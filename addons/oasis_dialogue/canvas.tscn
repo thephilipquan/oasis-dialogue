@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3 uid="uid://4plc4vhymybs"]
+
+[ext_resource type="Script" uid="uid://bkn5mac6gdvq3" path="res://addons/oasis_dialogue/canvas.gd" id="1_pyvqf"]
+
+[node name="DialogueCanvas" type="GraphEdit"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+grid_pattern = 1
+panning_scheme = 1
+minimap_enabled = false
+show_zoom_buttons = false
+show_grid_buttons = false
+show_minimap_button = false
+show_arrange_button = false
+script = ExtResource("1_pyvqf")
