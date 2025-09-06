@@ -2,7 +2,7 @@
 extends EditorPlugin
 
 const _CANVAS := preload("res://addons/oasis_dialogue/canvas/canvas.tscn")
-var canvas: GraphEdit = null
+var canvas: Control = null
 
 func _enter_tree() -> void:
 	canvas = _CANVAS.instantiate()
@@ -11,3 +11,4 @@ func _enter_tree() -> void:
 
 func _exit_tree() -> void:
 	remove_control_from_bottom_panel(canvas)
+	canvas.queue_free()

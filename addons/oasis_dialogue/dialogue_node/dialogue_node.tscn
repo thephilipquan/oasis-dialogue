@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cfpmjd8eo8f6o" path="res://addons/oasis_dialogue/dialogue_node/dialogue_node.gd" id="1_afudm"]
 [ext_resource type="Theme" uid="uid://br6up8xh8ljsg" path="res://addons/oasis_dialogue/theme.tres" id="1_f8dye"]
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jf3n0"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pyvqf"]
 
@@ -12,6 +13,7 @@ offset_right = 260.0
 offset_bottom = 198.0
 mouse_filter = 1
 theme = ExtResource("1_f8dye")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_jf3n0")
 position_offset = Vector2(395, 183)
 slot/0/left_enabled = false
 slot/0/left_type = 0
