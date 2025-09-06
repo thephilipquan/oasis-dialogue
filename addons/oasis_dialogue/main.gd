@@ -1,7 +1,7 @@
 @tool
 extends EditorPlugin
 
-const _CANVAS := preload("res://addons/oasis_dialogue/canvas.tscn")
+const _CANVAS := preload("res://addons/oasis_dialogue/canvas/canvas.tscn")
 var canvas: GraphEdit = null
 
 func _enter_tree() -> void:

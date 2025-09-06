@@ -1,16 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://dyt45pvhi04an"]
+[gd_scene load_steps=4 format=3 uid="uid://dyt45pvhi04an"]
 
-[ext_resource type="Script" uid="uid://cfpmjd8eo8f6o" path="res://addons/oasis_dialogue/dialogue_node.gd" id="1_afudm"]
+[ext_resource type="Script" uid="uid://cfpmjd8eo8f6o" path="res://addons/oasis_dialogue/dialogue_node/dialogue_node.gd" id="1_afudm"]
 
 [sub_resource type="Theme" id="Theme_jwq6a"]
 Label/font_sizes/font_size = 16
 TextEdit/font_sizes/font_size = 16
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_afudm"]
-content_margin_left = 16.0
-content_margin_top = 8.0
-content_margin_right = 16.0
-content_margin_bottom = 8.0
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pyvqf"]
 
@@ -20,9 +14,7 @@ offset_right = 260.0
 offset_bottom = 198.0
 mouse_filter = 1
 theme = SubResource("Theme_jwq6a")
-theme_override_styles/titlebar = SubResource("StyleBoxEmpty_afudm")
 position_offset = Vector2(395, 183)
-title = "you fool sheesh"
 slot/0/left_enabled = false
 slot/0/left_type = 0
 slot/0/left_color = Color(1, 1, 1, 1)
