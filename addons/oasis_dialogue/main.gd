@@ -6,7 +6,7 @@ var canvas: Control = null
 
 func _enter_tree() -> void:
 	canvas = _CANVAS.instantiate()
-	add_control_to_bottom_panel(canvas, "dialogue")
+	add_control_to_bottom_panel(canvas, "Dialogue")
 
 
 func _exit_tree() -> void:
