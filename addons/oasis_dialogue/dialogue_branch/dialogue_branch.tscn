@@ -1,0 +1,84 @@
+[gd_scene load_steps=5 format=3 uid="uid://dyt45pvhi04an"]
+
+[ext_resource type="Theme" uid="uid://br6up8xh8ljsg" path="res://addons/oasis_dialogue/theme.tres" id="1_7xbrg"]
+[ext_resource type="Script" uid="uid://cfpmjd8eo8f6o" path="res://addons/oasis_dialogue/dialogue_branch/dialogue_branch.gd" id="2_darse"]
+[ext_resource type="PackedScene" uid="uid://7cmbufflp3av" path="res://addons/oasis_dialogue/controls/toggle_button.tscn" id="3_b4b7a"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_f8dye"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+
+[node name="DialogueBranch" type="GraphNode"]
+custom_minimum_size = Vector2(320, 0)
+offset_right = 208.0
+offset_bottom = 133.0
+mouse_filter = 1
+theme = ExtResource("1_7xbrg")
+theme_override_styles/panel = SubResource("StyleBoxEmpty_f8dye")
+slot/0/left_enabled = false
+slot/0/left_type = 0
+slot/0/left_color = Color(1, 1, 1, 1)
+slot/0/left_icon = null
+slot/0/right_enabled = false
+slot/0/right_type = 0
+slot/0/right_color = Color(1, 1, 1, 1)
+slot/0/right_icon = null
+slot/0/draw_stylebox = true
+script = ExtResource("2_darse")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Id" type="Label" parent="VBoxContainer/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "1"
+
+[node name="Control" type="Control" parent="VBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ToggleButton" parent="VBoxContainer/MarginContainer/HBoxContainer" instance=ExtResource("3_b4b7a")]
+layout_mode = 2
+value = false
+
+[node name="Control2" type="Control" parent="VBoxContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Unique" type="CheckBox" parent="VBoxContainer/MarginContainer/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "unique"
+alignment = 2
+
+[node name="Prompts" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="PromptInput" type="TextEdit" parent="VBoxContainer/Prompts"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "type prompt here..."
+wrap_mode = 1
+scroll_fit_content_height = true
+
+[node name="Responses" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="ResponseInput" type="TextEdit" parent="VBoxContainer/Responses"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "type response here..."
+wrap_mode = 1
+scroll_fit_content_height = true
+
+[connection signal="text_changed" from="VBoxContainer/Prompts/PromptInput" to="." method="_on_prompt_input_text_changed"]

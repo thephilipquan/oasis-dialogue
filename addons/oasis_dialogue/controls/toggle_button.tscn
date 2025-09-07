@@ -1,0 +1,23 @@
+[gd_scene load_steps=2 format=3 uid="uid://7cmbufflp3av"]
+
+[ext_resource type="Script" uid="uid://jr111romsifl" path="res://addons/oasis_dialogue/controls/toggle_button.gd" id="1_6llj1"]
+
+[node name="ToggleButton" type="HBoxContainer"]
+offset_right = 54.0
+offset_bottom = 24.0
+script = ExtResource("1_6llj1")
+left_label = "seq"
+right_label = "rng"
+value = null
+
+[node name="LeftLabel" type="Label" parent="."]
+layout_mode = 2
+text = "seq"
+vertical_alignment = 1
+
+[node name="CheckButton" type="CheckButton" parent="."]
+layout_mode = 2
+
+[node name="RightLabel" type="Label" parent="."]
+layout_mode = 2
+text = "rng"

@@ -1,7 +1,7 @@
 @tool
 extends Control
 
-const _DIALOGUE_NODE := preload("res://addons/oasis_dialogue/dialogue_node/dialogue_node.tscn")
+const _DIALOGUE_NODE := preload("res://addons/oasis_dialogue/dialogue_branch/dialogue_branch.tscn")
 
 @onready
 var _tree: Tree = %Tree
