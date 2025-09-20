@@ -173,7 +173,7 @@ func _on_branch_changed(id: int, text: String) -> void:
 
 
 func _on_add_character_button_up() -> void:
-	var input_dialog := _input_dialog_factory.call()
+	var input_dialog: _InputDialog = _input_dialog_factory.call()
 	add_child(input_dialog)
 	input_dialog.set_placeholder_text("Enter character name...")
 	input_dialog.set_validation(_validate_new_character)
@@ -232,7 +232,7 @@ func _on_tree_item_selected() -> void:
 func _on_tree_item_activated() -> void:
 	var input_dialog: _InputDialog = _input_dialog_factory.call()
 	add_child(input_dialog)
-	input_dialog.set_placeholder_text("Renaming %s to..." % _model.active)
+	input_dialog.set_placeholder_text("Renaming %s to..." % _model.get_active_character())
 	input_dialog.set_validation(_validate_rename.bind(_model.get_characters().keys()))
 	input_dialog.set_on_done(_on_input_dialog_rename_done.bind(input_dialog))
 	input_dialog.set_on_cancel(_on_input_dialog_rename_cancel.bind(input_dialog))
@@ -247,7 +247,7 @@ func _on_input_dialog_rename_done(new_name: String, input_dialog: Control) -> vo
 		return
 
 	_model.rename_character(new_name)
-	_edit_selected_tree_item(_model.active)
+	_edit_selected_tree_item(_model.get_active_character())
 
 
 func _validate_rename(name: String, characters: Array[String]) -> String:
@@ -317,7 +317,7 @@ func _get_selected_tree_item_value() -> String:
 
 func _edit_selected_tree_item(value: String) -> void:
 	var item := _character_tree.get_selected()
-	item.set_text(0, _model.active)
+	item.set_text(0, value)
 
 
 func _remove_all_branch_nodes() -> void:
