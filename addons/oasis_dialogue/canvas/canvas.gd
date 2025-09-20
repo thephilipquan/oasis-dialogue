@@ -41,10 +41,6 @@ var _unbranchers_factory := Callable()
 
 
 func _ready() -> void:
-	# Center graph_edit.
-	_graph_edit.scroll_offset = -size
-	push_warning("test removing scroll offset")
-
 	_add_tree_item("root")
 
 
