@@ -1,0 +1,59 @@
+[gd_scene load_steps=4 format=3 uid="uid://bjsxs8phngbv1"]
+
+[ext_resource type="Theme" uid="uid://br6up8xh8ljsg" path="res://addons/oasis_dialogue/theme.tres" id="1_wqk6n"]
+[ext_resource type="Script" uid="uid://c3a4qvvvptqsp" path="res://addons/oasis_dialogue/confirm_dialog/confirm_dialog.gd" id="2_7e73r"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_t23ho"]
+
+[node name="ConfirmDialog" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_wqk6n")
+script = ExtResource("2_7e73r")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+modulate = Color(0, 0, 0, 0.5)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("CanvasTexture_t23ho")
+stretch_mode = 1
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+
+[node name="Message" type="Label" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="Cancel" type="Button" parent="CenterContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(129, 0)
+layout_mode = 2
+
+[node name="Confirm" type="Button" parent="CenterContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(129, 0)
+layout_mode = 2
+
+[connection signal="button_up" from="CenterContainer/VBoxContainer/HBoxContainer/Cancel" to="." method="_on_cancel_button_up"]
+[connection signal="button_up" from="CenterContainer/VBoxContainer/HBoxContainer/Confirm" to="." method="_on_confirm_button_up"]
