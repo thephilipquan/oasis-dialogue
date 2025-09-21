@@ -52,7 +52,6 @@ func has_action(action: String) -> bool:
 
 func add_branch() -> void:
 	if not _active:
-		push_warning("Tried to add a branch with no _active character.")
 		return
 	var branches := get_branches()
 	var sorted: Array[int] = branches.keys()
@@ -63,7 +62,6 @@ func add_branch() -> void:
 
 func add_named_branch(id: int) -> void:
 	if not _active:
-		push_warning("Tried to add a named branch with no _active character.")
 		return
 	_characters[_active].branches[id] = _AST.Branch.new(id, [], [], [])
 	branch_added.emit(id)
@@ -106,7 +104,6 @@ func switch_character(new_active: String) -> void:
 
 func remove_character(force := false) -> void:
 	if has_branches() and not force:
-		push_warning("%s has branches. Pass force as TRUE if you want to delete." % _active)
 		return
 	var removed_character := _active
 	_characters.erase(_active)
@@ -177,4 +174,3 @@ func from_json(json: Dictionary) -> void:
 	_actions.assign(json["actions"])
 	for c in _AST.Character.from_jsons(json["characters"]):
 		_characters[c.name] = c
->>>>>>> f4096c3 (feat: implement save and load project)

@@ -19,10 +19,6 @@ func set_lexer(lexer: Lexer) -> void:
 
 
 func _get_line_syntax_highlighting(line_number: int) -> Dictionary:
-	if not lexer:
-		push_warning("missing lexer")
-		return {}
-
 	var text_edit := get_text_edit()
 	var line := text_edit.get_line(line_number)
 

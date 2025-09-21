@@ -68,7 +68,6 @@ func add_error(expected_type: String) -> void:
 	message += " found %s instead" %  _Token.type_to_string(next.type)
 	var error := ParseError.new(message, next.line, next.column)
 
-	push_warning(error)
 	if _errors and error.line == _errors[-1].line:
 		_errors[-1] = error
 	else:

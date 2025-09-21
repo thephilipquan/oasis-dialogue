@@ -13,7 +13,9 @@ func before_each() -> void:
 
 func test_init() -> void:
 	var highlighter := SyntaxHighlighter.new()
+
 	sut.init(highlighter)
+
 	assert_eq(sut._code_edit.syntax_highlighter, highlighter)
 
 

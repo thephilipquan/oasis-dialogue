@@ -269,7 +269,6 @@ hey there
 	var tokens := lexer.tokenize(source)
 	sut.parse(tokens)
 	assert_eq(sut.get_errors().size(), 0)
-	print(sut.get_errors())
 
 
 func test_only_prompt() -> void:

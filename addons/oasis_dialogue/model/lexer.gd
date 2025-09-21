@@ -93,10 +93,6 @@ func move_position(steps: int) -> void:
 	_column += steps
 
 
-func at() -> String:
-	return _source.substr(_position, 1)
-
-
 func remainder() -> String:
 	return _source.substr(_position)
 

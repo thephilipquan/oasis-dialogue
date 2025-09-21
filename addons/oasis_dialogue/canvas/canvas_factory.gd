@@ -38,8 +38,6 @@ static func create() -> _Canvas:
 	var canvas := _CanvasScene.instantiate()
 	var model := _Model.new()
 	model.set_actions([_Global.CONNECT_BRANCH_KEYWORD])
-	# set actions and conditions in model
-	# and also in canvas.
 
 	var visitor_iterator := _VisitorIterator.new()
 	var empty_branch_visitor := _EmptyBranchVisitor.new(
@@ -64,14 +62,13 @@ static func create() -> _Canvas:
 		canvas.err_branch,
 	)
 
-	var visitors: Array[_Visitor] = [
+	visitor_iterator.set_visitors([
 		empty_branch_visitor,
 		duplicate_annotation_visitor,
 		#action_exists_visitor,
 		#condition_exists_visitor,
 		connect_branch_visitor,
-	]
-	visitor_iterator.set_visitors(visitors)
+	])
 
 	var lexer := _Lexer.new()
 	var branch_factory := func():
