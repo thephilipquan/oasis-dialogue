@@ -25,6 +25,9 @@ static func disable_left_with_no_connections(nodes: Array, graph: GraphEdit) -> 
 
 
 static func arrange_nodes(nodes: Array, graph: GraphEdit) -> void:
+	var selected_nodes: Array[GraphNode] = []
+	selected_nodes.assign(nodes.filter(func(n: GraphNode): return n.selected))
+
 	nodes.map(func(n: GraphNode): n.selected = true)
 	graph.arrange_nodes()
-	nodes.map(func(n: GraphNode): n.selected = false)
+	nodes.map(func(n: GraphNode): n.selected = n in selected_nodes)
