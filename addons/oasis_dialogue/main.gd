@@ -7,11 +7,10 @@ var _canvas: Control = null
 
 
 func _enter_tree() -> void:
-	var _canvas := _CanvasFactory.create()
+	_canvas = _CanvasFactory.create()
 	add_control_to_bottom_panel(_canvas, "Dialogue")
 
 
 func _exit_tree() -> void:
 	remove_control_from_bottom_panel(_canvas)
 	_canvas.queue_free()
-
