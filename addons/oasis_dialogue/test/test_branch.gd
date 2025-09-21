@@ -51,12 +51,14 @@ func test_set_text() -> void:
 
 func test_color_normal() -> void:
 	sut.color_normal()
-	assert_eq(sut.get_theme_stylebox("titlebar"), sut._normal_style)
+	assert_false(sut.has_theme_stylebox_override("titlebar"))
+	assert_false(sut.has_theme_stylebox_override("titlebar_selected"))
 
 
 func test_color_invalid() -> void:
 	sut.color_invalid()
-	assert_eq(sut.get_theme_stylebox("titlebar"), sut._invalid_style)
+	assert_true(sut.has_theme_stylebox_override("titlebar"))
+	assert_true(sut.has_theme_stylebox_override("titlebar_selected"))
 
 
 func test_highlight() -> void:

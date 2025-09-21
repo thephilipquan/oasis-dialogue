@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bwn8hmabgd5yn"]
+
+[ext_resource type="Script" uid="uid://by83xhedhp8dc" path="res://addons/oasis_dialogue/test/test_main.gd" id="1_demg8"]
+
+[node name="TestMain" type="Node"]
+script = ExtResource("1_demg8")

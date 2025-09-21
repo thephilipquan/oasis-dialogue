@@ -1,18 +1,14 @@
-[gd_scene load_steps=6 format=3 uid="uid://dyt45pvhi04an"]
+[gd_scene load_steps=4 format=3 uid="uid://dyt45pvhi04an"]
 
-[ext_resource type="StyleBox" uid="uid://bk7aqkqh2dlfw" path="res://addons/oasis_dialogue/branch/titlebar_unselected_stylebox.tres" id="1_6hn2x"]
+[ext_resource type="Theme" uid="uid://b48w54vf670uy" path="res://addons/oasis_dialogue/branch/branch_theme.tres" id="1_oxoiw"]
 [ext_resource type="StyleBox" uid="uid://bc3exjdlkea78" path="res://addons/oasis_dialogue/branch/titlebar_invalid_stylebox.tres" id="2_6hn2x"]
 [ext_resource type="Script" uid="uid://cfpmjd8eo8f6o" path="res://addons/oasis_dialogue/branch/branch.gd" id="2_darse"]
-[ext_resource type="StyleBox" uid="uid://d243uu5upe8j1" path="res://addons/oasis_dialogue/branch/code_edit_normal_stylebox.tres" id="4_oxoiw"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_t4sf6"]
 
 [node name="Branch" type="GraphNode"]
 custom_minimum_size = Vector2(320, 0)
 offset_right = 320.0
 offset_bottom = 68.0
-theme_override_styles/panel = SubResource("StyleBoxEmpty_t4sf6")
-theme_override_styles/titlebar = ExtResource("1_6hn2x")
+theme = ExtResource("1_oxoiw")
 slot/0/left_enabled = false
 slot/0/left_type = 0
 slot/0/left_color = Color(1, 1, 1, 1)
@@ -31,7 +27,6 @@ one_shot = true
 
 [node name="CodeEdit" type="CodeEdit" parent="."]
 layout_mode = 2
-theme_override_styles/normal = ExtResource("4_oxoiw")
 scroll_fit_content_height = true
 scroll_fit_content_width = true
 auto_brace_completion_enabled = true

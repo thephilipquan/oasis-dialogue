@@ -5,7 +5,6 @@ signal changed(_id: int, text: String)
 
 @export
 var _invalid_style: StyleBox = null
-var _normal_style: StyleBox = null
 
 @onready
 var _code_edit: CodeEdit = $CodeEdit
@@ -18,8 +17,6 @@ var _is_erred := false
 
 
 func _ready() -> void:
-	_normal_style = get_theme_stylebox("titlebar")
-
 	var hbox := get_titlebar_hbox()
 	hbox.add_spacer(false)
 
@@ -63,10 +60,14 @@ func highlight(line_errors: Array[int]) -> void:
 
 func color_invalid() -> void:
 	add_theme_stylebox_override("titlebar", _invalid_style)
+	add_theme_stylebox_override("titlebar_selected", _invalid_style)
 
 
 func color_normal() -> void:
-	add_theme_stylebox_override("titlebar", _normal_style)
+	if has_theme_stylebox_override("titlebar"):
+		remove_theme_stylebox_override("titlebar")
+	if has_theme_stylebox_override("titlebar_selected"):
+		remove_theme_stylebox_override("titlebar_selected")
 
 
 func _on_code_edit_text_changed() -> void:
