@@ -20,7 +20,7 @@ func _init() -> void:
 		Pattern.new(RegEx.create_from_string("\n"), newline_handler),
 		Pattern.new(RegEx.create_from_string("{"), curly_start_handler),
 		Pattern.new(RegEx.create_from_string("}"), curly_end_handler),
-		Pattern.new(RegEx.create_from_string(r"\s+"), skip_handler),
+		Pattern.new(RegEx.create_from_string(r"[ ]+"), skip_handler),
 		Pattern.new(RegEx.create_from_string("[a-zA-Z_]+"), match_handler.bind(_Type.IDENTIFIER)),
 		Pattern.new(RegEx.create_from_string("[0-9]+"), match_handler.bind(_Type.NUMBER)),
 		Pattern.new(RegEx.create_from_string("[^{\n]+"), text_handler),
