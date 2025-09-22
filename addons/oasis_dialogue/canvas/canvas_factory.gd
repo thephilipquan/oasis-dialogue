@@ -4,6 +4,7 @@ const _Global := preload("res://addons/oasis_dialogue/global.gd")
 
 const _Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
 const _CanvasScene := preload("res://addons/oasis_dialogue/canvas/canvas.tscn")
+const _CanvasInit := preload("res://addons/oasis_dialogue/canvas/canvas_init.gd")
 
 const _Branch := preload("res://addons/oasis_dialogue/branch/branch.gd")
 const _BranchScene := preload("res://addons/oasis_dialogue/branch/branch.tscn")
@@ -95,16 +96,16 @@ static func create() -> _Canvas:
 		])
 		return iterator
 
-	canvas.init(
-		model,
-		lexer,
-		_Parser.new(),
-		_Unparser.new(),
-		visitor_iterator,
-		branch_factory,
-		input_dialog_factory,
-		confirm_dialog_factory,
-		unbranchers_factory,
-	)
 
+	var init := _CanvasInit.new()
+	init.model = model
+	init.lexer = lexer
+	init.parser = _Parser.new()
+	init.unparser = _Unparser.new()
+	init.visitors = visitor_iterator
+	init.branch_factory = branch_factory
+	init.input_dialog_factory = input_dialog_factory
+	init.confirm_dialog_factory = confirm_dialog_factory
+	init.unbranchers_factory = unbranchers_factory
+	canvas.init(init)
 	return canvas

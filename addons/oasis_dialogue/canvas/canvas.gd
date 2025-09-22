@@ -3,6 +3,7 @@ extends Control
 
 const CONNECT_BRANCH_KEYWORD := "branch"
 
+const _CanvasInit := preload("res://addons/oasis_dialogue/canvas/canvas_init.gd")
 const _Branch := preload("res://addons/oasis_dialogue/branch/branch.gd")
 const _ConfirmDialog := preload("res://addons/oasis_dialogue/confirm_dialog/confirm_dialog.gd")
 const _InputDialog := preload("res://addons/oasis_dialogue/input_dialog/input_dialog.gd")
@@ -36,36 +37,29 @@ var _branch_factory := Callable()
 var _input_dialog_factory := Callable()
 ## [code]func() -> ConfirmDialogFactory[/code]
 var _confirm_dialog_factory := Callable()
-## [code]func(id: int) -> _VisitorIterator[/code]
+## [code]func(id: int) -> VisitorIterator[/code]
 var _unbranchers_factory := Callable()
+## [code]func() -> SaveDialog[/code]
+var _save_dialog_factory := Callable()
+## [code]func() -> void[/code]
+var _save_project := Callable()
 
 
 func _ready() -> void:
 	_add_tree_item("root")
 
 
-func init(
-	model: _Model,
-	lexer: _Lexer,
-	parser: _Parser,
-	unparser: _Unparser,
-	visitors: _VisitorIterator,
-	branch_factory: Callable,
-	input_dialog_factory: Callable,
-	confirm_dialog_factory: Callable,
-	unbranchers_factory: Callable
-) -> void:
-	_model = model
+func init(init: _CanvasInit) -> void:
+	_model = init.model
 	_model.branch_added.connect(_add_branch)
-
-	_lexer = lexer
-	_parser = parser
-	_unparser = unparser
-	_visitors = visitors
-	_branch_factory = branch_factory
-	_input_dialog_factory = input_dialog_factory
-	_confirm_dialog_factory = confirm_dialog_factory
-	_unbranchers_factory = unbranchers_factory
+	_lexer = init.lexer
+	_parser = init.parser
+	_unparser = init.unparser
+	_visitors = init.visitors
+	_branch_factory = init.branch_factory
+	_input_dialog_factory = init.input_dialog_factory
+	_confirm_dialog_factory = init.confirm_dialog_factory
+	_unbranchers_factory = init.unbranchers_factory
 
 
 func err_branch(id: int, message: String) -> void:

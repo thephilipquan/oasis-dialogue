@@ -4,6 +4,7 @@ const Global := preload("res://addons/oasis_dialogue/global.gd")
 
 const Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
 const CanvasScene := preload("res://addons/oasis_dialogue/canvas/canvas.tscn")
+const CanvasInit := preload("res://addons/oasis_dialogue/canvas/canvas_init.gd")
 const Branch := preload("res://addons/oasis_dialogue/branch/branch.gd")
 const BranchScene := preload("res://addons/oasis_dialogue/branch/branch.tscn")
 
@@ -23,6 +24,7 @@ const ConfirmDialog := preload("res://addons/oasis_dialogue/confirm_dialog/confi
 const ConfirmDialogScene := preload("res://addons/oasis_dialogue/confirm_dialog/confirm_dialog.tscn")
 
 var sut: Canvas = null
+var init: CanvasInit = null
 var model: Model = null
 var lexer: Lexer = null
 var parser: Parser = null
@@ -60,23 +62,24 @@ func before_all() -> void:
 		unbranchers = double(VisitorIterator).new()
 		return unbranchers
 
+	init = CanvasInit.new()
+	init.model = model
+	init.lexer = lexer
+	init.parser = parser
+	init.unparser = unparser
+	init.visitors = visitor_iterator
+	init.branch_factory = branch_factory
+	init.input_dialog_factory = input_dialog_factory
+	init.confirm_dialog_factory = confirm_dialog_factory
+	init.unbranchers_factory = unbranchers_factory
+
 
 func before_each() -> void:
 	doubled_branches.clear()
 	doubled_input_dialogs.clear()
 	doubled_confirm_dialogs.clear()
 	sut = CanvasScene.instantiate()
-	sut.init(
-		model,
-		lexer,
-		parser,
-		unparser,
-		visitor_iterator,
-		branch_factory,
-		input_dialog_factory,
-		confirm_dialog_factory,
-		unbranchers_factory,
-	)
+	sut.init(init)
 	add_child_autofree(sut)
 
 
