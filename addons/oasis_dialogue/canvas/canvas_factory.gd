@@ -50,14 +50,14 @@ static func create() -> _Canvas:
 		visitor_iterator.stop,
 		canvas.err_branch,
 	)
-	var action_exists_visitor := _ActionExistsVisitor.new(
-		model.has_action,
-		canvas.err_branch,
-	)
-	var condition_exists_visitor := _ConditionExistsVisitor.new(
-		model.has_condition,
-		canvas.err_branch,
-	)
+	#var action_exists_visitor := _ActionExistsVisitor.new(
+		#model.has_action,
+		#canvas.err_branch,
+	#)
+	#var condition_exists_visitor := _ConditionExistsVisitor.new(
+		#model.has_condition,
+		#canvas.err_branch,
+	#)
 	var connect_branch_visitor := _ConnectBranchVisitor.new(
 		_Global.CONNECT_BRANCH_KEYWORD,
 		canvas.connect_branches,
@@ -67,8 +67,8 @@ static func create() -> _Canvas:
 	var visitors: Array[_Visitor] = [
 		empty_branch_visitor,
 		duplicate_annotation_visitor,
-		action_exists_visitor,
-		condition_exists_visitor,
+		#action_exists_visitor,
+		#condition_exists_visitor,
 		connect_branch_visitor,
 	]
 	visitor_iterator.set_visitors(visitors)
