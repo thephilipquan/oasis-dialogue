@@ -22,6 +22,7 @@ const InputDialog := preload("res://addons/oasis_dialogue/input_dialog/input_dia
 const InputDialogScene := preload("res://addons/oasis_dialogue/input_dialog/input_dialog.tscn")
 const ConfirmDialog := preload("res://addons/oasis_dialogue/confirm_dialog/confirm_dialog.gd")
 const ConfirmDialogScene := preload("res://addons/oasis_dialogue/confirm_dialog/confirm_dialog.tscn")
+const OasisDialog := preload("res://addons/oasis_dialogue/file_dialog/oasis_dialog.gd")
 
 var sut: Canvas = null
 var init: CanvasInit = null
@@ -35,10 +36,12 @@ var branch_factory := Callable()
 var input_dialog_factory := Callable()
 var confirm_dialog_factory := Callable()
 var unbranchers_factory := Callable()
+var oasis_dialog_factory := Callable()
 
+var doubled_branches: Array[Branch] = []
 var doubled_input_dialogs: Array[InputDialog] = []
 var doubled_confirm_dialogs: Array[ConfirmDialog] = []
-var doubled_branches: Array[Branch] = []
+var doubled_oasis_dialogs: Array[OasisDialog] = []
 
 func before_all() -> void:
 	model = double(Model).new()
@@ -61,6 +64,10 @@ func before_all() -> void:
 	unbranchers_factory = func(id: int):
 		unbranchers = double(VisitorIterator).new()
 		return unbranchers
+	oasis_dialog_factory = func():
+		var dialog := OasisDialog.new()
+		doubled_oasis_dialogs.push_back(dialog)
+		return dialog
 
 	init = CanvasInit.new()
 	init.model = model
@@ -72,13 +79,16 @@ func before_all() -> void:
 	init.input_dialog_factory = input_dialog_factory
 	init.confirm_dialog_factory = confirm_dialog_factory
 	init.unbranchers_factory = unbranchers_factory
+	init.save_dialog_factory = oasis_dialog_factory
+	init.load_dialog_factory = oasis_dialog_factory
 
 
 func before_each() -> void:
 	doubled_branches.clear()
 	doubled_input_dialogs.clear()
 	doubled_confirm_dialogs.clear()
-	sut = CanvasScene.instantiate()
+	doubled_oasis_dialogs.clear()
+	sut = partial_double(CanvasScene).instantiate()
 	sut.init(init)
 	add_child_autofree(sut)
 
@@ -98,7 +108,7 @@ func test_add_character() -> void:
 	sut._on_add_character_button_up()
 	stub(model.get_branches).to_call(
 		func():
-			var branches: Dictionary[int, AST.ASTNode] = {}
+			var branches: Dictionary[int, AST.Branch] = {}
 			return branches
 	)
 	var input_dialog := doubled_input_dialogs[0]
@@ -137,7 +147,7 @@ func test_add_branch_with_no_active_character() -> void:
 	stub(model.get_characters).to_call(
 		func():
 			var characters: Dictionary[String, AST.Character] = {
-				"fred": AST.Character.new({}),
+				"fred": AST.Character.new("fred", {}),
 			}
 			return characters
 	)
@@ -153,7 +163,7 @@ func test_remove_character_with_no_branches() -> void:
 	sut._on_add_character_button_up()
 	stub(model.get_branches).to_call(
 		func():
-			var branches: Dictionary[int, AST.ASTNode] = {}
+			var branches: Dictionary[int, AST.Branch] = {}
 			return branches
 	)
 	var input_dialog := doubled_input_dialogs[0]
@@ -172,7 +182,7 @@ func test_remove_character_with_branches_confirmed() -> void:
 	sut._on_add_character_button_up()
 	stub(model.get_branches).to_call(
 		func():
-			var branches: Dictionary[int, AST.ASTNode] = {}
+			var branches: Dictionary[int, AST.Branch] = {}
 			return branches
 	)
 	var input_dialog := doubled_input_dialogs[0]
@@ -183,7 +193,7 @@ func test_remove_character_with_branches_confirmed() -> void:
 	stub(model.get_characters).to_call(
 		func():
 			var characters: Dictionary[String, AST.Character] = {
-				"fred": AST.Character.new({}),
+				"fred": AST.Character.new("fred", {}),
 			}
 			return characters
 	)
@@ -193,8 +203,8 @@ func test_remove_character_with_branches_confirmed() -> void:
 
 	stub(model.get_branches).to_call(
 		func():
-			var branches: Dictionary[int, AST.ASTNode] = {
-				0: AST.ASTNode.new(),
+			var branches: Dictionary[int, AST.Branch] = {
+				0: AST.Branch.new(-1, [], [], []),
 			}
 			return branches
 	)
@@ -214,7 +224,7 @@ func test_remove_character_with_branches_canceled() -> void:
 	sut._on_add_character_button_up()
 	stub(model.get_branches).to_call(
 		func():
-			var branches: Dictionary[int, AST.ASTNode] = {}
+			var branches: Dictionary[int, AST.Branch] = {}
 			return branches
 	)
 	var input_dialog := doubled_input_dialogs[0]
@@ -225,7 +235,7 @@ func test_remove_character_with_branches_canceled() -> void:
 	stub(model.get_characters).to_call(
 		func():
 			var characters: Dictionary[String, AST.Character] = {
-				"fred": AST.Character.new({}),
+				"fred": AST.Character.new("fred", {}),
 			}
 			return characters
 	)
@@ -235,8 +245,8 @@ func test_remove_character_with_branches_canceled() -> void:
 
 	stub(model.get_branches).to_call(
 		func():
-			var branches: Dictionary[int, AST.ASTNode] = {
-				0: AST.ASTNode.new(),
+			var branches: Dictionary[int, AST.Branch] = {
+				0: AST.Branch.new(-1, [], [], []),
 			}
 			return branches
 	)
@@ -255,7 +265,7 @@ func test_add_branch() -> void:
 	stub(model.get_characters).to_call(
 		func():
 			var characters: Dictionary[String, AST.Character] = {
-				"fred": AST.Character.new({}),
+				"fred": AST.Character.new("fred", {}),
 			}
 			return characters
 	)
@@ -280,7 +290,7 @@ func test_parser_error() -> void:
 	stub(model.get_characters).to_call(
 		func():
 			var characters: Dictionary[String, AST.Character] = {
-				"fred": AST.Character.new({}),
+				"fred": AST.Character.new("fred", {}),
 			}
 			return characters
 	)
@@ -317,7 +327,7 @@ func test_semantic_error() -> void:
 	stub(model.get_characters).to_call(
 		func():
 			var characters: Dictionary[String, AST.Character] = {
-				"fred": AST.Character.new({}),
+				"fred": AST.Character.new("fred", {}),
 			}
 			return characters
 	)
@@ -351,7 +361,7 @@ func test_connecting_branch_to_existing_branch() -> void:
 	stub(model.get_characters).to_call(
 		func():
 			var characters: Dictionary[String, AST.Character] = {
-				"fred": AST.Character.new({}),
+				"fred": AST.Character.new("fred", {}),
 			}
 			return characters
 	)
@@ -379,7 +389,7 @@ func test_connecting_branch_to_non_existing_branch() -> void:
 	stub(model.get_characters).to_call(
 		func():
 			var characters: Dictionary[String, AST.Character] = {
-				"fred": AST.Character.new({}),
+				"fred": AST.Character.new("fred", {}),
 			}
 			return characters
 	)
@@ -403,7 +413,7 @@ func test_connecting_branch_to_non_existing_branch_offsets() -> void:
 	stub(model.get_characters).to_call(
 		func():
 			var characters: Dictionary[String, AST.Character] = {
-				"fred": AST.Character.new({}),
+				"fred": AST.Character.new("fred", {}),
 			}
 			return characters
 	)
@@ -427,7 +437,7 @@ func test_connect_branch_removes_previous_connections() -> void:
 	stub(model.get_characters).to_call(
 		func():
 			var characters: Dictionary[String, AST.Character] = {
-				"fred": AST.Character.new({}),
+				"fred": AST.Character.new("fred", {}),
 			}
 			return characters
 	)
@@ -459,7 +469,7 @@ func test_connect_branch_to_nothing_disables_slot() -> void:
 	stub(model.get_characters).to_call(
 		func():
 			var characters: Dictionary[String, AST.Character] = {
-				"fred": AST.Character.new({}),
+				"fred": AST.Character.new("fred", {}),
 			}
 			return characters
 	)
@@ -492,7 +502,7 @@ func test_remove_branch() -> void:
 	stub(model.get_characters).to_call(
 		func():
 			var characters: Dictionary[String, AST.Character] = {
-				"fred": AST.Character.new({}),
+				"fred": AST.Character.new("fred", {}),
 			}
 			return characters
 	)
@@ -513,7 +523,7 @@ func test_removing_branch_calls_set_text_on_left_connections() -> void:
 	stub(model.get_characters).to_call(
 		func():
 			var characters: Dictionary[String, AST.Character] = {
-				"fred": AST.Character.new({}),
+				"fred": AST.Character.new("fred", {}),
 			}
 			return characters
 	)
@@ -547,7 +557,7 @@ func test_remove_branch_disables_previously_connected_empty_branch_slots() -> vo
 	stub(model.get_characters).to_call(
 		func():
 			var characters: Dictionary[String, AST.Character] = {
-				"fred": AST.Character.new({}),
+				"fred": AST.Character.new("fred", {}),
 			}
 			return characters
 	)
@@ -586,7 +596,7 @@ func test_switching_characters_removes_branch_nodes() -> void:
 	# Add character.
 	stub(model.get_branches).to_call(
 		func():
-			var branches: Dictionary[int, AST.ASTNode] = {}
+			var branches: Dictionary[int, AST.Branch] = {}
 			return branches
 	)
 	sut._on_add_character_button_up()
@@ -598,7 +608,7 @@ func test_switching_characters_removes_branch_nodes() -> void:
 	stub(model.get_characters).to_call(
 		func():
 			var characters: Dictionary[String, AST.Character] = {
-				"fred": AST.Character.new({}),
+				"fred": AST.Character.new("fred", {}),
 			}
 			return characters
 	)
@@ -619,9 +629,31 @@ func test_switching_character_reconstructs_branch_nodes() -> void:
 	# Add character.
 	stub(model.get_branches).to_call(
 		func():
-			var branches: Dictionary[int, AST.ASTNode] = {
-				0: AST.StringLiteral.new("foo"),
-				1: AST.StringLiteral.new("bar"),
+			var branches: Dictionary[int, AST.Branch] = {
+				0: AST.Branch.new(
+					0,
+					[],
+					[
+						AST.Prompt.new(
+							[],
+							AST.StringLiteral.new("foo"),
+							[]
+						),
+					],
+					[],
+				),
+				1: AST.Branch.new(
+					1,
+					[],
+					[
+						AST.Prompt.new(
+							[],
+							AST.StringLiteral.new("bar"),
+							[]
+						),
+					],
+					[],
+				),
 			}
 			return branches
 	)
@@ -640,9 +672,10 @@ func test_switching_character_reconstructs_connections() -> void:
 	# Add character.
 	stub(model.get_branches).to_call(
 		func():
-			var branches: Dictionary[int, AST.ASTNode] = {
+			var branches: Dictionary[int, AST.Branch] = {
 				0: AST.Branch.new(
 					0,
+					[],
 					[
 						AST.Prompt.new(
 							[],
@@ -653,10 +686,10 @@ func test_switching_character_reconstructs_connections() -> void:
 						),
 					],
 					[],
-					[],
 				),
 				1: AST.Branch.new(
 					1,
+					[],
 					[
 						AST.Prompt.new(
 							[],
@@ -664,7 +697,6 @@ func test_switching_character_reconstructs_connections() -> void:
 							[],
 						),
 					],
-					[],
 					[],
 				),
 			}
@@ -688,9 +720,10 @@ func test_switching_character_reconstructs_connections() -> void:
 func test_switching_character_reconstructs_connections_to_empty_branches() -> void:
 	stub(model.get_branches).to_call(
 		func():
-			var branches: Dictionary[int, AST.ASTNode] = {
+			var branches: Dictionary[int, AST.Branch] = {
 				0: AST.Branch.new(
 					0,
+					[],
 					[
 						AST.Prompt.new(
 							[],
@@ -700,7 +733,6 @@ func test_switching_character_reconstructs_connections_to_empty_branches() -> vo
 							],
 						),
 					],
-					[],
 					[],
 				),
 				1: AST.Branch.new(
@@ -732,7 +764,7 @@ func test_err_branch() -> void:
 	stub(model.get_characters).to_call(
 		func():
 			var characters: Dictionary[String, AST.Character] = {
-				"fred": AST.Character.new({}),
+				"fred": AST.Character.new("fred", {}),
 			}
 			return characters
 	)
@@ -752,7 +784,7 @@ func test_cannot_switch_character_with_errors() -> void:
 	stub(model.get_characters).to_call(
 		func():
 			var characters: Dictionary[String, AST.Character] = {
-				"fred": AST.Character.new({}),
+				"fred": AST.Character.new("fred", {}),
 			}
 			return characters
 	)
@@ -766,3 +798,116 @@ func test_cannot_switch_character_with_errors() -> void:
 	sut._on_tree_item_selected()
 
 	assert_not_called(model.switch_character)
+
+
+func test_save_project() -> void:
+	# Press save project.
+	stub(model.has_save_path).to_return(false)
+	sut._on_save_project_button_up()
+	var save_dialog := doubled_oasis_dialogs[0]
+	save_dialog.selected.emit("to/path")
+	await wait_physics_frames(1)
+
+	assert_called(model, "set_save_path", ["to/path"])
+	assert_called(model.save_project)
+
+
+func test_save_project_canceled() -> void:
+	# Press save project.
+	stub(model.has_save_path).to_return(false)
+	sut._on_save_project_button_up()
+	var dialog := doubled_oasis_dialogs[0]
+	dialog.canceled.emit()
+	await wait_physics_frames(1)
+
+	assert_not_called(model.save_project)
+
+
+func test_save_project_with_save_path() -> void:
+	# Press save project.
+	stub(model.has_save_path).to_return(true)
+	sut._on_save_project_button_up()
+
+	assert_eq(doubled_oasis_dialogs.size(), 0)
+	assert_called(model.save_project)
+
+
+func test_load_project() -> void:
+	# Press load project.
+	sut._on_load_project_button_up()
+	var dialog := doubled_oasis_dialogs[0]
+	stub(model.load_project).to_return(true)
+	stub(model.get_characters).to_call(
+		func():
+			return {
+				"fred": {},
+				"joe": {},
+		}
+	)
+	dialog.selected.emit("to/path")
+	await wait_physics_frames(1)
+
+	assert_called(model, "load_project", ["to/path"])
+	assert_eq(sut._character_tree.get_root().get_child_count(), 2)
+
+
+func test_load_project_rewrites_tree() -> void:
+	# Add character.
+	sut._on_add_character_button_up()
+	stub(model.get_branches).to_call(
+		func():
+			var branches: Dictionary[int, AST.Branch] = {}
+			return branches
+	)
+	var input_dialog := doubled_input_dialogs[0]
+	input_dialog._on_done.call("fred")
+	await wait_physics_frames(1)
+
+	# Add branch.
+	stub(model.get_characters).to_call(
+		func():
+			var characters: Dictionary[String, AST.Character] = {
+				"fred": AST.Character.new("fred", {}),
+			}
+			return characters
+	)
+	stub(model.get_active_character).to_return("fred")
+	stub(model.add_branch).to_call(model.branch_added.emit.bind(0))
+	sut._on_add_branch_button_up()
+
+	# Press load project.
+	sut._on_load_project_button_up()
+	var dialog := doubled_oasis_dialogs[0]
+	stub(model.load_project).to_return(true)
+	stub(model.get_characters).to_call(
+		func():
+			return {
+				"tim": {},
+				"joe": {},
+		}
+	)
+	dialog.selected.emit("to/path")
+	await wait_physics_frames(1)
+
+	assert_eq(sut._character_tree.get_root().get_child_count(), 2)
+
+
+func test_load_project_canceled() -> void:
+	# Press load project.
+	sut._on_load_project_button_up()
+	var dialog := doubled_oasis_dialogs[0]
+	dialog.canceled.emit()
+	await wait_physics_frames(1)
+
+	assert_not_called(model.load_project)
+
+
+func test_load_project_failed() -> void:
+	# Press load project.
+	sut._on_load_project_button_up()
+	var dialog := doubled_oasis_dialogs[0]
+	stub(model.load_project).to_return(false)
+	dialog.selected.emit("to/path")
+	await wait_physics_frames(1)
+
+	assert_eq(sut._character_tree.get_root().get_child_count(), 0)

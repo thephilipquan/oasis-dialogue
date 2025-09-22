@@ -10,38 +10,36 @@ func before_each() -> void:
 	sut = Model.new()
 
 
-func test_set_conditions() -> void:
+func test_save_path() -> void:
+	assert_eq(sut.get_save_path(), "")
+	assert_false(sut.has_save_path())
+
+	sut.set_save_path("foo")
+
+	assert_eq(sut.get_save_path(), "foo")
+	assert_true(sut.has_save_path())
+
+
+func test_conditions() -> void:
 	var conditions: Array[String] = [
 		"has_gold",
 		"is_day",
 	]
 	sut.set_conditions(conditions)
 	assert_eq_deep(sut._conditions, conditions)
-
-
-func test_has_condition() -> void:
-	sut.set_conditions([
-		"has_gold",
-	])
 	assert_true(sut.has_condition("has_gold"))
-	assert_false(sut.has_condition("is_day"))
+	assert_false(sut.has_condition("is_night"))
 
 
-func test_set_actions() -> void:
+func test_actions() -> void:
 	var actions: Array[String] = [
 		"foo",
 		"bar",
 	]
 	sut.set_actions(actions)
 	assert_eq_deep(sut._actions, actions)
-
-
-func test_has_action() -> void:
-	sut.set_actions([
-		"foo",
-	])
 	assert_true(sut.has_action("foo"))
-	assert_false(sut.has_action("bar"))
+	assert_false(sut.has_action("eee"))
 
 
 func test_is_active() -> void:
@@ -54,11 +52,8 @@ func test_is_active() -> void:
 func test_add_character() -> void:
 	sut.add_character("foo")
 	assert_true("foo" in sut.get_characters().keys())
-
-
-func test_add_character_has_no_branches() -> void:
-	sut.add_character("fred")
-	assert_eq(sut.get_characters()["fred"].branches.size(), 0)
+	assert_eq(sut.get_characters()["foo"].name, "foo")
+	assert_eq(sut.get_characters()["foo"].branches.size(), 0)
 
 
 func test_get_character_names() -> void:
@@ -113,7 +108,7 @@ func test_update_branch() -> void:
 	sut.add_character("fred")
 	sut.switch_character("fred")
 	sut.add_branch()
-	var annotations: Array[AST.ASTNode] = [
+	var annotations: Array[AST.Annotation] = [
 		AST.Annotation.new("rng", null),
 	]
 	var ast := AST.Branch.new(0, annotations, [], [])
@@ -207,6 +202,7 @@ func test_rename_character() -> void:
 	assert_eq(sut.get_active_character(), "bar")
 	assert_false("foo" in sut.get_characters().keys())
 	assert_true("bar" in sut.get_characters().keys())
+	assert_eq(sut.get_characters()["bar"].name, "bar")
 
 
 func test_remove_character_with_branches() -> void:
@@ -225,3 +221,90 @@ func test_force_remove_character() -> void:
 	sut.remove_character(true)
 	assert_eq(sut.get_active_character(), "")
 	assert_false("fred" in sut.get_characters().keys())
+
+
+func test_to_json() -> void:
+	sut.add_character("fred")
+	sut.set_actions(["foo"])
+	sut.set_conditions(["bar"])
+	sut.set_save_path("to/somewhere")
+
+	var got := sut.to_json()
+	var expected := {
+		"actions": [ "foo" ],
+		"conditions": [ "bar" ],
+		"save_path": "to/somewhere",
+		"characters": [
+			{
+				"name": "fred",
+				"branches": [],
+			},
+		],
+	}
+	assert_eq_deep(got, expected)
+
+
+func test_from_json() -> void:
+	var json := {
+		"actions": [ "foo" ],
+		"conditions": [ "bar" ],
+		"save_path": "to/somewhere",
+		"characters": [
+			{
+				"name": "fred",
+				"branches": [],
+			},
+		],
+	}
+	sut.from_json(json)
+
+	assert_true(sut.has_character("fred"))
+	assert_eq_deep(sut.get_characters()["fred"].branches, {})
+	assert_eq(sut.get_save_path(), json["save_path"])
+	assert_eq(sut._conditions, json["conditions"])
+	assert_eq(sut._actions, json["actions"])
+
+
+func test_load_project() -> void:
+	const test_path := "res://test_model_load.json"
+	var file := FileAccess.open(test_path, FileAccess.WRITE)
+	if not file:
+		fail_test("")
+		return
+	var json := {
+		"actions": [ "foo" ],
+		"conditions": [ "bar" ],
+		"save_path": "to/somewhere",
+		"characters": [
+			{
+				"name": "fred",
+				"branches": [],
+			},
+		],
+	}
+	file.store_string(JSON.stringify(json))
+	file.close()
+
+	sut.load_project(test_path)
+
+	assert_true(sut.has_character("fred"))
+	assert_eq_deep(sut.get_characters()["fred"].branches, {})
+	assert_eq(sut.get_save_path(), json["save_path"])
+	assert_eq(sut._conditions, json["conditions"])
+	assert_eq(sut._actions, json["actions"])
+	var dir := DirAccess.open(test_path.get_base_dir())
+	dir.remove(test_path)
+
+
+func test_save_project() -> void:
+	const test_path := "res://test_save_project.json"
+	sut.add_character("fred")
+	sut.set_actions(["foo"])
+	sut.set_conditions(["bar"])
+	sut.set_save_path(test_path)
+
+	sut.save_project()
+
+	assert_true(FileAccess.file_exists(test_path))
+	var dir := DirAccess.open(test_path.get_base_dir())
+	dir.remove(test_path)

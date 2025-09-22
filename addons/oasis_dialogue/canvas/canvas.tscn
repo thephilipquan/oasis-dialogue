@@ -50,6 +50,14 @@ stretch_mode = 4
 layout_mode = 2
 text = "remove"
 
+[node name="SaveProject" type="Button" parent="VBoxContainer/HeaderMarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "save"
+
+[node name="LoadProject" type="Button" parent="VBoxContainer/HeaderMarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "load"
+
 [node name="SplitContainer" type="SplitContainer" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
@@ -88,6 +96,8 @@ one_shot = true
 [connection signal="button_up" from="VBoxContainer/HeaderMarginContainer/HBoxContainer/AddCharacter" to="." method="_on_add_character_button_up"]
 [connection signal="button_up" from="VBoxContainer/HeaderMarginContainer/HBoxContainer/AddBranch" to="." method="_on_add_branch_button_up"]
 [connection signal="button_up" from="VBoxContainer/HeaderMarginContainer/HBoxContainer/RemoveCharacter" to="." method="_on_remove_character_button_up"]
+[connection signal="button_up" from="VBoxContainer/HeaderMarginContainer/HBoxContainer/SaveProject" to="." method="_on_save_project_button_up"]
+[connection signal="button_up" from="VBoxContainer/HeaderMarginContainer/HBoxContainer/LoadProject" to="." method="_on_load_project_button_up"]
 [connection signal="item_activated" from="VBoxContainer/SplitContainer/Tree" to="." method="_on_tree_item_activated"]
 [connection signal="item_edited" from="VBoxContainer/SplitContainer/Tree" to="." method="_on_tree_item_edited"]
 [connection signal="item_selected" from="VBoxContainer/SplitContainer/Tree" to="." method="_on_tree_item_selected"]

@@ -19,3 +19,7 @@ var input_dialog_factory := Callable()
 var confirm_dialog_factory := Callable()
 ## [code]func(id: int) -> VisitorIterator[/code]
 var unbranchers_factory := Callable()
+## [code]func() -> OasisDialog[/code]
+var save_dialog_factory := Callable()
+## [code]func() -> OasisDialog[/code]
+var load_dialog_factory := Callable()

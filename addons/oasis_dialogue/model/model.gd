@@ -7,10 +7,23 @@ const _SequenceUtils := preload("res://addons/oasis_dialogue/utils/sequence.gd")
 
 signal branch_added(id: int)
 
+var _save_path := ""
 var _active := ""
 var _characters: Dictionary[String, _AST.Character] = {}
 var _conditions: Array[String] = []
 var _actions: Array[String] = []
+
+
+func has_save_path() -> bool:
+	return _save_path != ""
+
+
+func get_save_path() -> String:
+	return _save_path
+
+
+func set_save_path(path: String) -> void:
+	_save_path = path
 
 
 func get_active_character() -> String:
@@ -52,7 +65,7 @@ func add_named_branch(id: int) -> void:
 	if not _active:
 		push_warning("Tried to add a named branch with no _active character.")
 		return
-	_characters[_active].branches[id] = _AST.ASTNode.new()
+	_characters[_active].branches[id] = _AST.Branch.new(id, [], [], [])
 	branch_added.emit(id)
 
 
@@ -83,7 +96,7 @@ func has_character(name: String) -> bool:
 
 func add_character(name: String) -> void:
 	assert(not name in _characters)
-	_characters[name] = _AST.Character.new({})
+	_characters[name] = _AST.Character.new(name, {})
 
 
 func switch_character(new_active: String) -> void:
@@ -102,11 +115,10 @@ func remove_character(force := false) -> void:
 
 func rename_character(to: String) -> void:
 	assert(_active and not to in _characters)
-	var old := _active
-
 	_characters[to] = _characters[_active]
 	_characters.erase(_active)
 	_active = to
+	_characters[_active].name = to
 
 
 func has_branch(id: int) -> bool:
@@ -118,6 +130,51 @@ func has_branches() -> bool:
 
 
 ## Returns the branches of the [member _active] character.
-func get_branches() -> Dictionary[int, _AST.ASTNode]:
+func get_branches() -> Dictionary[int, _AST.Branch]:
 	return _characters[_active].branches.duplicate()
 
+
+func load_project(path: String) -> bool:
+	var file := FileAccess.open(path, FileAccess.READ)
+	if not file:
+		return false
+	var json := JSON.new()
+	if json.parse(file.get_as_text()) != OK:
+		return false
+	from_json(json.data)
+	return true
+
+
+func save_project() -> bool:
+	var file := FileAccess.open(_save_path, FileAccess.WRITE)
+	if not file:
+		return false
+	file.store_string(JSON.stringify(to_json()))
+	return true
+
+
+func to_json() -> Dictionary:
+	var json := {
+		"save_path": _save_path,
+		"conditions": _conditions,
+		"actions": _actions,
+		"characters": (
+				_characters.values().map(func(c: _AST.Character): return c.to_json())
+				if _characters
+				else []
+		),
+	}
+	return json
+
+
+func from_json(json: Dictionary) -> void:
+	_conditions.clear()
+	_actions.clear()
+	_characters.clear()
+
+	_save_path = json["save_path"]
+	_conditions.assign(json["conditions"])
+	_actions.assign(json["actions"])
+	for c in _AST.Character.from_jsons(json["characters"]):
+		_characters[c.name] = c
+>>>>>>> f4096c3 (feat: implement save and load project)

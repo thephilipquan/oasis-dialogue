@@ -7,6 +7,7 @@ const _CanvasInit := preload("res://addons/oasis_dialogue/canvas/canvas_init.gd"
 const _Branch := preload("res://addons/oasis_dialogue/branch/branch.gd")
 const _ConfirmDialog := preload("res://addons/oasis_dialogue/confirm_dialog/confirm_dialog.gd")
 const _InputDialog := preload("res://addons/oasis_dialogue/input_dialog/input_dialog.gd")
+const _OasisDialog := preload("res://addons/oasis_dialogue/file_dialog/oasis_dialog.gd")
 const _Model := preload("res://addons/oasis_dialogue/model/model.gd")
 const _Lexer := preload("res://addons/oasis_dialogue/model/lexer.gd")
 const _Parser := preload("res://addons/oasis_dialogue/model/parser.gd")
@@ -39,10 +40,10 @@ var _input_dialog_factory := Callable()
 var _confirm_dialog_factory := Callable()
 ## [code]func(id: int) -> VisitorIterator[/code]
 var _unbranchers_factory := Callable()
-## [code]func() -> SaveDialog[/code]
+## [code]func() -> OasisDialog[/code]
 var _save_dialog_factory := Callable()
-## [code]func() -> void[/code]
-var _save_project := Callable()
+## [code]func() -> OasisDialog[/code]
+var _load_dialog_factory := Callable()
 
 
 func _ready() -> void:
@@ -60,6 +61,8 @@ func init(init: _CanvasInit) -> void:
 	_input_dialog_factory = init.input_dialog_factory
 	_confirm_dialog_factory = init.confirm_dialog_factory
 	_unbranchers_factory = init.unbranchers_factory
+	_save_dialog_factory = init.save_dialog_factory
+	_load_dialog_factory = init.load_dialog_factory
 
 
 func err_branch(id: int, message: String) -> void:
@@ -283,6 +286,64 @@ func _remove_character(confirm_dialog: Control = null) -> void:
 	_remove_all_branch_nodes()
 
 
+func _on_save_project_button_up() -> void:
+	if not _model.has_save_path():
+		var save_dialog: _OasisDialog = _save_dialog_factory.call()
+		add_child(save_dialog)
+		save_dialog.selected.connect(_on_save_dialog_selected.bind(save_dialog))
+		save_dialog.canceled.connect(_on_save_dialog_canceled.bind(save_dialog))
+	else:
+		_save_project()
+		_update_status("Project saved to %s." % _model.get_save_path())
+
+
+func _on_save_dialog_selected(path: String, dialog: _OasisDialog) -> void:
+	remove_child(dialog)
+	dialog.queue_free()
+	_model.set_save_path(path)
+	_save_project()
+
+
+func _on_save_dialog_canceled(save_dialog: _OasisDialog) -> void:
+	remove_child(save_dialog)
+	save_dialog.queue_free()
+
+
+func _save_project() -> void:
+	var message := ""
+	if _model.save_project():
+		message = "Project saved to %s." % _model.get_save_path()
+	else:
+		message = "Something went wrong. Couldn't save the project."
+	_update_status(message)
+
+
+func _on_load_project_button_up() -> void:
+	var dialog := _load_dialog_factory.call()
+	add_child(dialog)
+	dialog.selected.connect(_on_load_dialog_selected.bind(dialog))
+	dialog.canceled.connect(_on_load_dialog_canceled.bind(dialog))
+
+
+func _on_load_dialog_selected(path: String, dialog: _OasisDialog) -> void:
+	remove_child(dialog)
+	dialog.queue_free()
+
+	if not _model.load_project(path):
+		_update_status("Could not load %s." % path.get_file())
+		return
+
+	_remove_all_branch_nodes()
+	_clear_character_tree()
+	for name in _model.get_characters().keys():
+		_add_tree_item(name)
+
+
+func _on_load_dialog_canceled(dialog: _OasisDialog) -> void:
+	remove_child(dialog)
+	dialog.queue_free()
+
+
 func _update_status(message: String, duration := -1) -> void:
 	_status.text = message
 	if duration > -1:
@@ -312,6 +373,10 @@ func _get_selected_tree_item_value() -> String:
 func _edit_selected_tree_item(value: String) -> void:
 	var item := _character_tree.get_selected()
 	item.set_text(0, value)
+
+
+func _clear_character_tree() -> void:
+	_character_tree.get_root().get_children().map(func(t: TreeItem): t.free())
 
 
 func _remove_all_branch_nodes() -> void:

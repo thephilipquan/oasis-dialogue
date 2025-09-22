@@ -8,7 +8,7 @@ const _Type := _Token.Type
 var _tokens: Array[_Token] = []
 var _position := 0
 var _errors: Array[ParseError] = []
-var _root: _AST.ASTNode = null
+var _root: _AST.Branch = null
 
 
 func get_errors() -> Array[ParseError]:
@@ -116,7 +116,7 @@ func parse(_tokens: Array[_Token]) -> _AST.ASTNode:
 	return _root
 
 
-func _parse_annotations() -> Array[_AST.ASTNode]:
+func _parse_annotations() -> Array[_AST.Annotation]:
 	const expected: Array[_Type] = [
 		_Type.ID,
 		_Type.SEQ,
@@ -124,7 +124,7 @@ func _parse_annotations() -> Array[_AST.ASTNode]:
 		_Type.UNIQUE,
 	]
 
-	var annotations: Array[_AST.ASTNode] = []
+	var annotations: Array[_AST.Annotation] = []
 	while peek_type() == _Type.ATSIGN and peek_type(1) in expected:
 		consume_expected(_Type.ATSIGN)
 		var annotation := _parse_annotation()
@@ -138,7 +138,7 @@ func _parse_annotations() -> Array[_AST.ASTNode]:
 	return annotations
 
 
-func _parse_annotation() -> _AST.ASTNode:
+func _parse_annotation() -> _AST.Annotation:
 	var token := consume()
 	var value: _AST.ASTNode = null
 	if token.type == _Type.ID:
@@ -148,7 +148,7 @@ func _parse_annotation() -> _AST.ASTNode:
 	return annotation
 
 
-func _parse_prompts() -> Array[_AST.ASTNode]:
+func _parse_prompts() -> Array[_AST.Prompt]:
 	if not (peek_type() == _Type.ATSIGN and peek_type(1) == _Type.PROMPT):
 		return []
 	consume(2)
@@ -159,7 +159,7 @@ func _parse_prompts() -> Array[_AST.ASTNode]:
 	]
 	if not peek_expected_types(expected):
 		return []
-	var prompts: Array[_AST.ASTNode] = []
+	var prompts: Array[_AST.Prompt] = []
 	while peek_type() in expected:
 		var prompt := _parse_prompt()
 		prompts.push_back(prompt)
@@ -168,7 +168,7 @@ func _parse_prompts() -> Array[_AST.ASTNode]:
 	return prompts
 
 
-func _parse_prompt() -> _AST.ASTNode:
+func _parse_prompt() -> _AST.Prompt:
 	var conditions := _parse_conditions()
 	peek_expected_type(_Type.TEXT)
 	var text := _parse_string_literal()
@@ -177,7 +177,7 @@ func _parse_prompt() -> _AST.ASTNode:
 	return prompt
 
 
-func _parse_responses() -> Array[_AST.ASTNode]:
+func _parse_responses() -> Array[_AST.Response]:
 	if not (peek_type() == _Type.ATSIGN and peek_type(1) == _Type.RESPONSE):
 		return []
 	consume(2)
@@ -188,7 +188,7 @@ func _parse_responses() -> Array[_AST.ASTNode]:
 	]
 	if not peek_expected_types(expected):
 		return []
-	var responses: Array[_AST.ASTNode] = []
+	var responses: Array[_AST.Response] = []
 	while peek_type() in expected:
 		var response := _parse_response()
 		responses.push_back(response)
@@ -197,7 +197,7 @@ func _parse_responses() -> Array[_AST.ASTNode]:
 	return responses
 
 
-func _parse_response() -> _AST.ASTNode:
+func _parse_response() -> _AST.Response:
 	var conditions := _parse_conditions()
 	peek_expected_type(_Type.TEXT)
 	var text := _parse_string_literal()
@@ -206,11 +206,11 @@ func _parse_response() -> _AST.ASTNode:
 	return response
 
 
-func _parse_conditions() -> Array[_AST.ASTNode]:
+func _parse_conditions() -> Array[_AST.Condition]:
 	if peek_type() != _Type.CURLY_START:
 		return []
 	consume()
-	var conditions: Array[_AST.ASTNode] = []
+	var conditions: Array[_AST.Condition] = []
 	while peek_type() == _Type.IDENTIFIER:
 		var condition := _parse_condition()
 		conditions.push_back(condition)
@@ -220,18 +220,18 @@ func _parse_conditions() -> Array[_AST.ASTNode]:
 	return conditions
 
 
-func _parse_condition() -> _AST.ASTNode:
+func _parse_condition() -> _AST.Condition:
 	var name := consume_expected(_Type.IDENTIFIER).value
 	var value := _parse_number_literal()
 	var condition := _AST.Condition.new(name, value)
 	return condition
 
 
-func _parse_actions() -> Array[_AST.ASTNode]:
+func _parse_actions() -> Array[_AST.Action]:
 	if peek_type() != _Type.CURLY_START:
 		return []
 	consume()
-	var actions: Array[_AST.ASTNode] = []
+	var actions: Array[_AST.Action] = []
 	while peek_type() == _Type.IDENTIFIER:
 		var action := _parse_action()
 		actions.push_back(action)
@@ -241,14 +241,14 @@ func _parse_actions() -> Array[_AST.ASTNode]:
 	return actions
 
 
-func _parse_action() -> _AST.ASTNode:
+func _parse_action() -> _AST.Action:
 	var name := consume_expected(_Type.IDENTIFIER).value
 	var value := _parse_number_literal()
 	var action := _AST.Action.new(name, value)
 	return action
 
 
-func _parse_string_literal() -> _AST.ASTNode:
+func _parse_string_literal() -> _AST.StringLiteral:
 	if peek_type() != _Type.TEXT:
 		return null
 	var value := consume().value
@@ -256,7 +256,7 @@ func _parse_string_literal() -> _AST.ASTNode:
 	return string_literal
 
 
-func _parse_number_literal() -> _AST.ASTNode:
+func _parse_number_literal() -> _AST.NumberLiteral:
 	if peek_type() != _Type.NUMBER:
 		return null
 	var value := int(consume().value)

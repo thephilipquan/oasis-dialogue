@@ -15,6 +15,8 @@ const _InputDialogScene := preload("res://addons/oasis_dialogue/input_dialog/inp
 const _ConfirmDialog := preload("res://addons/oasis_dialogue/confirm_dialog/confirm_dialog.gd")
 const _ConfirmDialogScene := preload("res://addons/oasis_dialogue/confirm_dialog/confirm_dialog.tscn")
 
+const _OasisDialog := preload("res://addons/oasis_dialogue/file_dialog/oasis_dialog.gd")
+
 const _Model := preload("res://addons/oasis_dialogue/model/model.gd")
 const _Unparser := preload("res://addons/oasis_dialogue/model/unparser_visitor.gd")
 const _Parser := preload("res://addons/oasis_dialogue/model/parser.gd")
@@ -96,6 +98,14 @@ static func create() -> _Canvas:
 		])
 		return iterator
 
+	var save_dialog_factory := func():
+		var oasis_dialog := _OasisDialog.new()
+		oasis_dialog.init(FileDialog.FILE_MODE_SAVE_FILE)
+		return oasis_dialog
+	var load_dialog_factory := func():
+		var dialog := _OasisDialog.new()
+		dialog.init(FileDialog.FILE_MODE_OPEN_FILE)
+		return dialog
 
 	var init := _CanvasInit.new()
 	init.model = model
@@ -107,5 +117,7 @@ static func create() -> _Canvas:
 	init.input_dialog_factory = input_dialog_factory
 	init.confirm_dialog_factory = confirm_dialog_factory
 	init.unbranchers_factory = unbranchers_factory
+	init.save_dialog_factory = save_dialog_factory
+	init.load_dialog_factory = load_dialog_factory
 	canvas.init(init)
 	return canvas
