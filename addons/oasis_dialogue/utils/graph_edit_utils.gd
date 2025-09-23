@@ -31,3 +31,11 @@ static func arrange_nodes(nodes: Array, graph: GraphEdit) -> void:
 	nodes.map(func(n: GraphNode): n.selected = true)
 	graph.arrange_nodes()
 	nodes.map(func(n: GraphNode): n.selected = n in selected_nodes)
+
+
+static func center_graph_on_node(node: GraphNode, graph: GraphEdit) -> void:
+	graph.scroll_offset = (node.position_offset + node.size / 2) * graph.zoom - (graph.size / 2)
+
+
+static func center_node_in_graph(node: GraphNode, graph: GraphEdit) -> void:
+	node.position_offset = (graph.size / 2 + graph.scroll_offset) / graph.zoom - node.size / 2

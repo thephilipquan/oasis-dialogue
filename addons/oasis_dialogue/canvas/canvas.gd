@@ -92,6 +92,7 @@ func connect_branches(from_id: int, to_ids: Array[int]) -> void:
 			disconnected_branches.push_back(to)
 
 	_GraphUtils.arrange_nodes(_branches.values(), _graph_edit)
+	_GraphUtils.center_graph_on_node(from, _graph_edit)
 	_GraphUtils.disable_left_with_no_connections(disconnected_branches, _graph_edit)
 
 
@@ -113,7 +114,7 @@ func _add_branch(id: int) -> void:
 	branch.set_on_remove(_remove_branch.bind(id))
 	branch.set_id(id)
 	branch.changed.connect(_on_branch_changed)
-	branch.position_offset = (_graph_edit.size / 2 + _graph_edit.scroll_offset) / _graph_edit.zoom - branch.size / 2
+	_GraphUtils.center_node_in_graph(branch, _graph_edit)
 
 	_branches[id] = branch
 
