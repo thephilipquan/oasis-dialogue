@@ -17,6 +17,10 @@ const _Unparser := preload("res://addons/oasis_dialogue/model/unparser_visitor.g
 const _VisitorIterator := preload("res://addons/oasis_dialogue/model/visitor_iterator.gd")
 const _GraphUtils := preload("res://addons/oasis_dialogue/utils/graph_edit_utils.gd")
 
+enum _Duration {
+	INF = -1,
+	SHORT = 3,
+}
 
 @onready
 var _character_tree: Tree = %Tree
@@ -68,7 +72,7 @@ func init(init: _CanvasInit) -> void:
 func err_branch(id: int, message: String) -> void:
 	var branch := _branches[id]
 	branch.color_invalid()
-	_update_status(message)
+	_update_status(message, _Duration.INF)
 
 
 func connect_branches(from_id: int, to_ids: Array[int]) -> void:
@@ -98,11 +102,11 @@ func connect_branches(from_id: int, to_ids: Array[int]) -> void:
 
 func _on_add_branch_button_up() -> void:
 	if _model.get_characters().size() == 0:
-		_update_status("Please add a character first.")
+		_update_status("Please add a character first.", _Duration.SHORT)
 		return
 
 	if not _model.get_active_character():
-		_update_status("Please select a character.")
+		_update_status("Please select a character.", _Duration.SHORT)
 		return
 
 	_model.add_branch()
@@ -117,6 +121,7 @@ func _add_branch(id: int) -> void:
 	_GraphUtils.center_node_in_graph(branch, _graph_edit)
 
 	_branches[id] = branch
+	_update_status("Added branch: %d." % id, _Duration.SHORT)
 
 
 func _remove_branch(id: int) -> void:
@@ -159,7 +164,7 @@ func _on_branch_changed(id: int, text: String) -> void:
 	branch.color_normal()
 
 	if errors:
-		_update_status(errors[0].message) # change to take a list.
+		_update_status(errors[0].message, _Duration.INF) # change to take a list.
 		return
 
 	(ast as _AST.Branch).id = id
@@ -168,6 +173,7 @@ func _on_branch_changed(id: int, text: String) -> void:
 		return
 
 	_model.update_branch(id, ast)
+	_update_status("", _Duration.INF)
 
 
 func _on_add_character_button_up() -> void:
@@ -193,6 +199,7 @@ func _on_input_dialog_done(name: String, input_dialog: Control) -> void:
 
 	var item := _add_tree_item(name)
 	item.select(0)
+	_update_status("Added %s." % name, _Duration.SHORT)
 
 
 func _validate_new_character(name: String) -> String:
@@ -246,6 +253,7 @@ func _on_input_dialog_rename_done(new_name: String, input_dialog: Control) -> vo
 
 	_model.rename_character(new_name)
 	_edit_selected_tree_item(_model.get_active_character())
+	_update_status("Renamed %s to %s." %[old_name, new_name], _Duration.SHORT)
 
 
 func _validate_rename(name: String, characters: Array[String]) -> String:
@@ -282,9 +290,11 @@ func _remove_character(confirm_dialog: Control = null) -> void:
 		confirm_dialog.queue_free()
 		remove_child(confirm_dialog)
 
+	var removed_character := _model.get_active_character()
 	_model.remove_character(true)
 	_remove_selected_tree_item()
 	_remove_all_branch_nodes()
+	_update_status("Removed %s." % removed_character, _Duration.SHORT)
 
 
 func _on_save_project_button_up() -> void:
@@ -295,7 +305,6 @@ func _on_save_project_button_up() -> void:
 		save_dialog.canceled.connect(_on_save_dialog_canceled.bind(save_dialog))
 	else:
 		_save_project()
-		_update_status("Project saved to %s." % _model.get_save_path())
 
 
 func _on_save_dialog_selected(path: String, dialog: _OasisDialog) -> void:
@@ -316,7 +325,7 @@ func _save_project() -> void:
 		message = "Project saved to %s." % _model.get_save_path()
 	else:
 		message = "Something went wrong. Couldn't save the project."
-	_update_status(message)
+	_update_status(message, _Duration.SHORT)
 
 
 func _on_load_project_button_up() -> void:
@@ -331,7 +340,7 @@ func _on_load_dialog_selected(path: String, dialog: _OasisDialog) -> void:
 	dialog.queue_free()
 
 	if not _model.load_project(path):
-		_update_status("Could not load %s." % path.get_file())
+		_update_status("Could not load %s." % path.get_file(), _Duration.SHORT)
 		return
 
 	_remove_all_branch_nodes()
@@ -345,7 +354,7 @@ func _on_load_dialog_canceled(dialog: _OasisDialog) -> void:
 	dialog.queue_free()
 
 
-func _update_status(message: String, duration := -1) -> void:
+func _update_status(message: String, duration: _Duration) -> void:
 	_status.text = message
 	if duration > -1:
 		%StatusTimer.start(duration)
@@ -354,7 +363,7 @@ func _update_status(message: String, duration := -1) -> void:
 
 
 func _on_status_timer_timeout() -> void:
-	_update_status("")
+	_update_status("", _Duration.INF)
 
 
 func _add_tree_item(value: String) -> TreeItem:
