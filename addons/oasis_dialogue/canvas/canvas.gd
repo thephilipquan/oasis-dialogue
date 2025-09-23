@@ -15,7 +15,7 @@ const _SequenceUtils := preload("res://addons/oasis_dialogue/utils/sequence.gd")
 const _AST := preload("res://addons/oasis_dialogue/model/ast.gd")
 const _Unparser := preload("res://addons/oasis_dialogue/model/unparser_visitor.gd")
 const _VisitorIterator := preload("res://addons/oasis_dialogue/model/visitor_iterator.gd")
-const _GraphUtils := preload("res://addons/oasis_dialogue/utils/graph_edit_utils.gd")
+const _GraphController := preload("res://addons/oasis_dialogue/canvas/graph_controller.gd")
 
 enum _Duration {
 	INF = -1,
@@ -36,6 +36,7 @@ var _lexer: _Lexer = null
 var _parser: _Parser = null
 var _unparser: _Unparser = null
 var _visitors: _VisitorIterator = null
+var _graph_controller: _GraphController = null
 ## [code]func() -> _Branch[/code]
 var _branch_factory := Callable()
 ## [code]func() -> InputDialogFactory[/code]
@@ -67,6 +68,7 @@ func init(init: _CanvasInit) -> void:
 	_unbranchers_factory = init.unbranchers_factory
 	_save_dialog_factory = init.save_dialog_factory
 	_load_dialog_factory = init.load_dialog_factory
+	_graph_controller = init.graph_controller
 
 
 func err_branch(id: int, message: String) -> void:
@@ -76,28 +78,34 @@ func err_branch(id: int, message: String) -> void:
 
 
 func connect_branches(from_id: int, to_ids: Array[int]) -> void:
+	# if new or branchless, arrange from FROM
+	# if newly branchless, arrange normally
+	var to_arrange: Array[_Branch] = []
 	for to_id in to_ids:
 		if not _model.has_branch(to_id):
 			_model.add_named_branch(to_id)
+			to_arrange.push_back(_branches[to_id])
 
-	var disconnected_branches: Array[GraphNode] = []
 	var from := _branches[from_id]
 	from.set_slot_enabled_right(0, to_ids.size())
 	for other in _branches.keys():
 		var to := _branches[other]
 		var is_in := to_ids.has(other)
 		var is_connected := _graph_edit.is_node_connected(from.name, 0, to.name, 0)
+
 		if is_in and not is_connected:
 			if not to.is_slot_enabled_left(0):
 				to.set_slot_enabled_left(0, true)
+				if not to.is_slot_enabled_right(0):
+					to_arrange.push_back(to)
 			_graph_edit.connect_node(from.name, 0, to.name, 0)
 		elif not is_in and is_connected:
 			_graph_edit.disconnect_node(from.name, 0, to.name, 0)
-			disconnected_branches.push_back(to)
 
-	_GraphUtils.arrange_nodes(_branches.values(), _graph_edit)
-	_GraphUtils.center_graph_on_node(from, _graph_edit)
-	_GraphUtils.disable_left_with_no_connections(disconnected_branches, _graph_edit)
+	_graph_controller.disable_unused_slots(_graph_edit)
+	if to_arrange:
+		_graph_controller.arrange_nodes_around_anchor(from, to_arrange, _graph_edit)
+	_graph_controller.arrange_orphans(_graph_edit)
 
 
 func _on_add_branch_button_up() -> void:
@@ -118,7 +126,7 @@ func _add_branch(id: int) -> void:
 	branch.set_on_remove(_remove_branch.bind(id))
 	branch.set_id(id)
 	branch.changed.connect(_on_branch_changed)
-	_GraphUtils.center_node_in_graph(branch, _graph_edit)
+	_graph_controller.center_node_in_graph(branch, _graph_edit)
 
 	_branches[id] = branch
 	_update_status("Added branch: %d." % id, _Duration.SHORT)
@@ -145,7 +153,7 @@ func _remove_branch(id: int) -> void:
 			_graph_edit.disconnect_node(branch.name, 0, other.name, 0)
 			disconnected_branches.push_back(other)
 
-	_GraphUtils.disable_slots_of_non_connecting(disconnected_branches, _graph_edit)
+	_graph_controller.disable_unused_slots(_graph_edit)
 	_branches.erase(id)
 	_model.remove_branch(id)
 	_graph_edit.remove_child(branch)
@@ -231,7 +239,8 @@ func _on_tree_item_selected() -> void:
 		_unparser.finish()
 
 	model_branches.values().map(func(ast: _AST.ASTNode): _visitors.iterate(ast))
-	_GraphUtils.arrange_nodes(_branches.values(), _graph_edit)
+	push_warning("todo arrange nodes")
+	#_graph_controller.arrange_nodes(_branches.values(), _graph_edit)
 
 
 func _on_tree_item_activated() -> void:

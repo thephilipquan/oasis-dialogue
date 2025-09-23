@@ -1,12 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://4plc4vhymybs"]
+[gd_scene load_steps=5 format=3 uid="uid://4plc4vhymybs"]
 
 [ext_resource type="Script" uid="uid://bkn5mac6gdvq3" path="res://addons/oasis_dialogue/canvas/canvas.gd" id="1_pyvqf"]
 [ext_resource type="Theme" uid="uid://b17l0ux5wllk5" path="res://addons/oasis_dialogue/canvas/canvas_theme.tres" id="1_ta1sa"]
 [ext_resource type="Texture2D" uid="uid://bfkmd1luqmlue" path="res://addons/oasis_dialogue/assets/character.png" id="2_4e1bp"]
 [ext_resource type="Texture2D" uid="uid://pfc7nrl5emou" path="res://addons/oasis_dialogue/assets/dialogue.png" id="3_4e1bp"]
-
-[sub_resource type="Theme" id="Theme_4e1bp"]
-default_font_size = 12
 
 [node name="Canvas" type="Control"]
 layout_mode = 3
@@ -66,7 +63,6 @@ size_flags_vertical = 3
 unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
-theme = SubResource("Theme_4e1bp")
 hide_folding = true
 hide_root = true
 scroll_horizontal_enabled = false

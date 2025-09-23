@@ -5,6 +5,8 @@ const Global := preload("res://addons/oasis_dialogue/global.gd")
 const Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
 const CanvasScene := preload("res://addons/oasis_dialogue/canvas/canvas.tscn")
 const CanvasInit := preload("res://addons/oasis_dialogue/canvas/canvas_init.gd")
+const GraphController := preload("res://addons/oasis_dialogue/canvas/graph_controller.gd")
+
 const Branch := preload("res://addons/oasis_dialogue/branch/branch.gd")
 const BranchScene := preload("res://addons/oasis_dialogue/branch/branch.tscn")
 
@@ -32,6 +34,7 @@ var parser: Parser = null
 var unparser: Unparser = null
 var visitor_iterator: VisitorIterator = null
 var unbranchers: VisitorIterator = null
+var graph_controller: GraphController = null
 var branch_factory := Callable()
 var input_dialog_factory := Callable()
 var confirm_dialog_factory := Callable()
@@ -49,6 +52,7 @@ func before_all() -> void:
 	parser = double(Parser).new()
 	unparser = double(Unparser).new()
 	visitor_iterator = double(VisitorIterator).new()
+	graph_controller = double(GraphController).new()
 	input_dialog_factory = func():
 		var dialog: InputDialog = InputDialogScene.instantiate()
 		doubled_input_dialogs.push_back(dialog)
@@ -75,6 +79,7 @@ func before_all() -> void:
 	init.parser = parser
 	init.unparser = unparser
 	init.visitors = visitor_iterator
+	init.graph_controller = graph_controller
 	init.branch_factory = branch_factory
 	init.input_dialog_factory = input_dialog_factory
 	init.confirm_dialog_factory = confirm_dialog_factory
@@ -169,6 +174,7 @@ func test_remove_character_with_no_branches() -> void:
 	var input_dialog := doubled_input_dialogs[0]
 	input_dialog._on_done.call("fred")
 	await wait_physics_frames(1)
+	stub(model.get_active_character).to_return("")
 
 	sut._on_remove_character_button_up()
 
@@ -408,7 +414,7 @@ func test_connecting_branch_to_non_existing_branch() -> void:
 	assert_true(sut._graph_edit.is_node_connected(from.name, 0, to.name, 0))
 
 
-func test_connecting_branch_to_non_existing_branch_offsets() -> void:
+func test_connect_branch_calls_graph_controller() -> void:
 	# Add branch.
 	stub(model.get_characters).to_call(
 		func():
@@ -418,18 +424,30 @@ func test_connecting_branch_to_non_existing_branch_offsets() -> void:
 			return characters
 	)
 	stub(model.get_active_character).to_return("fred")
+	stub(model.add_branch).to_call(model.branch_added.emit.bind(0))
+	sut._on_add_branch_button_up()
+
+	# Add third branch.
+	stub(model.add_branch).to_call(model.branch_added.emit.bind(1))
+	sut._on_add_branch_button_up()
+
+	# Add second branch.
 	stub(model.add_branch).to_call(model.branch_added.emit.bind(2))
 	sut._on_add_branch_button_up()
 
 	# act.
-	stub(model.has_branch).when_passed(2).to_return(true)
-	stub(model.has_branch).when_passed(7).to_return(false)
-	stub(model.add_named_branch).to_call(model.branch_added.emit)
-	sut.connect_branches(2, [7])
+	stub(model.has_branch).to_return(true)
+	sut.connect_branches(0, [1])
 
 	var from := doubled_branches[0]
 	var to := doubled_branches[1]
-	assert_gte(to.position_offset.x, from.position_offset.x + from.size.x)
+	assert_called(graph_controller.disable_unused_slots)
+	assert_called(
+		graph_controller,
+		"arrange_nodes_around_anchor",
+		[from, [to], sut._graph_edit],
+	)
+	assert_called(graph_controller.arrange_orphans)
 
 
 func test_connect_branch_removes_previous_connections() -> void:
@@ -462,39 +480,6 @@ func test_connect_branch_removes_previous_connections() -> void:
 	var third := doubled_branches[2]
 	assert_true(sut._graph_edit.is_node_connected(first.name, 0, third.name, 0))
 	assert_false(sut._graph_edit.is_node_connected(first.name, 0, second.name, 0))
-
-
-func test_connect_branch_to_nothing_disables_slot() -> void:
-	# Add first branch.
-	stub(model.get_characters).to_call(
-		func():
-			var characters: Dictionary[String, AST.Character] = {
-				"fred": AST.Character.new("fred", {}),
-			}
-			return characters
-	)
-	stub(model.get_active_character).to_return("fred")
-	stub(model.add_branch).to_call(model.branch_added.emit.bind(0))
-	sut._on_add_branch_button_up()
-
-	# Add second branch.
-	stub(model.add_branch).to_call(model.branch_added.emit.bind(1))
-	sut._on_add_branch_button_up()
-
-	# Add third branch.
-	stub(model.add_branch).to_call(model.branch_added.emit.bind(2))
-	sut._on_add_branch_button_up()
-
-	stub(model.has_branch).to_return(true)
-	sut.connect_branches(0, [1, 2])
-	sut.connect_branches(0, [])
-
-	var first := doubled_branches[0]
-	var second := doubled_branches[1]
-	var third := doubled_branches[2]
-	assert_false(first.is_slot_enabled_right(0))
-	assert_false(second.is_slot_enabled_left(0))
-	assert_false(third.is_slot_enabled_left(0))
 
 
 func test_remove_branch() -> void:
@@ -552,7 +537,7 @@ func test_removing_branch_calls_set_text_on_left_connections() -> void:
 	assert_false(sut._graph_edit.is_node_connected(doubled_branches[0].name, 0, second_name, 0))
 
 
-func test_remove_branch_disables_previously_connected_empty_branch_slots() -> void:
+func test_remove_branch_calls_graph_controller_disable_unused_slots() -> void:
 	# Add first branch.
 	stub(model.get_characters).to_call(
 		func():
@@ -588,8 +573,7 @@ func test_remove_branch_disables_previously_connected_empty_branch_slots() -> vo
 	sut._remove_branch(1)
 	await wait_physics_frames(1)
 
-	assert_false(first.is_slot_enabled_right(0))
-	assert_false(third.is_slot_enabled_left(0))
+	assert_called(graph_controller.disable_unused_slots)
 
 
 func test_switching_characters_removes_branch_nodes() -> void:

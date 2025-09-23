@@ -5,6 +5,7 @@ const _Global := preload("res://addons/oasis_dialogue/global.gd")
 const _Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
 const _CanvasScene := preload("res://addons/oasis_dialogue/canvas/canvas.tscn")
 const _CanvasInit := preload("res://addons/oasis_dialogue/canvas/canvas_init.gd")
+const _GraphController := preload("res://addons/oasis_dialogue/canvas/graph_controller.gd")
 
 const _Branch := preload("res://addons/oasis_dialogue/branch/branch.gd")
 const _BranchScene := preload("res://addons/oasis_dialogue/branch/branch.tscn")
@@ -71,6 +72,11 @@ static func create() -> _Canvas:
 	])
 
 	var lexer := _Lexer.new()
+	var graph_controller := _GraphController.new()
+	graph_controller.init(
+		func():
+			return canvas.get_tree().create_tween()
+	)
 	var branch_factory := func():
 		var branch: _Branch = _BranchScene.instantiate()
 		var highlighter := _BranchHighlighter.new()
@@ -110,6 +116,7 @@ static func create() -> _Canvas:
 	init.parser = _Parser.new()
 	init.unparser = _Unparser.new()
 	init.visitors = visitor_iterator
+	init.graph_controller = graph_controller
 	init.branch_factory = branch_factory
 	init.input_dialog_factory = input_dialog_factory
 	init.confirm_dialog_factory = confirm_dialog_factory

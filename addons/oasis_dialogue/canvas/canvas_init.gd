@@ -5,12 +5,14 @@ const _Lexer := preload("res://addons/oasis_dialogue/model/lexer.gd")
 const _Parser := preload("res://addons/oasis_dialogue/model/parser.gd")
 const _Unparser := preload("res://addons/oasis_dialogue/model/unparser_visitor.gd")
 const _VisitorIterator := preload("res://addons/oasis_dialogue/model/visitor_iterator.gd")
+const _GraphController := preload("res://addons/oasis_dialogue/canvas/graph_controller.gd")
 
 var model: _Model = null
 var lexer: _Lexer =  null
 var parser: _Parser = null
 var unparser: _Unparser = null
 var visitors: _VisitorIterator = null
+var graph_controller: _GraphController = null
 ## [code]func() -> _Branch[/code]
 var branch_factory := Callable()
 ## [code]func() -> InputDialogFactory[/code]
