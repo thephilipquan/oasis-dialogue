@@ -214,7 +214,7 @@ func test_remove_character_with_branches_confirmed() -> void:
 	confirm_dialog._on_confirm.call()
 	await wait_physics_frames(1)
 
-	assert_called(model.remove_character)
+	assert_called(model, "remove_character", [true])
 	assert_eq(sut._character_tree.get_root().get_child_count(), 0)
 	assert_eq(sut._branches.size(), 0)
 

@@ -282,7 +282,7 @@ func _remove_character(confirm_dialog: Control = null) -> void:
 		confirm_dialog.queue_free()
 		remove_child(confirm_dialog)
 
-	_model.remove_character()
+	_model.remove_character(true)
 	_remove_selected_tree_item()
 	_remove_all_branch_nodes()
 
