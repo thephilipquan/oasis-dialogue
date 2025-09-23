@@ -23,33 +23,35 @@ func visit_annotation(annotation: _AST.Annotation) -> void:
 
 
 func visit_prompt(prompt: _AST.Prompt) -> void:
-	if _seen_prompt:
-		return
 	var s := ""
 	if _in_annotation:
 		s += "\n"
-		# We're done with annotations.
 		_in_annotation = false
-	_seen_prompt = true
-	s += "@prompt\n"
+	if not _seen_prompt:
+		s += "@prompt"
+		_seen_prompt = true
+	if _in_curly:
+		s += " }"
+		_in_curly = false
+	s += "\n"
 	_text += s
 
 
 func visit_response(response: _AST.Response) -> void:
-	if _seen_response:
-		return
 	var s := ""
 	if _in_annotation:
 		s += "\n"
-		# We're done with annotations.
 		_in_annotation = false
-	elif _in_curly:
-		s += " }\n"
+	if _in_curly:
+		s += " }"
 		_in_curly = false
-	elif _seen_prompt:
-		s += "\n"
-	_seen_response = true
-	s += "@response\n"
+	if not _seen_response:
+		if _seen_prompt:
+			s += "\n"
+		s += "@response"
+		_seen_response = true
+
+	s += "\n"
 	_text += s
 
 
@@ -100,4 +102,3 @@ func finish() -> void:
 	_in_curly = false
 	_seen_prompt = false
 	_seen_response = false
-

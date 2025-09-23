@@ -264,6 +264,112 @@ func test_prompt_with_action_and_response() -> void:
 	assert_eq(sut.get_text(), expected)
 
 
+func test_multiple_prompts() -> void:
+	var root := AST.Branch.new(
+		-1,
+		[],
+		[
+			AST.Prompt.new(
+				[],
+				AST.StringLiteral.new("foo"),
+				[ AST.Action.new("a", null) ],
+			),
+			AST.Prompt.new(
+				[],
+				AST.StringLiteral.new("bar"),
+				[],
+			),
+			AST.Prompt.new(
+				[],
+				AST.StringLiteral.new("baz"),
+				[ AST.Action.new("c", null) ],
+			),
+		],
+		[],
+	)
+
+	root.accept(sut)
+
+	var expected = "@prompt\nfoo { a }\nbar\nbaz { c }"
+	assert_eq(sut.get_text(), expected)
+
+
+func test_multiple_responses() -> void:
+	var root := AST.Branch.new(
+		-1,
+		[],
+		[],
+		[
+			AST.Response.new(
+				[],
+				AST.StringLiteral.new("foo"),
+				[ AST.Action.new("a", null) ],
+			),
+			AST.Response.new(
+				[],
+				AST.StringLiteral.new("bar"),
+				[],
+			),
+			AST.Response.new(
+				[],
+				AST.StringLiteral.new("baz"),
+				[ AST.Action.new("c", null) ],
+			),
+		],
+	)
+
+	root.accept(sut)
+
+	var expected = "@response\nfoo { a }\nbar\nbaz { c }"
+	assert_eq(sut.get_text(), expected)
+
+
+func test_multiple_prompts_and_responses() -> void:
+	var root := AST.Branch.new(
+		-1,
+		[],
+		[
+			AST.Prompt.new(
+				[],
+				AST.StringLiteral.new("foo"),
+				[ AST.Action.new("a", null) ],
+			),
+			AST.Prompt.new(
+				[],
+				AST.StringLiteral.new("bar"),
+				[],
+			),
+			AST.Prompt.new(
+				[],
+				AST.StringLiteral.new("baz"),
+				[ AST.Action.new("c", null) ],
+			),
+		],
+		[
+			AST.Response.new(
+				[],
+				AST.StringLiteral.new("foo"),
+				[ AST.Action.new("a", null) ],
+			),
+			AST.Response.new(
+				[],
+				AST.StringLiteral.new("bar"),
+				[],
+			),
+			AST.Response.new(
+				[],
+				AST.StringLiteral.new("baz"),
+				[ AST.Action.new("c", null) ],
+			),
+		],
+	)
+
+	root.accept(sut)
+
+	var expected = "@prompt\nfoo { a }\nbar\nbaz { c }\n@response\nfoo { a }\nbar\nbaz { c }"
+	assert_eq(sut.get_text(), expected)
+
+
 func test_cancel_clears_members() -> void:
 	var root := AST.Branch.new(
 		-1,
@@ -322,4 +428,3 @@ func test_finish_clears_members() -> void:
 	assert_eq(sut._in_curly, false)
 	assert_eq(sut._seen_prompt, false)
 	assert_eq(sut._seen_response, false)
-

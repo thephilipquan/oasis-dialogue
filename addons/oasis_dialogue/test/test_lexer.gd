@@ -140,6 +140,22 @@ func test_text_after_curly_end() -> void:
 	assert_eq_deep(got, expected)
 
 
+func test_whitespace_ignored_after_curly_end() -> void:
+	var source := "{ something }     \nhey"
+	var expected: Array[Type] = [
+		Type.CURLY_START,
+		Type.IDENTIFIER,
+		Type.CURLY_END,
+		Type.EOL,
+		Type.TEXT,
+		Type.EOF,
+	]
+	var tokens := sut.tokenize(source)
+	gut.p(tokens.map(func(t: Token): return t.to_string()), 1)
+	var got := tokens.map(func(t: Token): return t.type)
+	assert_eq_deep(got, expected)
+
+
 func test_new_line_shifts_line_and_column() -> void:
 	var source := (
 """{ }
