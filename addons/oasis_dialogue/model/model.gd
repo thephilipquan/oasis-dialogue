@@ -2,7 +2,6 @@ extends RefCounted
 
 const _AST := preload("res://addons/oasis_dialogue/model/ast.gd")
 const _Visitor := preload("res://addons/oasis_dialogue/model/visitor.gd")
-const _IdCollision := preload("res://addons/oasis_dialogue/model/id_collision.gd")
 const _SequenceUtils := preload("res://addons/oasis_dialogue/utils/sequence.gd")
 
 signal branch_added(id: int)
