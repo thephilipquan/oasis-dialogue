@@ -6,15 +6,12 @@ const ConditionExistsVisitor := preload("res://addons/oasis_dialogue/model/condi
 var sut: ConditionExistsVisitor = null
 
 
-func after_each() -> void:
-	sut = null
+func before_each() -> void:
+	sut = add_child_autofree(ConditionExistsVisitor.new())
 
 
 func test_condition_exists() -> void:
-	sut = ConditionExistsVisitor.new(
-		func(s: String): return true,
-		func(id: int, message: String): fail_test(""),
-	)
+	sut.init(func(s: String): return true)
 	var ast := AST.Branch.new(
 		0,
 		[],
@@ -29,16 +26,15 @@ func test_condition_exists() -> void:
 		],
 		[],
 	)
+	watch_signals(sut)
+
 	ast.accept(sut)
 
-	pass_test("")
+	assert_signal_not_emitted(sut.erred)
 
 
 func test_no_branch_action() -> void:
-	sut = ConditionExistsVisitor.new(
-		func(s: String): return false,
-		func(id: int, message: String): pass_test(""),
-	)
+	sut.init(func(s: String): return false)
 	var ast := AST.Branch.new(
 		0,
 		[],
@@ -53,5 +49,8 @@ func test_no_branch_action() -> void:
 		],
 		[],
 	)
+	watch_signals(sut)
+
 	ast.accept(sut)
 
+	assert_signal_emitted(sut.erred)

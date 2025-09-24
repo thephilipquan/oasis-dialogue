@@ -19,13 +19,6 @@ func test_init() -> void:
 	assert_eq(sut._code_edit.syntax_highlighter, highlighter)
 
 
-func test_button_calls_on_remove() -> void:
-	var on_remove := func(): pass_test("")
-	sut.set_on_remove(on_remove)
-
-	sut._on_remove_branch_button_up()
-
-
 func test_set_id() -> void:
 	sut.set_id(3)
 	assert_eq(sut._id, 3)
@@ -123,3 +116,14 @@ func test_hide_button_on_node_deselect() -> void:
 
 	var button := sut.find_child("*Button*", true, false)
 	assert_false(button.visible)
+
+
+func test_remove() -> void:
+	sut.set_id(3)
+	watch_signals(sut)
+
+	sut._on_remove_branch_button_up()
+
+	assert_signal_emitted_with_parameters(sut.removed, [3, sut])
+
+

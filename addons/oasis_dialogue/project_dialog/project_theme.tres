@@ -1,0 +1,37 @@
+[gd_resource type="Theme" load_steps=5 format=3 uid="uid://cpd6nr0bs2te6"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_yp43h"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kv2io"]
+bg_color = Color(0.36, 0.59999996, 0.72, 0.5019608)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yp43h"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.15, 0.15, 0.15, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n76ru"]
+bg_color = Color(0.4392, 0.6264, 0.72, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[resource]
+Button/font_sizes/font_size = 24
+Button/styles/focus = SubResource("StyleBoxEmpty_yp43h")
+Button/styles/hover = SubResource("StyleBoxFlat_kv2io")
+Button/styles/normal = SubResource("StyleBoxFlat_yp43h")
+Button/styles/pressed = SubResource("StyleBoxFlat_n76ru")
+Label/font_sizes/font_size = 64
+VBoxContainer/constants/separation = 32

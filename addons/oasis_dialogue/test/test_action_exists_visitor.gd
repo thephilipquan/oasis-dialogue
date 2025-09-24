@@ -6,15 +6,12 @@ const ActionExistsVisitor := preload("res://addons/oasis_dialogue/model/action_e
 var sut: ActionExistsVisitor = null
 
 
-func after_each() -> void:
-	sut = null
+func before_each() -> void:
+	sut = add_child_autofree(ActionExistsVisitor.new())
 
 
 func test_action_exists() -> void:
-	sut = ActionExistsVisitor.new(
-		func(s: String): return true,
-		func(id: int, message: String): fail_test(""),
-	)
+	sut.init(func(s: String): return true)
 	var ast := AST.Branch.new(
 		0,
 		[],
@@ -29,17 +26,15 @@ func test_action_exists() -> void:
 		],
 		[],
 	)
+	watch_signals(sut)
 
 	ast.accept(sut)
 
-	pass_test("")
+	assert_signal_not_emitted(sut.erred)
 
 
 func test_action_not_exists() -> void:
-	sut = ActionExistsVisitor.new(
-		func(s: String): return false,
-		func(id: int, message: String): pass_test(""),
-	)
+	sut.init(func(s: String): return false)
 	var ast := AST.Branch.new(
 		0,
 		[],
@@ -54,5 +49,8 @@ func test_action_not_exists() -> void:
 		],
 		[],
 	)
+	watch_signals(sut)
 
 	ast.accept(sut)
+
+	assert_signal_emitted(sut.erred)

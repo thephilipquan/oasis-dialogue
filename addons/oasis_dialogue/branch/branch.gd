@@ -1,7 +1,8 @@
 @tool
 extends GraphNode
 
-signal changed(_id: int, text: String)
+signal changed(id: int, text: String)
+signal removed(id: int, node: GraphNode)
 
 @export
 var _invalid_style: StyleBox = null
@@ -10,7 +11,6 @@ var _invalid_style: StyleBox = null
 var _code_edit: CodeEdit = $CodeEdit
 
 var _id := -1
-var _on_remove := Callable()
 var _remove_button: Button = null
 
 var _is_erred := false
@@ -33,10 +33,6 @@ func init(highlighter: SyntaxHighlighter) -> void:
 
 func is_erred() -> bool:
 	return _is_erred
-
-
-func set_on_remove(on_remove: Callable) -> void:
-	_on_remove = on_remove
 
 
 func set_id(id: int) -> void:
@@ -80,7 +76,7 @@ func _on_parser_timer_timeout() -> void:
 
 
 func _on_remove_branch_button_up() -> void:
-	_on_remove.call()
+	removed.emit(_id, self)
 
 
 func _on_node_selected() -> void:

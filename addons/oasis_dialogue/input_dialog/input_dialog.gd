@@ -1,10 +1,10 @@
 @tool
 extends Control
 
+signal confirmed(text: String)
+signal canceled
 
 var _validate := Callable()
-var _on_done := Callable()
-var _on_cancel := Callable()
 
 @onready
 var _line_edit: LineEdit = $CenterContainer/VBoxContainer/LineEdit
@@ -18,16 +18,18 @@ func set_placeholder_text(text: String) -> void:
 	_line_edit.placeholder_text = text
 
 
-func set_on_done(on_done: Callable) -> void:
-	_on_done = on_done
-
-
 func set_validation(validate: Callable) -> void:
 	_validate = validate
 
 
-func set_on_cancel(on_cancel: Callable) -> void:
-	_on_cancel = on_cancel
+func set_cancel_label(text: String) -> void:
+	var button: Button = $CenterContainer/VBoxContainer/HBoxContainer/Cancel
+	button.text = text
+
+
+func set_confirm_label(text: String) -> void:
+	var button: Button = $CenterContainer/VBoxContainer/HBoxContainer/Done
+	button.text = text
 
 
 func _on_done_button_up() -> void:
@@ -43,7 +45,7 @@ func _done() -> void:
 	var status := _validate.call(name)
 	if status:
 		return
-	_on_done.call(name)
+	confirmed.emit(name)
 
 
 func _on_line_edit_text_changed(new_text: String) -> void:
@@ -64,4 +66,4 @@ func _update_status(message: String) -> void:
 
 
 func _on_cancel_button_up() -> void:
-	_on_cancel.call()
+	canceled.emit()

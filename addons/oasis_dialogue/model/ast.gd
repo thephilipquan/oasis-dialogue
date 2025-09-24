@@ -1,6 +1,6 @@
 extends RefCounted
 
-const _Visitor := preload("res://addons/oasis_dialogue/model/visitor.gd")
+const _Visitor := preload("res://addons/oasis_dialogue/visitor/visitor.gd")
 
 class ASTNode:
 	extends RefCounted
@@ -16,56 +16,56 @@ class ASTNode:
 		return cast != null
 
 
-class Character:
-	extends ASTNode
-
-	var name := ""
-	var branches: Dictionary[int, Branch] = {}
-
-	func _init(name: String, branches: Dictionary[int, Branch]) -> void:
-		self.name = name
-		self.branches = branches
-
-	func accept(visitor: _Visitor) -> void:
-		branches.values().map(func(n: ASTNode): n.accept(visitor))
-
-	static func from_jsons(jsons: Array) -> Array[Character]:
-		var characters: Array[Character] = []
-		for json in jsons:
-			characters.push_back(from_json(json))
-		return characters
-
-	static func from_json(json: Dictionary) -> Character:
-		var branches: Dictionary[int, Branch] = {}
-		for branch in Branch.from_jsons(json["branches"]):
-			branches[branch.id] = branch
-		return new(
-			json["name"],
-			branches,
-		)
-
-	func to_json() -> Dictionary:
-		return {
-			"name": name,
-			"branches": branches.values().map(func(n: ASTNode): return n.to_json()),
-		}
-
-	func equals(other: ASTNode)-> bool:
-		var cast := other as Character
-		if not cast:
-			return false
-		if (
-			name != cast.name
-			or branches.size() != cast.branches.size()
-		):
-			return false
-		for i in branches.size():
-			if not branches[i].equals(cast.branches[i]):
-				return false
-		return true
-
-	func _to_string() -> String:
-		return JSON.stringify(to_json())
+#class Character:
+	#extends ASTNode
+#
+	#var name := ""
+	#var branches: Dictionary[int, Branch] = {}
+#
+	#func _init(name: String, branches: Dictionary[int, Branch]) -> void:
+		#self.name = name
+		#self.branches = branches
+#
+	#func accept(visitor: _Visitor) -> void:
+		#branches.values().map(func(n: ASTNode): n.accept(visitor))
+#
+	#static func from_jsons(jsons: Array) -> Array[Character]:
+		#var characters: Array[Character] = []
+		#for json in jsons:
+			#characters.push_back(from_json(json))
+		#return characters
+#
+	#static func from_json(json: Dictionary) -> Character:
+		#var branches: Dictionary[int, Branch] = {}
+		#for branch in Branch.from_jsons(json["branches"]):
+			#branches[branch.id] = branch
+		#return new(
+			#json["name"],
+			#branches,
+		#)
+#
+	#func to_json() -> Dictionary:
+		#return {
+			#"name": name,
+			#"branches": branches.values().map(func(n: ASTNode): return n.to_json()),
+		#}
+#
+	#func equals(other: ASTNode)-> bool:
+		#var cast := other as Character
+		#if not cast:
+			#return false
+		#if (
+			#name != cast.name
+			#or branches.size() != cast.branches.size()
+		#):
+			#return false
+		#for i in branches.size():
+			#if not branches[i].equals(cast.branches[i]):
+				#return false
+		#return true
+#
+	#func _to_string() -> String:
+		#return JSON.stringify(to_json())
 
 
 class Branch:
@@ -88,10 +88,10 @@ class Branch:
 		prompts.map(func(n: ASTNode): n.accept(visitor))
 		responses.map(func(n: ASTNode): n.accept(visitor))
 
-	static func from_jsons(jsons: Array) -> Array[Branch]:
-		var branches: Array[Branch] = []
-		for json in jsons:
-			branches.push_back(from_json(json))
+	static func from_jsons(jsons: Dictionary) -> Dictionary[int, Branch]:
+		var branches: Dictionary[int, Branch] = {}
+		for id in jsons:
+			branches[id] = from_json(jsons[id])
 		return branches
 
 	static func from_json(json: Dictionary) -> Branch:

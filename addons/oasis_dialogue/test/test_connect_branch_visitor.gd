@@ -7,16 +7,15 @@ const Global := preload("res://addons/oasis_dialogue/global.gd")
 var sut: ConnectBranchVisitor = null
 
 
-func after_each() -> void:
-	sut = null
+func before_each() -> void:
+	sut = add_child_autofree(ConnectBranchVisitor.new())
 
 
 func test_normal() -> void:
-	sut = ConnectBranchVisitor.new(
+	sut.init(
 		"foo",
 		func(a: int, to: Array[int]):
 			assert_eq_deep(to, [4, 6]),
-		func(id: int, message: String): fail_test("on_err should not be called"),
 	)
 	var ast := AST.Branch.new(
 		2,
@@ -33,17 +32,18 @@ func test_normal() -> void:
 		],
 		[],
 	)
+	watch_signals(sut)
 
 	ast.accept(sut)
-
 	sut.finish()
+
+	assert_signal_not_emitted(sut.erred)
 
 
 func test_no_branch_action() -> void:
-	sut = ConnectBranchVisitor.new(
+	sut.init(
 		"foo",
 		func(a: int, b: Array[int]): assert_eq_deep(b, []),
-		func(id: int, message: String): fail_test("on_err should not be called"),
 	)
 	var ast := AST.Branch.new(
 		1,
@@ -59,16 +59,18 @@ func test_no_branch_action() -> void:
 		],
 		[],
 	)
+	watch_signals(sut)
 
 	ast.accept(sut)
 	sut.finish()
 
+	assert_signal_not_emitted(sut.erred)
+
 
 func test_missing_number() -> void:
-	sut = ConnectBranchVisitor.new(
+	sut.init(
 		"foo",
 		func(id: int, to: Array[int]): fail_test("finish will not be called"),
-		func(id: int, message: String): pass_test("on_err was called"),
 	)
 	var ast := AST.Branch.new(
 		2,
@@ -84,15 +86,17 @@ func test_missing_number() -> void:
 		],
 		[],
 	)
+	watch_signals(sut)
 
 	ast.accept(sut)
 
+	assert_signal_emitted(sut.erred)
+
 
 func test_branching_to_itself() -> void:
-	sut = ConnectBranchVisitor.new(
+	sut.init(
 		"foo",
 		func(id: int, to: Array[int]): fail_test("finish will not be called"),
-		func(id: int, message: String): pass_test("on_err was called"),
 	)
 	var ast := AST.Branch.new(
 		4,
@@ -108,16 +112,18 @@ func test_branching_to_itself() -> void:
 		],
 		[],
 	)
+	watch_signals(sut)
 
 	ast.accept(sut)
+
+	assert_signal_emitted(sut.erred)
 
 
 func test_duplicate_list_is_passed() -> void:
 	var got: Array[int] = []
-	sut = ConnectBranchVisitor.new(
+	sut.init(
 		"foo",
 		func(a: int, to: Array[int]): assert_ne(sut._to_branches, got),
-		func(id: int, message: String): fail_test("on_err should not be called"),
 	)
 	var ast := AST.Branch.new(
 		2,
@@ -134,16 +140,18 @@ func test_duplicate_list_is_passed() -> void:
 		],
 		[],
 	)
+	watch_signals(sut)
 
 	ast.accept(sut)
 	sut.finish()
 
+	assert_signal_not_emitted(sut.erred)
+
 
 func test_calls_connect_branch_even_if_to_branches_is_empty() -> void:
-	sut = ConnectBranchVisitor.new(
+	sut.init(
 		"foo",
 		func(a: int, b: Array[int]): assert_eq_deep(b, []),
-		func(id: int, message: String): fail_test("on_err should not be called"),
 	)
 	var ast := AST.Branch.new(
 		1,
@@ -159,16 +167,18 @@ func test_calls_connect_branch_even_if_to_branches_is_empty() -> void:
 		],
 		[],
 	)
+	watch_signals(sut)
 
 	ast.accept(sut)
 	sut.finish()
 
+	assert_signal_not_emitted(sut.erred)
+
 
 func test_resets_members_after_cancel() -> void:
-	sut = ConnectBranchVisitor.new(
+	sut.init(
 		"foo",
 		func(a: int, to: Array[int]): pass,
-		func(id: int, message: String): pass,
 	)
 	var ast := AST.Branch.new(
 		2,
@@ -194,10 +204,9 @@ func test_resets_members_after_cancel() -> void:
 
 
 func test_resets_members_after_finish() -> void:
-	sut = ConnectBranchVisitor.new(
+	sut.init(
 		"foo",
 		func(a: int, to: Array[int]): pass,
-		func(id: int, message: String): pass,
 	)
 	var ast := AST.Branch.new(
 		2,

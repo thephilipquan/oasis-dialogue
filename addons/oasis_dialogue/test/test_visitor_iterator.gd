@@ -1,8 +1,8 @@
 extends GutTest
 
 const AST := preload("res://addons/oasis_dialogue/model/ast.gd")
-const Visitor := preload("res://addons/oasis_dialogue/model/visitor.gd")
-const Iterator := preload("res://addons/oasis_dialogue/model/visitor_iterator.gd")
+const Visitor := preload("res://addons/oasis_dialogue/visitor/visitor.gd")
+const Iterator := preload("res://addons/oasis_dialogue/visitor/visitor_iterator.gd")
 
 var sut: Iterator = null
 
@@ -11,14 +11,18 @@ func before_each() -> void:
 	sut = Iterator.new()
 
 
-func test_set_visitors() -> void:
-	var visitors: Array[Visitor] = [ double(Visitor).new() ]
-	sut.set_visitors(visitors)
+func test_ready_sets_visitors() -> void:
+	sut.add_child(double(Visitor).new())
+	sut.add_child(Node.new())
+	sut.add_child(Node2D.new())
+	sut.add_child(double(Visitor).new())
+	add_child_autofree(sut)
 
-	assert_eq_deep(sut._visitors, visitors)
+	assert_eq(sut._visitors.size(), 2)
 
 
 func test_stop() -> void:
+	add_child_autofree(sut)
 	assert_true(sut.is_valid())
 
 	sut.stop()
@@ -27,6 +31,7 @@ func test_stop() -> void:
 
 
 func test_iterate_resets_validity() -> void:
+	add_child_autofree(sut)
 	sut._is_valid = false
 	var ast := AST.Branch.new(-1, [], [], [])
 
@@ -37,8 +42,8 @@ func test_iterate_resets_validity() -> void:
 
 func test_calls_visitor_finish() -> void:
 	var visitor: Visitor = double(Visitor).new()
-	var visitors: Array[Visitor] = [ visitor ]
-	sut.set_visitors(visitors)
+	sut.add_child(visitor)
+	add_child_autofree(sut)
 	var ast := AST.Branch.new(-1, [], [], [])
 
 	sut.iterate(ast)
@@ -49,8 +54,8 @@ func test_calls_visitor_finish() -> void:
 
 func test_calls_visitor_cancel_when_stopped() -> void:
 	var visitor: Visitor = double(Visitor).new()
-	var visitors: Array[Visitor] = [ visitor ]
-	sut.set_visitors(visitors)
+	sut.add_child(visitor)
+	add_child_autofree(sut)
 	var ast := AST.Branch.new(-1, [], [], [])
 	stub(visitor.visit_branch).to_call(func(b: AST.Branch): sut.stop())
 

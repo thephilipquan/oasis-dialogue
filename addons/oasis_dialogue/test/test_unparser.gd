@@ -2,11 +2,12 @@ extends GutTest
 
 const Unparser := preload("res://addons/oasis_dialogue/model/unparser_visitor.gd")
 const AST := preload("res://addons/oasis_dialogue/model/ast.gd")
+
 var sut: Unparser = null
 
 
-func before_all() -> void:
-	sut = Unparser.new()
+func before_each() -> void:
+	sut = add_child_autofree(Unparser.new())
 
 
 func after_each() -> void:

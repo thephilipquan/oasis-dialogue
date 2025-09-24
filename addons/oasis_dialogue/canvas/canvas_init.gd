@@ -4,7 +4,7 @@ const _Model := preload("res://addons/oasis_dialogue/model/model.gd")
 const _Lexer := preload("res://addons/oasis_dialogue/model/lexer.gd")
 const _Parser := preload("res://addons/oasis_dialogue/model/parser.gd")
 const _Unparser := preload("res://addons/oasis_dialogue/model/unparser_visitor.gd")
-const _VisitorIterator := preload("res://addons/oasis_dialogue/model/visitor_iterator.gd")
+const _VisitorIterator := preload("res://addons/oasis_dialogue/visitor/visitor_iterator.gd")
 const _GraphController := preload("res://addons/oasis_dialogue/canvas/graph_controller.gd")
 
 var model: _Model = null

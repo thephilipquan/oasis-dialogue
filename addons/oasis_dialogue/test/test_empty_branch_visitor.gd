@@ -6,15 +6,11 @@ const EmptyBranchVisitor := preload("res://addons/oasis_dialogue/model/empty_bra
 var sut: EmptyBranchVisitor = null
 
 
-func after_each() -> void:
-	sut = null
+func before_each() -> void:
+	sut = add_child_autofree(partial_double(EmptyBranchVisitor).new())
 
 
 func test_non_empty() -> void:
-	sut = EmptyBranchVisitor.new(
-		fail_test.bind("stop_iterator should not be called"),
-		func(id: int, message: String): fail_test("on_err should not be called"),
-	)
 	var ast := AST.Branch.new(
 		-1,
 		[],
@@ -23,17 +19,19 @@ func test_non_empty() -> void:
 		],
 		[],
 	)
+	watch_signals(sut)
 
 	ast.accept(sut)
 
-	pass_test("")
+	assert_signal_not_emitted(sut.erred)
 
 
 func test_empty() -> void:
-	sut = EmptyBranchVisitor.new(
-		pass_test.bind(""),
-		func(id: int, message: String): pass_test(""),
-	)
+	stub(sut.stop).to_do_nothing()
 	var ast := AST.Branch.new(-1, [], [], [])
+	watch_signals(sut)
 
 	ast.accept(sut)
+
+	assert_signal_emitted(sut.erred)
+	assert_called(sut.stop)

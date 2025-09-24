@@ -1,17 +1,18 @@
 extends RefCounted
 
-const _Token := preload("res://addons/oasis_dialogue/model/token.gd")
 const _AST := preload("res://addons/oasis_dialogue/model/ast.gd")
+const _Token := preload("res://addons/oasis_dialogue/model/token.gd")
+const _ParseError := preload("res://addons/oasis_dialogue/model/parse_error.gd")
 
 const _Type := _Token.Type
 
 var _tokens: Array[_Token] = []
 var _position := 0
-var _errors: Array[ParseError] = []
+var _errors: Array[_ParseError] = []
 var _root: _AST.Branch = null
 
 
-func get_errors() -> Array[ParseError]:
+func get_errors() -> Array[_ParseError]:
 	return _errors
 
 
@@ -66,7 +67,7 @@ func add_error(expected_type: String) -> void:
 	if previous:
 		message += " after previous %s," % previous
 	message += " found %s instead" %  _Token.type_to_string(next.type)
-	var error := ParseError.new(message, next.line, next.column)
+	var error := _ParseError.new(message, next.line, next.column)
 
 	if _errors and error.line == _errors[-1].line:
 		_errors[-1] = error
@@ -96,7 +97,7 @@ func consume_while(type: _Type) -> void:
 		next = peek()
 
 
-func parse(_tokens: Array[_Token]) -> _AST.ASTNode:
+func parse(_tokens: Array[_Token]) -> _AST.Branch:
 	self._tokens = _tokens
 	_root = null
 	_position = 0
@@ -261,19 +262,3 @@ func _parse_number_literal() -> _AST.NumberLiteral:
 	var value := int(consume().value)
 	var number_literal := _AST.NumberLiteral.new(value)
 	return number_literal
-
-
-class ParseError:
-	extends RefCounted
-
-	var message := ""
-	var line := -1
-	var column := -1
-
-	func _init(message: String, line: int, column: int) -> void:
-		self.message = message
-		self.line = line
-		self.column = column
-
-	func _to_string() -> String:
-		return "Error at (%d, %d): %s" % [line, column, message]

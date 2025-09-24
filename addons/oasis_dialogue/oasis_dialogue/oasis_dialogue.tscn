@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://t8shr44ts4y"]
+
+[ext_resource type="Script" uid="uid://lyfhru1ff3v1" path="res://addons/oasis_dialogue/oasis_dialogue/oasis_dialogue.gd" id="1_o56dv"]
+[ext_resource type="Script" uid="uid://dehadtdq8k1yi" path="res://addons/oasis_dialogue/project_manager.gd" id="2_8bjac"]
+
+[node name="OasisDialogue" type="Node"]
+script = ExtResource("1_o56dv")
+
+[node name="ProjectManager" type="Node" parent="."]
+script = ExtResource("2_8bjac")

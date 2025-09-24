@@ -6,8 +6,8 @@ const RemoveAction := preload("res://addons/oasis_dialogue/model/remove_action_v
 var sut: RemoveAction = null
 
 
-func after_each() -> void:
-	sut = null
+func before_each() -> void:
+	sut = add_child_autofree(RemoveAction.new())
 
 
 func test_only_specified_branch_removed() -> void:
@@ -34,7 +34,7 @@ func test_only_specified_branch_removed() -> void:
 			),
 		],
 	)
-	sut = RemoveAction.new(AST.Action.new("something", AST.NumberLiteral.new(3)))
+	sut.init(AST.Action.new("something", AST.NumberLiteral.new(3)))
 
 	ast.accept(sut)
 
@@ -68,7 +68,7 @@ func test_no_match_stays_unchanged() -> void:
 			),
 		],
 	)
-	sut = RemoveAction.new(AST.Action.new("something", AST.NumberLiteral.new(3)))
+	sut.init(AST.Action.new("something", AST.NumberLiteral.new(3)))
 
 	ast.accept(sut)
 
@@ -77,3 +77,4 @@ func test_no_match_stays_unchanged() -> void:
 
 	var response_actions := (ast.responses[0] as AST.Response).actions
 	assert_eq(response_actions.size(), 1)
+

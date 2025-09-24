@@ -1,8 +1,8 @@
 @tool
 extends Control
 
-var _on_cancel := Callable()
-var _on_confirm := Callable()
+signal confirmed
+signal canceled
 
 @onready
 var _message: Label = $CenterContainer/VBoxContainer/Message
@@ -12,21 +12,19 @@ func set_message(text: String) -> void:
 	_message.text = text
 
 
-func set_on_cancel(label: String, on_cancel: Callable) -> void:
+func set_cancel_label(text: String) -> void:
 	var button: Button = $CenterContainer/VBoxContainer/HBoxContainer/Cancel
-	button.text = label
-	_on_cancel = on_cancel
+	button.text = text
 
 
-func set_on_confirm(label: String, on_confirm: Callable) -> void:
+func set_confirm_label(text: String) -> void:
 	var button: Button = $CenterContainer/VBoxContainer/HBoxContainer/Confirm
-	button.text = label
-	_on_confirm = on_confirm
+	button.text = text
 
 
 func _on_cancel_button_up() -> void:
-	_on_cancel.call()
+	canceled.emit()
 
 
 func _on_confirm_button_up() -> void:
-	_on_confirm.call()
+	confirmed.emit()

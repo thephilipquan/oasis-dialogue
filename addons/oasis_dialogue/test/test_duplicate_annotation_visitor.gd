@@ -6,15 +6,12 @@ const DuplicateAnnotationVisitor := preload("res://addons/oasis_dialogue/model/d
 var sut: DuplicateAnnotationVisitor = null
 
 
-func after_each() -> void:
-	sut = null
+func before_each() -> void:
+	sut = add_child_autofree(partial_double(DuplicateAnnotationVisitor).new())
 
 
 func test_duplicates() -> void:
-	sut = DuplicateAnnotationVisitor.new(
-		func(): pass_test(""),
-		func(id: int, message: String): pass_test(""),
-	)
+	stub(sut.stop).to_do_nothing()
 	var ast := AST.Branch.new(
 		-1,
 		[
@@ -25,15 +22,16 @@ func test_duplicates() -> void:
 		[],
 		[],
 	)
+	watch_signals(sut)
 
 	ast.accept(sut)
+
+	assert_signal_emitted(sut.erred)
+	assert_called(sut.stop)
 
 
 func test_no_duplicates() -> void:
-	sut = DuplicateAnnotationVisitor.new(
-		func(): fail_test("stop_iterator should not be called"),
-		func(id: int, message: String): fail_test("on_err should not be called"),
-	)
+	stub(sut.stop).to_do_nothing()
 	var ast := AST.Branch.new(
 		-1,
 		[
@@ -43,7 +41,9 @@ func test_no_duplicates() -> void:
 		[],
 		[],
 	)
+	watch_signals(sut)
 
 	ast.accept(sut)
 
-	pass_test("")
+	assert_signal_not_emitted(sut.erred)
+

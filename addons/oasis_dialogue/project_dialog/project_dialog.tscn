@@ -1,0 +1,44 @@
+[gd_scene load_steps=4 format=3 uid="uid://bykbja3qso7mr"]
+
+[ext_resource type="Theme" uid="uid://cpd6nr0bs2te6" path="res://addons/oasis_dialogue/project_dialog/project_theme.tres" id="1_ijrkd"]
+[ext_resource type="Script" uid="uid://oqp5vhdobxuj" path="res://addons/oasis_dialogue/project_dialog/file_dialog_button.gd" id="2_4vucw"]
+[ext_resource type="Script" uid="uid://brftljvrgv7p5" path="res://addons/oasis_dialogue/project_dialog/project_dialog.gd" id="2_sgvh3"]
+
+[node name="ProjectDialog" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_ijrkd")
+script = ExtResource("2_sgvh3")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Oasis Dialogue"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NewProject" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(256, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "new project"
+script = ExtResource("2_4vucw")
+
+[node name="LoadProject" type="Button" parent="VBoxContainer"]
+custom_minimum_size = Vector2(256, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "load"
+script = ExtResource("2_4vucw")
