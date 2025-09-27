@@ -1,17 +1,17 @@
 extends GutTest
 
 const AST := preload("res://addons/oasis_dialogue/model/ast.gd")
-const ActionExistsVisitor := preload("res://addons/oasis_dialogue/model/action_exists_visitor.gd")
+const ActionExists := preload("res://addons/oasis_dialogue/visitor/action_exists_visitor.gd")
 
-var sut: ActionExistsVisitor = null
+var sut: ActionExists = null
 
 
-func before_each() -> void:
-	sut = add_child_autofree(ActionExistsVisitor.new())
+func after_each() -> void:
+	sut = null
 
 
 func test_action_exists() -> void:
-	sut.init(func(s: String): return true)
+	sut = ActionExists.new(func(s: String): return true)
 	var ast := AST.Branch.new(
 		0,
 		[],
@@ -34,7 +34,7 @@ func test_action_exists() -> void:
 
 
 func test_action_not_exists() -> void:
-	sut.init(func(s: String): return false)
+	sut = ActionExists.new(func(s: String): return false)
 	var ast := AST.Branch.new(
 		0,
 		[],

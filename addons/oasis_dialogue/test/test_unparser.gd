@@ -1,13 +1,16 @@
 extends GutTest
 
-const Unparser := preload("res://addons/oasis_dialogue/model/unparser_visitor.gd")
+const Unparser := preload("res://addons/oasis_dialogue/visitor/unparser_visitor.gd")
+const Graph := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
 const AST := preload("res://addons/oasis_dialogue/model/ast.gd")
 
 var sut: Unparser = null
+var graph: Graph = null
 
 
 func before_each() -> void:
-	sut = add_child_autofree(Unparser.new())
+	graph = double(Graph).new()
+	sut = Unparser.new(graph)
 
 
 func after_each() -> void:
@@ -371,6 +374,32 @@ func test_multiple_prompts_and_responses() -> void:
 	assert_eq(sut.get_text(), expected)
 
 
+func test_cancel_doesnt_call_graph() -> void:
+	var root := AST.Branch.new(
+		-1,
+		[],
+		[
+			AST.Prompt.new(
+				[],
+				AST.StringLiteral.new("foo"),
+				[ AST.Action.new("do_thing", null) ],
+			),
+		],
+		[
+			AST.Response.new(
+				[],
+				AST.StringLiteral.new("bar"),
+				[],
+			),
+		],
+	)
+
+	root.accept(sut)
+	sut.cancel()
+
+	assert_not_called(graph.update_branch)
+
+
 func test_cancel_clears_members() -> void:
 	var root := AST.Branch.new(
 		-1,
@@ -395,10 +424,37 @@ func test_cancel_clears_members() -> void:
 	sut.cancel()
 
 	assert_eq(sut._text, "")
+	assert_eq(sut._id, -1)
 	assert_eq(sut._in_annotation, false)
 	assert_eq(sut._in_curly, false)
 	assert_eq(sut._seen_prompt, false)
 	assert_eq(sut._seen_response, false)
+
+
+func test_finish_calls_graph() -> void:
+	var root := AST.Branch.new(
+		-1,
+		[],
+		[
+			AST.Prompt.new(
+				[],
+				AST.StringLiteral.new("foo"),
+				[ AST.Action.new("do_thing", null) ],
+			),
+		],
+		[
+			AST.Response.new(
+				[],
+				AST.StringLiteral.new("bar"),
+				[],
+			),
+		],
+	)
+
+	root.accept(sut)
+	sut.finish()
+
+	assert_called(graph.update_branch)
 
 
 func test_finish_clears_members() -> void:
@@ -425,6 +481,7 @@ func test_finish_clears_members() -> void:
 	sut.finish()
 
 	assert_eq(sut._text, "")
+	assert_eq(sut._id, -1)
 	assert_eq(sut._in_annotation, false)
 	assert_eq(sut._in_curly, false)
 	assert_eq(sut._seen_prompt, false)

@@ -1,19 +1,21 @@
-@tool
 extends "res://addons/oasis_dialogue/visitor/visitor.gd"
 
 const _SemanticError := preload("res://addons/oasis_dialogue/semantic_error.gd")
 
 signal erred(error: _SemanticError)
 
-var _id := -1
 var _connect_keyword := ""
-var _to_branches: Array[int] = []
 var _connect_branches := Callable()
+var _stop := Callable()
+
+var _id := -1
+var _to_branches: Array[int] = []
 
 
-func init(connect_keyword: String, connect_branches: Callable) -> void:
+func _init(connect_keyword: String, connect_branches: Callable, stop_iterator: Callable) -> void:
 	_connect_keyword = connect_keyword
 	_connect_branches = connect_branches
+	_stop = stop_iterator
 
 
 func visit_branch(branch: _AST.Branch) -> void:
@@ -27,11 +29,13 @@ func visit_action(action: _AST.Action) -> void:
 	var number := action.value as _AST.NumberLiteral
 	if not number:
 		emit_error("Missing branch id after %s action." % _connect_keyword)
+		_stop.call()
 		return
 
 	var to := number.value
 	if _id == to:
 		emit_error("Cannot %s to itself." % _connect_keyword)
+		_stop.call()
 		return
 
 	_to_branches.push_back(to)

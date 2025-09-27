@@ -1,7 +1,7 @@
 extends GutTest
 
 const AST := preload("res://addons/oasis_dialogue/model/ast.gd")
-const UpdateModel := preload("res://addons/oasis_dialogue/model/update_model_visitor.gd")
+const UpdateModel := preload("res://addons/oasis_dialogue/visitor/update_model_visitor.gd")
 const Model := preload("res://addons/oasis_dialogue/model/model.gd")
 
 var sut: UpdateModel = null
@@ -10,8 +10,7 @@ var model: Model = null
 
 func before_each() -> void:
 	model = double(Model).new()
-	sut = add_child_autofree(UpdateModel.new())
-	sut._model = model
+	sut = UpdateModel.new(model)
 
 
 func after_each() -> void:

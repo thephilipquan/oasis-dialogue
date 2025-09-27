@@ -1,7 +1,6 @@
-extends Node
+extends RefCounted
 
 const _AST := preload("res://addons/oasis_dialogue/model/ast.gd")
-const _VisitorIterator := preload("res://addons/oasis_dialogue/visitor/visitor_iterator.gd")
 
 
 func visit_branch(branch: _AST.Branch) -> void:
@@ -24,9 +23,3 @@ func cancel() -> void:
 	pass
 func finish() -> void:
 	pass
-
-func stop() -> void:
-	var parent := get_parent() as _VisitorIterator
-	if not parent:
-		return
-	parent.stop()

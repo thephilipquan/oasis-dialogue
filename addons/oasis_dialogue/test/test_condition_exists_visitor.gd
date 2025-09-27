@@ -1,17 +1,17 @@
 extends GutTest
 
 const AST := preload("res://addons/oasis_dialogue/model/ast.gd")
-const ConditionExistsVisitor := preload("res://addons/oasis_dialogue/model/condition_exists_visitor.gd")
+const ConditionExists := preload("res://addons/oasis_dialogue/visitor/condition_exists_visitor.gd")
 
-var sut: ConditionExistsVisitor = null
+var sut: ConditionExists = null
 
 
-func before_each() -> void:
-	sut = add_child_autofree(ConditionExistsVisitor.new())
+func after_each() -> void:
+	sut = null
 
 
 func test_condition_exists() -> void:
-	sut.init(func(s: String): return true)
+	sut = ConditionExists.new(func(s: String): return true)
 	var ast := AST.Branch.new(
 		0,
 		[],
@@ -34,7 +34,7 @@ func test_condition_exists() -> void:
 
 
 func test_no_branch_action() -> void:
-	sut.init(func(s: String): return false)
+	sut = ConditionExists.new(func(s: String): return false)
 	var ast := AST.Branch.new(
 		0,
 		[],

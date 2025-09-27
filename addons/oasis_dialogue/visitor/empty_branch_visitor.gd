@@ -1,4 +1,3 @@
-@tool
 extends "res://addons/oasis_dialogue/visitor/visitor.gd"
 
 const _SemanticError := preload("res://addons/oasis_dialogue/semantic_error.gd")
@@ -6,6 +5,10 @@ const _SemanticError := preload("res://addons/oasis_dialogue/semantic_error.gd")
 signal erred(error: _SemanticError)
 
 var _id := -1
+var _stop := Callable()
+
+func _init(stop_iterator: Callable) -> void:
+	_stop = stop_iterator
 
 
 func visit_branch(branch: _AST.Branch) -> void:
@@ -16,4 +19,4 @@ func visit_branch(branch: _AST.Branch) -> void:
 	error.id = _id
 	error.message = "Empty branch."
 	erred.emit(error)
-	stop()
+	_stop.call()

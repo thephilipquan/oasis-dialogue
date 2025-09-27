@@ -1,17 +1,17 @@
 extends GutTest
 
 const AST := preload("res://addons/oasis_dialogue/model/ast.gd")
-const DuplicateAnnotationVisitor := preload("res://addons/oasis_dialogue/model/duplicate_annotation_visitor.gd")
+const DuplicateAnnotation := preload("res://addons/oasis_dialogue/visitor/duplicate_annotation_visitor.gd")
 
-var sut: DuplicateAnnotationVisitor = null
+var sut: DuplicateAnnotation = null
 
 
-func before_each() -> void:
-	sut = add_child_autofree(partial_double(DuplicateAnnotationVisitor).new())
+func after_each() -> void:
+	sut = null
 
 
 func test_duplicates() -> void:
-	stub(sut.stop).to_do_nothing()
+	sut = DuplicateAnnotation.new(pass_test.bind(""))
 	var ast := AST.Branch.new(
 		-1,
 		[
@@ -27,11 +27,10 @@ func test_duplicates() -> void:
 	ast.accept(sut)
 
 	assert_signal_emitted(sut.erred)
-	assert_called(sut.stop)
 
 
 func test_no_duplicates() -> void:
-	stub(sut.stop).to_do_nothing()
+	sut = DuplicateAnnotation.new(fail_test.bind(""))
 	var ast := AST.Branch.new(
 		-1,
 		[
@@ -46,4 +45,3 @@ func test_no_duplicates() -> void:
 	ast.accept(sut)
 
 	assert_signal_not_emitted(sut.erred)
-

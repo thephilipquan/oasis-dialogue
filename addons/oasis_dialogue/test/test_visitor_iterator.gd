@@ -11,39 +11,38 @@ func before_each() -> void:
 	sut = Iterator.new()
 
 
-func test_ready_sets_visitors() -> void:
-	sut.add_child(double(Visitor).new())
-	sut.add_child(Node.new())
-	sut.add_child(Node2D.new())
-	sut.add_child(double(Visitor).new())
-	add_child_autofree(sut)
+func test_set_visitors() -> void:
+	var visitors: Array[Visitor] = [
+		double(Visitor).new(),
+		double(Visitor).new(),
+	]
+	sut.set_visitors(visitors)
 
-	assert_eq(sut._visitors.size(), 2)
+	assert_eq_deep(sut._visitors, visitors)
 
 
 func test_stop() -> void:
-	add_child_autofree(sut)
-	assert_true(sut.is_valid())
+	sut._is_valid = true
 
 	sut.stop()
 
-	assert_false(sut.is_valid())
+	assert_false(sut._is_valid)
 
 
 func test_iterate_resets_validity() -> void:
-	add_child_autofree(sut)
 	sut._is_valid = false
 	var ast := AST.Branch.new(-1, [], [], [])
 
 	sut.iterate(ast)
 
-	assert_true(sut.is_valid())
+	assert_true(sut._is_valid)
 
 
 func test_calls_visitor_finish() -> void:
 	var visitor: Visitor = double(Visitor).new()
-	sut.add_child(visitor)
-	add_child_autofree(sut)
+	sut.set_visitors([
+		visitor,
+	])
 	var ast := AST.Branch.new(-1, [], [], [])
 
 	sut.iterate(ast)
@@ -54,8 +53,9 @@ func test_calls_visitor_finish() -> void:
 
 func test_calls_visitor_cancel_when_stopped() -> void:
 	var visitor: Visitor = double(Visitor).new()
-	sut.add_child(visitor)
-	add_child_autofree(sut)
+	sut.set_visitors([
+		visitor,
+	])
 	var ast := AST.Branch.new(-1, [], [], [])
 	stub(visitor.visit_branch).to_call(func(b: AST.Branch): sut.stop())
 

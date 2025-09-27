@@ -8,7 +8,7 @@ var _id := -1
 var _condition_exists := Callable()
 
 
-func init(condition_exists: Callable) -> void:
+func _init(condition_exists: Callable) -> void:
 	_condition_exists = condition_exists
 
 

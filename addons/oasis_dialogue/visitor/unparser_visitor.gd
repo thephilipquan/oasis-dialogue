@@ -10,8 +10,11 @@ var _in_curly := false
 var _seen_prompt := false
 var _seen_response := false
 
-@export
 var _graph: _BranchEdit = null
+
+
+func _init(graph: _BranchEdit) -> void:
+	_graph = graph
 
 
 func get_text() -> String:

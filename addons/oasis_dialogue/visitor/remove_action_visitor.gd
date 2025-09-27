@@ -3,7 +3,7 @@ extends "res://addons/oasis_dialogue/visitor/visitor.gd"
 var _action: _AST.Action = null
 
 
-func init(action: _AST.Action) -> void:
+func _init(action: _AST.Action) -> void:
 	_action = action
 
 

@@ -8,7 +8,7 @@ var _id := -1
 var _action_exists := Callable()
 
 
-func init(action_exists: Callable) -> void:
+func _init(action_exists: Callable) -> void:
 	_action_exists = action_exists
 
 
