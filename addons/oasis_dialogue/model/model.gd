@@ -83,12 +83,14 @@ func remove_active_character() -> void:
 	_characters.erase(_active)
 	_branches.clear()
 	_active = ""
+	character_changed.emit(_active)
 
 
 func rename_active_character(to: String) -> void:
 	assert(_active and not to in _characters)
 	_characters[_characters.find(_active)] = to
 	_active = to
+	character_changed.emit(_active)
 
 
 func has_branch(id: int) -> bool:
