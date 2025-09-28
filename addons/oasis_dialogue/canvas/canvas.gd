@@ -110,6 +110,7 @@ func _ready() -> void:
 
 	# Visitors to handle removal of text in affected branches after a branch
 	# is removed needs to be created on demand.
+	# Refactor this to BranchRemovalCleaner
 	var unbranch_removed := func unbranch_from_deleted(removed_id: int, dirty_ids: Array[int]) -> void:
 		var visitors := _VisitorIterator.new()
 		visitors.set_visitors([
@@ -126,8 +127,10 @@ func _ready() -> void:
 		for id in dirty_ids:
 			var ast := _model.get_branch(id)
 			visitors.iterate(ast)
+		_model.remove_branch(removed_id)
 	graph.branches_dirtied.connect(unbranch_removed)
 
+	# Refactor to BranchReconstructor
 	var restore_branch := func restore_branch(id: int) -> void:
 		var ast := _model.get_branch(id)
 		restore_branch_visitors.iterate(ast)
