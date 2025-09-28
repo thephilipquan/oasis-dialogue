@@ -3,7 +3,7 @@ extends GutTest
 const ConfirmDialog := preload("res://addons/oasis_dialogue/confirm_dialog/confirm_dialog.gd")
 const ConfirmDialogScene := preload("res://addons/oasis_dialogue/confirm_dialog/confirm_dialog.tscn")
 const Model := preload("res://addons/oasis_dialogue/model/model.gd")
-const RemoveCharacterButton := preload("res://addons/oasis_dialogue/buttons/remove_character_button.gd")
+const RemoveCharacterButton := preload("res://addons/oasis_dialogue/canvas/remove_character_button.gd")
 
 var sut: RemoveCharacterButton = null
 var model: Model = null

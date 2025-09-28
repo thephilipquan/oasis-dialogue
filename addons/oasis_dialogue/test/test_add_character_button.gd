@@ -1,6 +1,6 @@
 extends GutTest
 
-const AddCharacterButton := preload("res://addons/oasis_dialogue/buttons/add_character_button.gd")
+const AddCharacterButton := preload("res://addons/oasis_dialogue/canvas/add_character_button.gd")
 const InputDialog := preload("res://addons/oasis_dialogue/input_dialog/input_dialog.gd")
 const InputDialogScene := preload("res://addons/oasis_dialogue/input_dialog/input_dialog.tscn")
 const Model := preload("res://addons/oasis_dialogue/model/model.gd")

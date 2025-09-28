@@ -1,6 +1,6 @@
 extends GutTest
 
-const CharacterTree := preload("res://addons/oasis_dialogue/character_tree.gd")
+const CharacterTree := preload("res://addons/oasis_dialogue/canvas/character_tree.gd")
 
 var sut: CharacterTree = null
 

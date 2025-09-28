@@ -1,23 +1,12 @@
-[gd_scene load_steps=19 format=3 uid="uid://4plc4vhymybs"]
+[gd_scene load_steps=8 format=3 uid="uid://4plc4vhymybs"]
 
 [ext_resource type="Script" uid="uid://bkn5mac6gdvq3" path="res://addons/oasis_dialogue/canvas/canvas.gd" id="1_pyvqf"]
 [ext_resource type="Theme" uid="uid://b17l0ux5wllk5" path="res://addons/oasis_dialogue/canvas/canvas_theme.tres" id="1_ta1sa"]
-[ext_resource type="Script" uid="uid://bkmgq6oqeg575" path="res://addons/oasis_dialogue/buttons/add_character_button.gd" id="3_4e1bp"]
-[ext_resource type="Script" uid="uid://collm4lemrw6i" path="res://addons/oasis_dialogue/buttons/remove_character_button.gd" id="4_6xxxj"]
-[ext_resource type="Script" uid="uid://cwosx2xibo8sq" path="res://addons/oasis_dialogue/buttons/add_branch_button.gd" id="4_wvnn7"]
-[ext_resource type="Script" uid="uid://dug54oaf67dch" path="res://addons/oasis_dialogue/character_tree.gd" id="6_gyuj5"]
-[ext_resource type="Script" uid="uid://b2vsiv15rt33f" path="res://addons/oasis_dialogue/model/model.gd" id="6_wavsj"]
+[ext_resource type="Script" uid="uid://bkmgq6oqeg575" path="res://addons/oasis_dialogue/canvas/add_character_button.gd" id="3_4e1bp"]
+[ext_resource type="Script" uid="uid://collm4lemrw6i" path="res://addons/oasis_dialogue/canvas/remove_character_button.gd" id="4_6xxxj"]
+[ext_resource type="Script" uid="uid://cwosx2xibo8sq" path="res://addons/oasis_dialogue/canvas/add_branch_button.gd" id="4_wvnn7"]
+[ext_resource type="Script" uid="uid://dug54oaf67dch" path="res://addons/oasis_dialogue/canvas/character_tree.gd" id="6_gyuj5"]
 [ext_resource type="Script" uid="uid://bnp7di4ksvma5" path="res://addons/oasis_dialogue/branch/branch_edit.gd" id="7_54gq2"]
-[ext_resource type="Script" uid="uid://e5g8rlgh7tl7" path="res://addons/oasis_dialogue/language_server.gd" id="9_ytw7q"]
-[ext_resource type="Script" uid="uid://bbsmsgjqhjirr" path="res://addons/oasis_dialogue/rename_character_handler.gd" id="11_65wvt"]
-[ext_resource type="Script" uid="uid://dxhufx2ehd5et" path="res://addons/oasis_dialogue/visitor/remove_action_visitor.gd" id="11_g4vuv"]
-[ext_resource type="Script" uid="uid://1igfodaqb12t" path="res://addons/oasis_dialogue/unparser.gd" id="11_n0a6n"]
-[ext_resource type="Script" uid="uid://dmfhf1bdjjkec" path="res://addons/oasis_dialogue/visitor/visitor_iterator.gd" id="11_xkohu"]
-[ext_resource type="Script" uid="uid://bpgd7hcd3p46r" path="res://addons/oasis_dialogue/visitor/empty_branch_visitor.gd" id="12_g4vuv"]
-[ext_resource type="Script" uid="uid://bfb1xihjl181u" path="res://addons/oasis_dialogue/visitor/duplicate_annotation_visitor.gd" id="13_1wr22"]
-[ext_resource type="Script" uid="uid://omiim36trubi" path="res://addons/oasis_dialogue/visitor/unparser_visitor.gd" id="13_g4vuv"]
-[ext_resource type="Script" uid="uid://bcng3rlm1ubre" path="res://addons/oasis_dialogue/visitor/connect_branch_visitor.gd" id="14_k72xb"]
-[ext_resource type="Script" uid="uid://bkp03botteceq" path="res://addons/oasis_dialogue/visitor/update_model_visitor.gd" id="15_mh22a"]
 
 [node name="Canvas" type="Control"]
 layout_mode = 3
@@ -43,23 +32,22 @@ layout_mode = 2
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HeaderMarginContainer"]
 layout_mode = 2
 
-[node name="AddCharacter" type="Button" parent="VBoxContainer/HeaderMarginContainer/HBoxContainer" node_paths=PackedStringArray("_model")]
+[node name="AddCharacter" type="Button" parent="VBoxContainer/HeaderMarginContainer/HBoxContainer"]
 layout_mode = 2
 text = "add character"
 script = ExtResource("3_4e1bp")
-_model = NodePath("../../../../Model")
 
-[node name="RemoveCharacter" type="Button" parent="VBoxContainer/HeaderMarginContainer/HBoxContainer" node_paths=PackedStringArray("_model")]
+[node name="RemoveCharacter" type="Button" parent="VBoxContainer/HeaderMarginContainer/HBoxContainer"]
+visible = false
 layout_mode = 2
 text = "remove character"
 script = ExtResource("4_6xxxj")
-_model = NodePath("../../../../Model")
 
-[node name="AddBranch" type="Button" parent="VBoxContainer/HeaderMarginContainer/HBoxContainer" node_paths=PackedStringArray("_model")]
+[node name="AddBranch" type="Button" parent="VBoxContainer/HeaderMarginContainer/HBoxContainer"]
+visible = false
 layout_mode = 2
 text = "add branch"
 script = ExtResource("4_wvnn7")
-_model = NodePath("../../../../Model")
 
 [node name="SplitContainer" type="SplitContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -94,60 +82,4 @@ vertical_alignment = 1
 unique_name_in_owner = true
 one_shot = true
 
-[node name="Model" type="Node" parent="."]
-script = ExtResource("6_wavsj")
-
-[node name="LanguageServer" type="Node" parent="."]
-script = ExtResource("9_ytw7q")
-
-[node name="BranchRemovalVisitors" type="Node" parent="."]
-script = ExtResource("11_xkohu")
-
-[node name="RemoveBranchAction" type="Node" parent="BranchRemovalVisitors"]
-script = ExtResource("11_g4vuv")
-
-[node name="UpdateModel" type="Node" parent="BranchRemovalVisitors" node_paths=PackedStringArray("_model")]
-script = ExtResource("15_mh22a")
-_model = NodePath("../../Model")
-
-[node name="UpdateBranchEdit" type="Node" parent="BranchRemovalVisitors" node_paths=PackedStringArray("_graph")]
-script = ExtResource("13_g4vuv")
-_graph = NodePath("../../VBoxContainer/SplitContainer/BranchEdit")
-
-[node name="SemanticVisitors" type="Node" parent="."]
-script = ExtResource("11_xkohu")
-
-[node name="EmptyBranch" type="Node" parent="SemanticVisitors"]
-script = ExtResource("12_g4vuv")
-
-[node name="DuplicateAnnotation" type="Node" parent="SemanticVisitors"]
-script = ExtResource("13_1wr22")
-
-[node name="ConnectBranch" type="Node" parent="SemanticVisitors"]
-script = ExtResource("14_k72xb")
-
-[node name="UpdateModel" type="Node" parent="SemanticVisitors" node_paths=PackedStringArray("_model")]
-script = ExtResource("15_mh22a")
-_model = NodePath("../../Model")
-
-[node name="RenameCharacterHandler" type="Node" parent="." node_paths=PackedStringArray("_model")]
-script = ExtResource("11_65wvt")
-_model = NodePath("../Model")
-
-[node name="Unparser" type="Node" parent="." node_paths=PackedStringArray("_graph")]
-script = ExtResource("11_n0a6n")
-_graph = NodePath("../VBoxContainer/SplitContainer/BranchEdit")
-
-[connection signal="character_added" from="VBoxContainer/HeaderMarginContainer/HBoxContainer/AddCharacter" to="VBoxContainer/SplitContainer/CharacterTree" method="add_item"]
-[connection signal="character_added" from="VBoxContainer/HeaderMarginContainer/HBoxContainer/AddCharacter" to="Model" method="add_character"]
-[connection signal="character_removed" from="VBoxContainer/HeaderMarginContainer/HBoxContainer/RemoveCharacter" to="VBoxContainer/SplitContainer/CharacterTree" method="remove_selected_item"]
-[connection signal="character_removed" from="VBoxContainer/HeaderMarginContainer/HBoxContainer/RemoveCharacter" to="VBoxContainer/SplitContainer/BranchEdit" method="remove_branches"]
-[connection signal="character_removed" from="VBoxContainer/HeaderMarginContainer/HBoxContainer/RemoveCharacter" to="Model" method="remove_active_character"]
-[connection signal="branch_added" from="VBoxContainer/HeaderMarginContainer/HBoxContainer/AddBranch" to="VBoxContainer/SplitContainer/BranchEdit" method="add_branch"]
-[connection signal="branch_added" from="VBoxContainer/HeaderMarginContainer/HBoxContainer/AddBranch" to="Model" method="add_branch"]
-[connection signal="character_activated" from="VBoxContainer/SplitContainer/CharacterTree" to="RenameCharacterHandler" method="rename"]
-[connection signal="branch_restored" from="VBoxContainer/SplitContainer/BranchEdit" to="Unparser" method="restore_branch"]
 [connection signal="timeout" from="VBoxContainer/FooterMarginContainer/Status/StatusTimer" to="." method="_on_status_timer_timeout"]
-[connection signal="character_changed" from="Model" to="VBoxContainer/HeaderMarginContainer/HBoxContainer/RemoveCharacter" method="_on_model_character_changed"]
-[connection signal="character_changed" from="Model" to="VBoxContainer/HeaderMarginContainer/HBoxContainer/AddBranch" method="_on_model_character_changed"]
-[connection signal="parsed" from="LanguageServer" to="SemanticVisitors" method="iterate"]

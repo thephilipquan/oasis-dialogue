@@ -1,6 +1,6 @@
 extends GutTest
 
-const AddBranchButton := preload("res://addons/oasis_dialogue/buttons/add_branch_button.gd")
+const AddBranchButton := preload("res://addons/oasis_dialogue/canvas/add_branch_button.gd")
 const Model := preload("res://addons/oasis_dialogue/model/model.gd")
 
 var sut: AddBranchButton = null
