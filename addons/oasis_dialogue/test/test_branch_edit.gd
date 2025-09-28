@@ -59,6 +59,14 @@ func test_get_branches() -> void:
 	assert_true(2 in got)
 
 
+func test_update_branch_calls_set_text() -> void:
+	sut.add_branch(2)
+
+	sut.update_branch(2, "hello world")
+
+	assert_called(branches[0], "set_text", ["hello world"])
+
+
 func test_remove_branch() -> void:
 	watch_signals(sut)
 	sut.add_branch(3)

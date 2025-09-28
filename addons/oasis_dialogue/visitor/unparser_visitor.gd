@@ -118,5 +118,5 @@ func cancel() -> void:
 func finish() -> void:
 	if _in_curly:
 		_text += " }"
-	_graph.get_branch(_id).set_text(_text)
+	_graph.update_branch(_id, _text)
 	cancel()

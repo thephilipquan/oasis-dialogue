@@ -45,6 +45,10 @@ func get_branches() -> Dictionary[int, _Branch]:
 	return _branches.duplicate()
 
 
+func update_branch(id: int, text: String) -> void:
+	_branches[id].set_text(text)
+
+
 func connect_branches(from_id: int, to_ids: Array[int]) -> void:
 	var to_arrange: Array[_Branch] = []
 	var from := _branches[from_id]
