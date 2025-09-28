@@ -29,6 +29,7 @@ const _DuplicateAnnotationVisitor := preload("res://addons/oasis_dialogue/visito
 const _EmptyBranchVisitor := preload("res://addons/oasis_dialogue/visitor/empty_branch_visitor.gd")
 const _UpdateModelVisitor := preload("res://addons/oasis_dialogue/visitor/update_model_visitor.gd")
 const _RemoveActionVisitor := preload("res://addons/oasis_dialogue/visitor/remove_action_visitor.gd")
+const _CreateBranchVisitor := preload("res://addons/oasis_dialogue/visitor/create_branch_visitor.gd")
 const _UnparserVisitor := preload("res://addons/oasis_dialogue/visitor/unparser_visitor.gd")
 const _VisitorIterator := preload("res://addons/oasis_dialogue/visitor/visitor_iterator.gd")
 
@@ -72,6 +73,11 @@ func _ready() -> void:
 
 	var update_model_visitor := _UpdateModelVisitor.new(_model)
 	var unparser_visitor := _UnparserVisitor.new(graph)
+	var create_branch_visitor := _CreateBranchVisitor.new(
+		_Global.CONNECT_BRANCH_KEYWORD,
+		_model,
+		graph,
+	)
 	var connect_branch_visitor := _ConnectBranchVisitor.new(
 		_Global.CONNECT_BRANCH_KEYWORD,
 		graph.connect_branches,
@@ -104,6 +110,7 @@ func _ready() -> void:
 	language_server.parsed.connect(semantic_visitors.iterate)
 
 	semantic_visitors.set_visitors([
+		create_branch_visitor,
 		connect_branch_visitor,
 		update_model_visitor,
 	])
