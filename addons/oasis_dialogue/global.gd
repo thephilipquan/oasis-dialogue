@@ -18,3 +18,5 @@ const LOAD_FILE_NAME := "name"
 
 const FILE_BRANCHES := "branches"
 const FILE_BRANCH_POSITION_OFFSETS := "branch_position_offsets"
+const FILE_GRAPH_ZOOM := "graph_zoom"
+const FILE_GRAPH_SCROLL_OFFSET := "graph_scroll_offset"

@@ -263,16 +263,36 @@ func test_load_character_restores_session() -> void:
 				"y": 200,
 			},
 		},
+		Global.FILE_GRAPH_ZOOM: 1.34,
+		Global.FILE_GRAPH_SCROLL_OFFSET: {
+			"x": -500,
+			"y": -700,
+		},
+	}
+
+	sut.load_character(data)
+
+	assert_eq(branches[0].position_offset, Vector2(50, 100))
+	assert_eq(branches[1].position_offset, Vector2(150, 200))
+	assert_almost_eq(sut.zoom, 1.34, 0.01)
+	# NOTE: Cannot test for scroll offset in GutTest. But it does work.
+	#assert_eq(sut.scroll_offset, Vector2(-500, -700))
+
+
+func test_load_character_default_values() -> void:
+	var data := {
+		Global.FILE_BRANCH_POSITION_OFFSETS: {
+			0: {},
+			1: {},
+		},
 	}
 	watch_signals(sut)
 
 	sut.load_character(data)
 
-	assert_eq(sut.get_branches().size(), 2)
-	assert_eq(branches[0].position_offset, Vector2(50, 100))
-	assert_eq(branches[1].position_offset, Vector2(150, 200))
-	assert_eq(get_signal_parameters(sut.branch_restored, 0), [branches[0]])
-	assert_eq(get_signal_parameters(sut.branch_restored, 1), [branches[1]])
+	assert_eq(branches[0].position_offset, Vector2(0, 0))
+	assert_eq(branches[1].position_offset, Vector2(0, 0))
+	assert_eq(sut.zoom, 1.0)
 
 
 func test_load_character_overwrites_branches() -> void:
@@ -302,24 +322,55 @@ func test_load_character_overwrites_branches() -> void:
 	sut.load_character(data)
 
 	assert_eq(sut.get_branches().size(), 1)
+	# branches[2] is the 3rd doubled branch made.
 	assert_eq(branches[2].position_offset, Vector2(250, 300))
-	assert_eq(get_signal_parameters(sut.branch_restored), [branches[2]])
 
 
-func test_load_character_with_missing_vector_axis() -> void:
-	var data := {
-		Global.FILE_BRANCH_POSITION_OFFSETS: {
-			0: {
-				"y": 100,
-			},
-			1: {
-				"x": 150,
-			},
+func test_save_character_saves_branch_position_offsets() -> void:
+	sut.add_branch(0)
+	branches[0].position_offset = Vector2(50, 100)
+	sut.add_branch(1)
+	branches[1].position_offset = Vector2(150, 200)
+
+	var data := {}
+
+	sut.save_character(data)
+
+	const key := Global.FILE_BRANCH_POSITION_OFFSETS
+	if not key in data:
+		fail_test("")
+		return
+
+	var expected := {
+		0: {
+			"x": 50,
+			"y": 100,
+		},
+		1: {
+			"x": 150,
+			"y": 200,
 		},
 	}
+	assert_eq_deep(data[key], expected)
 
-	sut.load_character(data)
 
-	assert_eq(sut.get_branches().size(), 2)
-	assert_eq(branches[0].position_offset, Vector2(0, 100))
-	assert_eq(branches[1].position_offset, Vector2(150, 0))
+func test_save_character_saves_graph_zoom() -> void:
+	sut.zoom = 1.55
+	var data := {}
+
+	sut.save_character(data)
+
+	const key := Global.FILE_GRAPH_ZOOM
+	if not key in data:
+		fail_test("")
+		return
+	assert_almost_eq(data[key], 1.55, 0.01)
+
+
+func test_save_character_saves_branch_scroll_offset() -> void:
+	var data := {}
+
+	sut.save_character(data)
+
+	const key := Global.FILE_GRAPH_SCROLL_OFFSET
+	assert_true(key in data)

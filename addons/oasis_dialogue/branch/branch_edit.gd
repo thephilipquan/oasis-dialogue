@@ -207,12 +207,18 @@ func load_character(data: Dictionary) -> void:
 
 		branch_restored.emit(id)
 
+	zoom = data.get(_Global.FILE_GRAPH_ZOOM, 1.0)
+	scroll_offset = _Vector2Utils.from_json(
+		data.get(_Global.FILE_GRAPH_SCROLL_OFFSET, {})
+	)
 
 func save_character(data: Dictionary) -> void:
 	var position_offsets := {}
 	for id in _branches:
-		position_offsets[id] = _branches[id].position_offset
+		position_offsets[id] = _Vector2Utils.to_json(_branches[id].position_offset)
 	data[_Global.FILE_BRANCH_POSITION_OFFSETS] = position_offsets
+	data[_Global.FILE_GRAPH_ZOOM] = zoom
+	data[_Global.FILE_GRAPH_SCROLL_OFFSET] = _Vector2Utils.to_json(scroll_offset)
 
 
 func _setup_tween() -> void:

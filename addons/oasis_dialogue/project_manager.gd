@@ -107,6 +107,7 @@ func load_subfile(filename: String) -> void:
 	var data := {}
 	if content:
 		data.assign(JSON.parse_string(content))
+	clean_loaded_data(data)
 
 	data[_Global.LOAD_FILE_NAME] = filename
 
@@ -153,6 +154,19 @@ func _save_active() -> void:
 	saving_file.emit(data)
 	var file := FileAccess.open(get_subfile_path(_active), FileAccess.WRITE)
 	file.store_string(JSON.stringify(data))
+
+
+func clean_loaded_data(data: Dictionary) -> void:
+	for key in data:
+		match key:
+			_Global.FILE_BRANCHES, _Global.FILE_BRANCH_POSITION_OFFSETS:
+				var branches: Dictionary = data[key]
+				var to_replace: Array[String] = []
+				for id in branches:
+					to_replace.push_back(id)
+				for id in to_replace:
+					branches[id.to_int()] = branches[id]
+					branches.erase(id)
 
 
 func _format_param(value: String) -> String:
