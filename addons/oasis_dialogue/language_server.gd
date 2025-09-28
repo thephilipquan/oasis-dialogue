@@ -1,4 +1,4 @@
-extends Node
+extends RefCounted
 
 const _AST := preload("res://addons/oasis_dialogue/model/ast.gd")
 const _Branch := preload("res://addons/oasis_dialogue/branch/branch.gd")
@@ -14,7 +14,7 @@ var _lexer: _Lexer = null
 var _parser: _Parser = null
 
 
-func init(lexer: _Lexer, parser: _Parser) -> void:
+func _init(lexer: _Lexer, parser: _Parser) -> void:
 	_lexer = lexer
 	_parser = parser
 
