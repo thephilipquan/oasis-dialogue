@@ -198,7 +198,7 @@ func load_character(data: Dictionary) -> void:
 		remove_child(_branches[id])
 	_branches.clear()
 
-	var position_offsets := data.get(_Global.SAVE_FILE_BRANCH_POSITION_OFFSETS, {})
+	var position_offsets := data.get(_Global.FILE_BRANCH_POSITION_OFFSETS, {})
 	for key in position_offsets:
 		var id: int = key
 		add_branch(id)
@@ -212,7 +212,7 @@ func save_character(data: Dictionary) -> void:
 	var position_offsets := {}
 	for id in _branches:
 		position_offsets[id] = _branches[id].position_offset
-	data[_Global.SAVE_FILE_BRANCH_POSITION_OFFSETS] = position_offsets
+	data[_Global.FILE_BRANCH_POSITION_OFFSETS] = position_offsets
 
 
 func _setup_tween() -> void:

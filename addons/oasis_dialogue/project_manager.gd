@@ -57,10 +57,10 @@ func load_project(path: String) -> void:
 	project_loaded.emit(data)
 
 	if (
-		_Global.SAVE_PROJECT_ACTIVE in data
-		and data[_Global.SAVE_PROJECT_ACTIVE] != ""
+		_Global.PROJECT_ACTIVE in data
+		and data[_Global.PROJECT_ACTIVE] != ""
 	):
-		load_subfile(data[_Global.SAVE_PROJECT_ACTIVE])
+		load_subfile(data[_Global.PROJECT_ACTIVE])
 
 
 func save_project() -> void:

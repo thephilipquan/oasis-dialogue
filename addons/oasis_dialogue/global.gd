@@ -2,11 +2,19 @@ extends RefCounted
 
 const CONNECT_BRANCH_KEYWORD := "branch"
 
-const SAVE_PROJECT_ACTIVE := "active"
-const SAVE_PROJECT_CHARACTERS := "characters"
-const SAVE_PROJECT_CONDITIONS := "conditions"
-const SAVE_PROJECT_ACTIONS := "actions"
+## The key for the list of character names.
+## [br]
+## Put by ProjectManager when loading.
+const LOAD_PROJECT_CHARACTERS := "characters"
 
-const SAVE_FILE_NAME := "name"
-const SAVE_FILE_BRANCHES := "branches"
-const SAVE_FILE_BRANCH_POSITION_OFFSETS := "branch_position_offsets"
+const PROJECT_ACTIVE := "active"
+const PROJECT_CONDITIONS := "conditions"
+const PROJECT_ACTIONS := "actions"
+
+## The key for the name of the file loaded.
+## [br]
+## Put by ProjectManager when loading.
+const LOAD_FILE_NAME := "name"
+
+const FILE_BRANCHES := "branches"
+const FILE_BRANCH_POSITION_OFFSETS := "branch_position_offsets"

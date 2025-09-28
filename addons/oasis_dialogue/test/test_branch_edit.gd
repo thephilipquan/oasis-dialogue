@@ -236,7 +236,7 @@ func test_arrange_orphans() -> void:
 
 func test_load_character() -> void:
 	var data := {
-		Global.SAVE_FILE_BRANCH_POSITION_OFFSETS: {
+		Global.FILE_BRANCH_POSITION_OFFSETS: {
 			0: {
 				"x": 50,
 				"y": 100,
@@ -260,7 +260,7 @@ func test_load_character() -> void:
 
 func test_load_character_overwrites_branches() -> void:
 	var data := {
-		Global.SAVE_FILE_BRANCH_POSITION_OFFSETS: {
+		Global.FILE_BRANCH_POSITION_OFFSETS: {
 			0: {
 				"x": 50,
 				"y": 100,
@@ -274,7 +274,7 @@ func test_load_character_overwrites_branches() -> void:
 	sut.load_character(data)
 
 	data = {
-		Global.SAVE_FILE_BRANCH_POSITION_OFFSETS: {
+		Global.FILE_BRANCH_POSITION_OFFSETS: {
 			0: {
 				"x": 250,
 				"y": 300,
@@ -291,7 +291,7 @@ func test_load_character_overwrites_branches() -> void:
 
 func test_load_character_with_missing_vector_axis() -> void:
 	var data := {
-		Global.SAVE_FILE_BRANCH_POSITION_OFFSETS: {
+		Global.FILE_BRANCH_POSITION_OFFSETS: {
 			0: {
 				"y": 100,
 			},

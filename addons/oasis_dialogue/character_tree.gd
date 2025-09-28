@@ -41,7 +41,7 @@ func load_project(data: Dictionary) -> void:
 	for child in get_root().get_children():
 		child.free()
 	var characters: Array[String] = []
-	characters.assign(data.get(_Global.SAVE_PROJECT_CHARACTERS, []))
+	characters.assign(data.get(_Global.LOAD_PROJECT_CHARACTERS, []))
 
 	for name in characters:
 		add_item(name)

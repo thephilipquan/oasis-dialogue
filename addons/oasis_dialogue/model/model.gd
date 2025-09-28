@@ -107,20 +107,20 @@ func get_branches() -> Dictionary[int, _AST.Branch]:
 
 
 func load_character(data: Dictionary) -> void:
-	_active = data.get(_Global.SAVE_FILE_NAME, "")
-	_branches = _AST.Branch.from_jsons(data.get(_Global.SAVE_FILE_BRANCHES, {}))
+	_active = data.get(_Global.LOAD_FILE_NAME, "")
+	_branches = _AST.Branch.from_jsons(data.get(_Global.FILE_BRANCHES, {}))
 	character_changed.emit(_active)
 
 
 func load_project(data: Dictionary) -> void:
 	var characters: Array[String] = []
-	characters.assign(data.get(_Global.SAVE_PROJECT_CHARACTERS, []))
+	characters.assign(data.get(_Global.LOAD_PROJECT_CHARACTERS, []))
 
 	var conditions: Array[String] = []
-	conditions.assign(data.get(_Global.SAVE_PROJECT_CONDITIONS, []))
+	conditions.assign(data.get(_Global.PROJECT_CONDITIONS, []))
 
 	var actions: Array[String] = []
-	actions.assign(data.get(_Global.SAVE_PROJECT_ACTIONS, []))
+	actions.assign(data.get(_Global.PROJECT_ACTIONS, []))
 
 	_characters = characters
 	_conditions = conditions
@@ -128,15 +128,13 @@ func load_project(data: Dictionary) -> void:
 
 
 func save_project(data: Dictionary) -> void:
-	data[_Global.SAVE_PROJECT_CHARACTERS] = _characters
-	data[_Global.SAVE_PROJECT_CONDITIONS] = _conditions
-	data[_Global.SAVE_PROJECT_ACTIONS] = _actions
+	data[_Global.LOAD_PROJECT_CHARACTERS] = _characters
+	data[_Global.PROJECT_CONDITIONS] = _conditions
+	data[_Global.PROJECT_ACTIONS] = _actions
 
 
 func save_character(save: Dictionary) -> void:
-	save[_Global.SAVE_FILE_NAME] = _active
-
 	var branches := {}
 	for id in _branches:
 		branches[id] = _branches[id].to_json()
-	save[_Global.SAVE_FILE_BRANCHES] = branches
+	save[_Global.FILE_BRANCHES] = branches
