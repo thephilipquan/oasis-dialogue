@@ -358,7 +358,22 @@ func test_load_subfile_with_empty_directory() -> void:
 
 
 func test_load_subfile_emits_name_in_data() -> void:
-	fail_test("todo")
+	sut.new_project(TESTDIR)
+	sut.add_subfile("fred")
+
+	var file := FileAccess.open(
+		TESTDIR.path_join("fred.%s" % ProjectManager.EXTENSION),
+		FileAccess.WRITE
+	)
+	watch_signals(sut)
+
+	sut.load_subfile("fred")
+
+	var got = get_signal_parameters(sut.file_loaded)
+	if not got:
+		fail_test("")
+		return
+	assert_eq(got[0], { "name": "fred" })
 
 
 func test_remove_active_subfile_with_empty_directory() -> void:

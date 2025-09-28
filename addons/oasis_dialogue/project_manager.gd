@@ -108,6 +108,8 @@ func load_subfile(filename: String) -> void:
 	if content:
 		data.assign(JSON.parse_string(content))
 
+	data[_Global.LOAD_FILE_NAME] = filename
+
 	_active = filename
 	file_loaded.emit(data)
 
