@@ -5,15 +5,13 @@ const _SemanticError := preload("res://addons/oasis_dialogue/semantic_error.gd")
 signal erred(error: _SemanticError)
 
 var _connect_keyword := ""
-var _connect_branches := Callable()
+var _stop := Callable()
 
 var _id := -1
-var _to_branches: Array[int] = []
 
-
-func _init(connect_keyword: String, connect_branches: Callable) -> void:
+func _init(connect_keyword: String, stop_iterator: Callable) -> void:
 	_connect_keyword = connect_keyword
-	_connect_branches = connect_branches
+	_stop = stop_iterator
 
 
 func visit_branch(branch: _AST.Branch) -> void:
@@ -23,16 +21,19 @@ func visit_branch(branch: _AST.Branch) -> void:
 func visit_action(action: _AST.Action) -> void:
 	if action.name != _connect_keyword:
 		return
-	_to_branches.push_back(action.value.value)
+	elif not action.value:
+		emit_error("Missing branch id after %s action." % _connect_keyword)
+		_stop.call()
+	elif action.value.value == _id:
+		emit_error("Cannot %s to itself." % _connect_keyword)
+		_stop.call()
 
 
 func cancel() -> void:
 	_id = -1
-	_to_branches.clear()
 
 
 func finish() -> void:
-	_connect_branches.call(_id, _to_branches.duplicate())
 	cancel()
 
 
