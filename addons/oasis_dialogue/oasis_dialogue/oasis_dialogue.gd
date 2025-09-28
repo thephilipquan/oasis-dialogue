@@ -8,13 +8,13 @@ const _Project := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
 const _ProjectScene := preload("res://addons/oasis_dialogue/canvas/canvas.tscn")
 
 
-@onready
-var _manager: _ProjectManager = $ProjectManager
+var _manager: _ProjectManager = null
 
 var _project_dialog: _ProjectDialog = null
 var _project: _Project = null
 
 func _ready() -> void:
+	_manager = _ProjectManager.new()
 	_open_project_dialog()
 
 

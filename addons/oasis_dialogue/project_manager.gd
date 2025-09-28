@@ -1,5 +1,4 @@
-@tool
-extends Node
+extends RefCounted
 
 const _Global := preload("res://addons/oasis_dialogue/global.gd")
 
