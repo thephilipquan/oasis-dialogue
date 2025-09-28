@@ -7,7 +7,7 @@ var sut: Model = null
 
 
 func before_each() -> void:
-	sut = add_child_autofree(Model.new())
+	sut = Model.new()
 
 
 func test_conditions() -> void:

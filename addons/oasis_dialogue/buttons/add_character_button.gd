@@ -1,22 +1,21 @@
 @tool
 extends Button
 
-const _Model := preload("res://addons/oasis_dialogue/model/model.gd")
 const _InputDialog := preload("res://addons/oasis_dialogue/input_dialog/input_dialog.gd")
+const _Model := preload("res://addons/oasis_dialogue/model/model.gd")
 
 signal character_added(name: String)
 
-var _input_dialog_factory := Callable()
-
-@export
 var _model: _Model = null
+var _input_dialog_factory := Callable()
 
 
 func _ready() -> void:
 	button_up.connect(_on_button_up)
 
 
-func init(input_dialog_factory: Callable) -> void:
+func init(model: _Model, input_dialog_factory: Callable) -> void:
+	_model = model
 	_input_dialog_factory = input_dialog_factory
 
 

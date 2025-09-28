@@ -10,9 +10,8 @@ var model: Model = null
 func before_each() -> void:
 	sut = AddBranchButton.new()
 	model = double(Model).new()
-	sut._model = model
+	sut.init(model)
 	add_child_autofree(sut)
-	add_child_autofree(model)
 
 
 func test_emits_next_id_is_sart() -> void:

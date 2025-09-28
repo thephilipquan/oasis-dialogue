@@ -1,4 +1,4 @@
-extends Node
+extends RefCounted
 
 const _AST := preload("res://addons/oasis_dialogue/model/ast.gd")
 const _Global := preload("res://addons/oasis_dialogue/global.gd")
@@ -12,10 +12,6 @@ var _actions: Array[String] = []
 
 var _active := ""
 var _branches: Dictionary[int, _AST.Branch] = {}
-
-
-func _ready() -> void:
-	character_changed.emit(_active)
 
 
 func get_active_character() -> String:

@@ -21,11 +21,9 @@ func before_all() -> void:
 func before_each() -> void:
 	sut = RemoveCharacterButton.new()
 	model = double(Model).new()
-	sut._model = model
-	sut.init(dialog_factory)
+	sut.init(model, dialog_factory)
 
 	add_child_autofree(sut)
-	add_child_autofree(model)
 
 
 func test_has_no_branches() -> void:

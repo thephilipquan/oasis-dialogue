@@ -19,13 +19,8 @@ func before_all() -> void:
 
 
 func before_each() -> void:
-	sut = RenameCharacterHandler.new()
 	model = double(Model).new()
-	sut._model = model
-	sut.init(dialog_factory)
-
-	add_child_autofree(sut)
-	add_child_autofree(model)
+	sut = RenameCharacterHandler.new(model, dialog_factory)
 
 
 func test_validate_new_name() -> void:

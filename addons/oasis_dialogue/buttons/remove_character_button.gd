@@ -8,7 +8,6 @@ signal character_removed
 
 var _confirm_dialog_factory := Callable()
 
-@export
 var _model: _Model = null
 
 
@@ -16,7 +15,8 @@ func _ready() -> void:
 	button_up.connect(_on_button_up)
 
 
-func init(confirm_dialog_factory: Callable) -> void:
+func init(model: _Model, confirm_dialog_factory: Callable) -> void:
+	_model = model
 	_confirm_dialog_factory = confirm_dialog_factory
 
 
@@ -43,5 +43,5 @@ func _on_dialog_confirmed(dialog: Control) -> void:
 	character_removed.emit()
 
 
-func _on_model_character_changed(name: String) -> void:
-	visible = name != ""
+func _on_model_character_changed(new_name: String) -> void:
+	visible = new_name != ""
