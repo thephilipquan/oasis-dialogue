@@ -20,18 +20,23 @@ func _ready() -> void:
 	display_mode = FileDialog.DISPLAY_LIST
 
 	filters = PackedStringArray(["*.%s" % EXTENSION])
-	confirmed.connect(_emit_selected)
-	file_selected.connect(_emit_selected)
 	show()
 
 
 func init(mode: FileMode) -> void:
 	if mode == FileMode.FILE_MODE_SAVE_FILE:
 		get_line_edit().text = "game_name.%s" % EXTENSION
+		confirmed.connect(_on_confirm)
+	else:
+		file_selected.connect(_emit_selected)
+		dir_selected.connect(_emit_selected)
 	file_mode = mode
 
 
+func _on_confirm() -> void:
+	var path := current_dir.path_join(get_line_edit().text)
+	selected.emit(path)
+
+
 func _emit_selected(path := "") -> void:
-	if not path:
-		path = current_dir.path_join(get_line_edit().text)
 	selected.emit(path)
