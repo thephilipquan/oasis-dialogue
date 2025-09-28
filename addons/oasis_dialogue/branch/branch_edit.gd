@@ -11,7 +11,7 @@ signal branch_added(id: int, branch: _Branch)
 ## Emitted when a branch
 signal branches_dirtied(id: int, dirty_ids: Array[int])
 ## Emitted when a branch is loaded from file and needs to be unparsed.
-signal branch_restored(branch: _Branch)
+signal branch_restored(id: int)
 
 var duration: float = 0.5:
 	set(value):
@@ -205,7 +205,7 @@ func load_character(data: Dictionary) -> void:
 		var offset := _Vector2Utils.from_json(position_offsets.get(key, {}))
 		_branches[id].position_offset = offset
 
-		branch_restored.emit(_branches[id])
+		branch_restored.emit(id)
 
 
 func save_character(data: Dictionary) -> void:

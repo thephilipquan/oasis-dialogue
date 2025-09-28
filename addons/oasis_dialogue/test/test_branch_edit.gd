@@ -234,7 +234,24 @@ func test_arrange_orphans() -> void:
 	assert_gt(branches[2].position_offset.y, 0.0)
 
 
-func test_load_character() -> void:
+func test_load_character_creates_branches_and_emits() -> void:
+	var data := {
+		Global.FILE_BRANCH_POSITION_OFFSETS: {
+			0: {},
+			1: {},
+		},
+	}
+
+	watch_signals(sut)
+
+	sut.load_character(data)
+
+	assert_eq(sut.get_branches().size(), 2)
+	assert_eq(get_signal_parameters(sut.branch_restored, 0), [0])
+	assert_eq(get_signal_parameters(sut.branch_restored, 1), [1])
+
+
+func test_load_character_restores_session() -> void:
 	var data := {
 		Global.FILE_BRANCH_POSITION_OFFSETS: {
 			0: {

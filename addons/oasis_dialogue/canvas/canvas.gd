@@ -128,7 +128,7 @@ func _ready() -> void:
 			visitors.iterate(ast)
 	graph.branches_dirtied.connect(unbranch_removed)
 
-	var restore_branch := func(id: int) -> void:
+	var restore_branch := func restore_branch(id: int) -> void:
 		var ast := _model.get_branch(id)
 		restore_branch_visitors.iterate(ast)
 		semantic_visitors.iterate(ast)
