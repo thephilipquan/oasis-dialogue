@@ -1,4 +1,4 @@
-extends Node
+extends RefCounted
 
 const _Model := preload("res://addons/oasis_dialogue/model/model.gd")
 const _InputDialog := preload("res://addons/oasis_dialogue/input_dialog/input_dialog.gd")
@@ -6,16 +6,11 @@ const _InputDialog := preload("res://addons/oasis_dialogue/input_dialog/input_di
 signal character_renamed(name: String)
 
 var _input_dialog_factory := Callable()
-
-@export
 var _model: _Model = null
 
 
-func _ready() -> void:
-	assert(_model)
-
-
-func init(input_dialog_factory: Callable) -> void:
+func _init(model: _Model, input_dialog_factory: Callable) -> void:
+	_model = model
 	_input_dialog_factory = input_dialog_factory
 
 
