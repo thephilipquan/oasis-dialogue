@@ -9,7 +9,7 @@ const SAVE_POSITION_OFFSET_KEY := "branch_position_offsets"
 
 signal branch_added(id: int, branch: _Branch)
 ## Emitted when a branch
-signal branch_dirtied(id: int, dirty_id: int)
+signal branches_dirtied(id: int, dirty_ids: Array[int])
 ## Emitted when a branch is loaded from file and needs to be unparsed.
 signal branch_restored(branch: _Branch)
 
@@ -89,8 +89,8 @@ func remove_branch(id: int, branch: _Branch) -> void:
 			if other.name in to_connections:
 				disconnect_node(branch.name, 0, other.name, 0)
 
-	for dirty_id in disconnected_branches:
-		branch_dirtied.emit(id, dirty_id)
+	if disconnected_branches:
+		branches_dirtied.emit(id, disconnected_branches)
 	disable_unused_slots()
 	_branches.erase(id)
 	remove_child(branch)
