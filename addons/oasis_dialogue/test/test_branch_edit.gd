@@ -234,11 +234,11 @@ func test_arrange_orphans() -> void:
 	assert_gt(branches[2].position_offset.y, 0.0)
 
 
-func test_load_character_creates_branches_and_emits() -> void:
+func test_load_character_creates_branches_and_emits_branch_restored() -> void:
 	var data := {
 		Global.FILE_BRANCH_POSITION_OFFSETS: {
-			0: {},
-			1: {},
+			3: {},
+			6: {},
 		},
 	}
 
@@ -247,11 +247,11 @@ func test_load_character_creates_branches_and_emits() -> void:
 	sut.load_character(data)
 
 	assert_eq(sut.get_branches().size(), 2)
-	assert_eq(get_signal_parameters(sut.branch_restored, 0), [0])
-	assert_eq(get_signal_parameters(sut.branch_restored, 1), [1])
+	assert_eq(get_signal_parameters(sut.branch_restored, 0), [3])
+	assert_eq(get_signal_parameters(sut.branch_restored, 1), [6])
 
 
-func test_load_character_restores_session() -> void:
+func test_load_character_restores_branch_position_offsets() -> void:
 	var data := {
 		Global.FILE_BRANCH_POSITION_OFFSETS: {
 			0: {
@@ -263,7 +263,26 @@ func test_load_character_restores_session() -> void:
 				"y": 200,
 			},
 		},
+	}
+
+	sut.load_character(data)
+
+	assert_eq(branches[0].position_offset, Vector2(50, 100))
+	assert_eq(branches[1].position_offset, Vector2(150, 200))
+
+
+func test_load_character_restores_graph_zoom() -> void:
+	var data := {
 		Global.FILE_GRAPH_ZOOM: 1.34,
+	}
+
+	sut.load_character(data)
+
+	assert_almost_eq(sut.zoom, 1.34, 0.01)
+
+
+func test_load_character_restores_graph_scroll_offset() -> void:
+	var data := {
 		Global.FILE_GRAPH_SCROLL_OFFSET: {
 			"x": -500,
 			"y": -700,
@@ -272,14 +291,53 @@ func test_load_character_restores_session() -> void:
 
 	sut.load_character(data)
 
-	assert_eq(branches[0].position_offset, Vector2(50, 100))
-	assert_eq(branches[1].position_offset, Vector2(150, 200))
-	assert_almost_eq(sut.zoom, 1.34, 0.01)
-	# NOTE: Cannot test for scroll offset in GutTest. But it does work.
-	#assert_eq(sut.scroll_offset, Vector2(-500, -700))
+	pass_test("Bug. Doesn't work in tests.")
+	# assert_almost(sut.scroll_offset, 1.34, 0.01)
 
 
-func test_load_character_default_values() -> void:
+func test_load_character_restores_branch_connections() -> void:
+	var data := {
+		Global.FILE_BRANCH_POSITION_OFFSETS: {
+			0: {},
+			1: {},
+			2: {},
+			3: {},
+		},
+		Global.FILE_BRANCH_CONNECTIONS: [
+			{
+				"from": 0,
+				"to": 1
+			},
+			{
+				"from": 1,
+				"to": 2
+			},
+		],
+	}
+
+	sut.load_character(data)
+
+	assert_false(branches[0].is_slot_enabled_left(0))
+	assert_true(branches[0].is_slot_enabled_right(0))
+	assert_true(branches[1].is_slot_enabled_left(0))
+	assert_true(branches[1].is_slot_enabled_right(0))
+	assert_true(branches[2].is_slot_enabled_left(0))
+	assert_false(branches[2].is_slot_enabled_right(0))
+	assert_false(branches[3].is_slot_enabled_left(0))
+	assert_false(branches[3].is_slot_enabled_right(0))
+
+	var from_connections := sut.connections.map(func(d: Dictionary): return d["from_node"])
+	var to_connections := sut.connections.map(func(d: Dictionary): return d["to_node"])
+	assert_true(sut.is_node_connected(branches[0].name, 0, branches[1].name, 0))
+	assert_true(sut.is_node_connected(branches[1].name, 0, branches[2].name, 0))
+	assert_false(branches[2].name in from_connections)
+	assert_false(branches[3].name in from_connections)
+
+	assert_false(branches[0].name in to_connections)
+	assert_false(branches[3].name in to_connections)
+
+
+func test_load_character_default_branch_position_offsets() -> void:
 	var data := {
 		Global.FILE_BRANCH_POSITION_OFFSETS: {
 			0: {},
@@ -292,7 +350,30 @@ func test_load_character_default_values() -> void:
 
 	assert_eq(branches[0].position_offset, Vector2(0, 0))
 	assert_eq(branches[1].position_offset, Vector2(0, 0))
+
+
+func test_load_character_default_graph_zoom() -> void:
+	sut.zoom = 1.58
+	var data := {}
+	watch_signals(sut)
+
+	sut.load_character(data)
+
 	assert_eq(sut.zoom, 1.0)
+
+
+func test_load_character_default_connections() -> void:
+	var data := {
+		Global.FILE_BRANCH_POSITION_OFFSETS: {
+			0: {},
+			1: {},
+		},
+	}
+	watch_signals(sut)
+
+	sut.load_character(data)
+
+	assert_eq(sut.connections.size(), 0)
 
 
 func test_load_character_overwrites_branches() -> void:
@@ -374,3 +455,17 @@ func test_save_character_saves_branch_scroll_offset() -> void:
 
 	const key := Global.FILE_GRAPH_SCROLL_OFFSET
 	assert_true(key in data)
+
+
+func test_save_character_saves_branch_connections() -> void:
+	sut.add_branch(0)
+	sut.add_branch(1)
+	var data := {}
+
+	sut.save_character(data)
+
+	const key := Global.FILE_BRANCH_CONNECTIONS
+	if not key in data:
+		fail_test("")
+		return
+	assert_eq_deep(data[key], [])

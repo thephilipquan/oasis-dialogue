@@ -143,10 +143,9 @@ func _ready() -> void:
 	graph.branches_dirtied.connect(unbranch_removed)
 
 	# Refactor to BranchReconstructor
-	var restore_branch := func restore_branch(id: int) -> void:
+	var restore_branch := func restore_branches(id: int) -> void:
 		var ast := _model.get_branch(id)
 		restore_branch_visitors.iterate(ast)
-		semantic_visitors.iterate(ast)
 	graph.branch_restored.connect(restore_branch)
 
 	restore_branch_visitors.set_visitors([

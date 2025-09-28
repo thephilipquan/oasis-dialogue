@@ -205,13 +205,26 @@ func load_character(data: Dictionary) -> void:
 		add_branch(id)
 		var offset := _Vector2Utils.from_json(position_offsets.get(key, {}))
 		_branches[id].position_offset = offset
-
 		branch_restored.emit(id)
+
+	var branch_connections := data.get(_Global.FILE_BRANCH_CONNECTIONS, {})
+	for json in branch_connections:
+		var connection := _BranchConnection.from_json(json)
+		if not connection:
+			push_warning("invalid connection json %s" % json)
+			continue
+		_branches[connection.from].set_slot_enabled_right(0, true)
+		_branches[connection.to].set_slot_enabled_left(0, true)
+		connect_node(
+			_branches[connection.from].name, 0,
+			_branches[connection.to].name, 0,
+		)
 
 	zoom = data.get(_Global.FILE_GRAPH_ZOOM, 1.0)
 	scroll_offset = _Vector2Utils.from_json(
 		data.get(_Global.FILE_GRAPH_SCROLL_OFFSET, {})
 	)
+
 
 func save_character(data: Dictionary) -> void:
 	var position_offsets := {}
@@ -220,6 +233,20 @@ func save_character(data: Dictionary) -> void:
 	data[_Global.FILE_BRANCH_POSITION_OFFSETS] = position_offsets
 	data[_Global.FILE_GRAPH_ZOOM] = zoom
 	data[_Global.FILE_GRAPH_SCROLL_OFFSET] = _Vector2Utils.to_json(scroll_offset)
+
+	var name_to_key: Dictionary[String, int] = {}
+	for id in _branches:
+		name_to_key[_branches[id].name] = id
+
+	var simple_connections := connections.map(
+			func(d: Dictionary):
+				var connection := _BranchConnection.new(
+					name_to_key[d["from_node"]],
+					name_to_key[d["to_node"]],
+				)
+				return connection.to_json()
+	)
+	data[_Global.FILE_BRANCH_CONNECTIONS] = simple_connections
 
 
 func _setup_tween() -> void:
@@ -237,3 +264,29 @@ func _stop_tween() -> void:
 	if _tween and _tween.is_valid():
 		_tween.kill()
 		_tween = null
+
+
+class _BranchConnection:
+	extends RefCounted
+
+	var from := -1
+	var to := -1
+
+	static func from_json(json: Dictionary) -> _BranchConnection:
+		var from: int = json.get("from", -1)
+		var to: int = json.get("to", -1)
+
+		if not (from > -1 and to > -1):
+			return null
+
+		return new(from, to)
+
+	func _init(from: int, to: int) -> void:
+		self.from = from
+		self.to = to
+
+	func to_json() -> Dictionary:
+		return {
+			"from": from,
+			"to": to,
+		}
