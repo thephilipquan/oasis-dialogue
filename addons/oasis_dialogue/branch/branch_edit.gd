@@ -193,6 +193,7 @@ func center_node_in_graph(node: GraphNode) -> void:
 
 
 func load_character(data: Dictionary) -> void:
+	_stop_tween()
 	for id in _branches:
 		_branches[id].queue_free()
 		remove_child(_branches[id])
@@ -230,3 +231,9 @@ func _setup_tween() -> void:
 	_tween.set_ease(Tween.EASE_IN_OUT)
 	_tween.set_trans(Tween.TRANS_CUBIC)
 	_tween.set_parallel()
+
+
+func _stop_tween() -> void:
+	if _tween and _tween.is_valid():
+		_tween.kill()
+		_tween = null
