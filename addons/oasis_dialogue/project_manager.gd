@@ -19,6 +19,7 @@ func get_settings_path() -> String:
 
 
 func get_subfile_path(filename: String) -> String:
+	filename = _format_param(filename)
 	return _directory.path_join(filename + "." + EXTENSION)
 
 
@@ -74,6 +75,7 @@ func save_project() -> void:
 
 
 func add_subfile(filename: String) -> void:
+	filename = _format_param(filename)
 	if not _directory:
 		return
 	var dir := DirAccess.open(_directory)
@@ -87,6 +89,7 @@ func add_subfile(filename: String) -> void:
 
 
 func load_subfile(filename: String) -> void:
+	filename = _format_param(filename)
 	if not _directory or filename == _active:
 		return
 
@@ -123,6 +126,7 @@ func remove_active_subfile() -> void:
 
 
 func rename_active_subfile(to_name: String) -> void:
+	to_name = _format_param(to_name)
 	if not _directory or not _active:
 		return
 
@@ -147,3 +151,7 @@ func _save_active() -> void:
 	saving_file.emit(data)
 	var file := FileAccess.open(get_subfile_path(_active), FileAccess.WRITE)
 	file.store_string(JSON.stringify(data))
+
+
+func _format_param(value: String) -> String:
+	return value.to_lower()
