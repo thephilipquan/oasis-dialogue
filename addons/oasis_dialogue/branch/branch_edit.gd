@@ -70,10 +70,9 @@ func connect_branches(from_id: int, to_ids: Array[int]) -> void:
 
 
 func remove_branch(id: int, branch: _Branch) -> void:
-	var branch_connections := get_connection_list_from_node(branch.name)
-
 	var disconnected_branches: Array[int] = []
-	if branch_connections:
+	if get_connection_count(branch.name, 0):
+		var branch_connections := get_connection_list_from_node(branch.name)
 		var from_connections: Array[String] = []
 		from_connections.assign(branch_connections.map(func(d: Dictionary): return d["from_node"]))
 		var to_connections: Array[String] = []
@@ -105,51 +104,42 @@ func remove_branches() -> void:
 
 
 func disable_unused_slots() -> void:
-	var nodes: Array[GraphNode] = []
-	nodes.assign(
-		get_children().filter(
-			func(n: Node): return is_instance_of(n, GraphNode)
-		)
-	)
-	var from_connections: Array[String] = []
-	from_connections.assign(connections.map(func(d: Dictionary): return d["from_node"]))
-	var to_connections: Array[String] = []
-	to_connections.assign(connections.map(func(d: Dictionary): return d["to_node"]))
+	for id in _branches:
+		var branch := _branches[id]
+		if not get_connection_count(branch.name, 0):
+			branch.set_slot_enabled_right(0, false)
+			branch.set_slot_enabled_left(0, false)
+			continue
 
-	for node in nodes:
-		if not node.name in from_connections:
-			node.set_slot_enabled_right(0, false)
-		if not node.name in to_connections:
-			node.set_slot_enabled_left(0, false)
+		var branch_connections := get_connection_list_from_node(branch.name)
+		var from_connections: Array[String] = []
+		from_connections.assign(branch_connections.map(func(d: Dictionary): return d["from_node"]))
+		var to_connections: Array[String] = []
+		to_connections.assign(branch_connections.map(func(d: Dictionary): return d["to_node"]))
+
+		if not branch.name in from_connections:
+			branch.set_slot_enabled_right(0, false)
+		if not branch.name in to_connections:
+			branch.set_slot_enabled_left(0, false)
 
 
 ## Arranges the orphans below the left-most node.
 func arrange_orphans() -> void:
-	var nodes: Array[GraphNode] = []
-	nodes.assign(
-		get_children().filter(
-			func(n: Node): return is_instance_of(n, GraphNode)
-		)
-	)
-	var from_connections: Array[String] = []
-	from_connections.assign(connections.map(func(d: Dictionary): return d["from_node"]))
-	var to_connections: Array[String] = []
-	to_connections.assign(connections.map(func(d: Dictionary): return d["to_node"]))
-
 	var anchor: GraphNode = null
-	var orphans: Array[GraphNode] = []
-	for node in nodes:
-		if not (node.name in from_connections or node.name in to_connections):
-			orphans.push_back(node)
+	var orphans: Array[_Branch] = []
+	for id in _branches:
+		var branch := _branches[id]
+		if not get_connection_count(branch.name, 0):
+			orphans.push_back(branch)
 		elif not anchor:
-			anchor = node
-		elif node.position_offset.x < anchor.position_offset.x:
-			anchor = node
+			anchor = branch
+		elif branch.position_offset.x < anchor.position_offset.x:
+			anchor = branch
 		elif (
-			node.position_offset.x <= anchor.position_offset.x
-			and node.position_offset.y < anchor.position_offset.y
+			branch.position_offset.x <= anchor.position_offset.x
+			and branch.position_offset.y < anchor.position_offset.y
 		):
-			anchor = node
+			anchor = branch
 
 	if not (anchor and orphans):
 		return
@@ -157,7 +147,7 @@ func arrange_orphans() -> void:
 	arrange_branches_around_anchor(anchor, orphans)
 
 
-func arrange_branches_around_anchor(anchor: GraphNode, to_arrange: Array) -> void:
+func arrange_branches_around_anchor(anchor: GraphNode, to_arrange: Array[_Branch]) -> void:
 	var all_nodes: Array[GraphNode] = []
 	all_nodes.assign(get_children().filter(func(n: Node): return is_instance_of(n, GraphNode)))
 	var selected_nodes := all_nodes.filter(func(n: GraphNode): return n.selected)
