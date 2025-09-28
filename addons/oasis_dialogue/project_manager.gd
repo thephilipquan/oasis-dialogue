@@ -25,7 +25,9 @@ func get_subfile_path(filename: String) -> String:
 func new_project(path: String) -> void:
 	_directory = path
 	var file := FileAccess.open(get_settings_path(), FileAccess.WRITE)
-	file.close()
+	if not file:
+		print("ERROR: ", FileAccess.get_open_error())
+		return
 
 
 func load_project(path: String) -> void:
@@ -44,9 +46,20 @@ func load_project(path: String) -> void:
 	if content:
 		data.assign(JSON.parse_string(content))
 
+	var characters: Array[String] = []
+	for file in dir.get_files():
+		var name := file.get_slice(".", 0)
+		if name:
+			characters.push_back(name)
+	if characters:
+		data[_Global.LOAD_PROJECT_CHARACTERS] = characters
+
 	project_loaded.emit(data)
 
-	if _Global.SAVE_PROJECT_ACTIVE in data:
+	if (
+		_Global.SAVE_PROJECT_ACTIVE in data
+		and data[_Global.SAVE_PROJECT_ACTIVE] != ""
+	):
 		load_subfile(data[_Global.SAVE_PROJECT_ACTIVE])
 
 
@@ -69,6 +82,8 @@ func add_subfile(filename: String) -> void:
 		return
 
 	var file := FileAccess.open(path, FileAccess.WRITE)
+	if not file:
+		print("ERROR: ", FileAccess.get_open_error())
 
 
 func load_subfile(filename: String) -> void:
@@ -88,7 +103,6 @@ func load_subfile(filename: String) -> void:
 
 	var data := {}
 	if content:
-		print("this is file content: '%s'" % content)
 		data.assign(JSON.parse_string(content))
 
 	_active = filename

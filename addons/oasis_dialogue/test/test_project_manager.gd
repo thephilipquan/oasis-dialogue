@@ -1,28 +1,31 @@
 extends GutTest
 
+const Global := preload("res://addons/oasis_dialogue/global.gd")
 const ProjectManager := preload("res://addons/oasis_dialogue/project_manager.gd")
 
-const TEST_DIRECTORY := "res://test_dir"
+const BASEDIR := "res://"
+const TESTDIR := "res://test_dir"
 
 var sut: ProjectManager = null
 
 
 func before_all() -> void:
-	var dir := DirAccess.open(TEST_DIRECTORY.get_base_dir())
-	dir.make_dir(TEST_DIRECTORY.get_basename())
+	assert(BASEDIR == TESTDIR.get_base_dir())
+	var dir := DirAccess.open(BASEDIR)
+	dir.make_dir(TESTDIR.get_basename())
 
 
 func after_all() -> void:
-	var dir := DirAccess.open(TEST_DIRECTORY.get_base_dir())
-	dir.remove(TEST_DIRECTORY.get_basename())
+	var dir := DirAccess.open(BASEDIR)
+	dir.remove(TESTDIR.get_basename())
 
 
 func before_each() -> void:
-	sut = add_child_autofree(ProjectManager.new())
+	sut = ProjectManager.new()
 
 
 func after_each() -> void:
-	var dir := DirAccess.open(TEST_DIRECTORY)
+	var dir := DirAccess.open(TESTDIR)
 
 	var to_remove: Array[String] = []
 	var files := dir.get_files()
@@ -35,19 +38,18 @@ func after_each() -> void:
 	to_remove.map(func(f: String): dir.remove(f))
 	to_remove.clear()
 
-	dir = DirAccess.open(TEST_DIRECTORY.get_base_dir())
+	dir = DirAccess.open(BASEDIR)
 	files = dir.get_files()
 	for file in files:
 		if file.get_extension() == ProjectManager.EXTENSION:
 			fail_test("Created %s in %s when it should be created in %s." % [
 				file,
-				TEST_DIRECTORY.get_base_dir(),
-				TEST_DIRECTORY,
+				BASEDIR,
+				TESTDIR,
 			])
 			to_remove.push_back(file)
 	to_remove.map(func(f: String): dir.remove(f))
 	to_remove.clear()
-
 
 
 func test_get_settings_path() -> void:
@@ -66,21 +68,20 @@ func test_get_subfile_path() -> void:
 
 
 func test_new_project_set_directory_member() -> void:
-	sut.new_project(TEST_DIRECTORY)
+	sut.new_project(TESTDIR)
 
 	var settings := sut.get_settings_path()
-	assert_eq(sut._directory, TEST_DIRECTORY)
+	assert_eq(sut._directory, TESTDIR)
 
 
 func test_new_project_creates_settings_file() -> void:
-	sut.new_project(TEST_DIRECTORY)
+	sut.new_project(TESTDIR)
 
 	assert_true(FileAccess.file_exists(sut.get_settings_path()))
 
 
-
 func test_add_subfile() -> void:
-	sut.new_project(TEST_DIRECTORY)
+	sut.new_project(TESTDIR)
 
 	sut.add_subfile("tim")
 
@@ -89,7 +90,7 @@ func test_add_subfile() -> void:
 
 
 func test_add_subfile_already_exists_do_nothing() -> void:
-	sut.new_project(TEST_DIRECTORY)
+	sut.new_project(TESTDIR)
 
 	sut.add_subfile("tim")
 	var file := FileAccess.open(sut.get_subfile_path("tim"), FileAccess.WRITE)
@@ -103,7 +104,7 @@ func test_add_subfile_already_exists_do_nothing() -> void:
 
 
 func test_load_subfile_emits_file_loaded() -> void:
-	sut.new_project(TEST_DIRECTORY)
+	sut.new_project(TESTDIR)
 	sut.add_subfile("fred")
 
 	var file := FileAccess.open(
@@ -131,7 +132,7 @@ func test_load_subfile_emits_file_loaded() -> void:
 
 
 func test_load_subfile_not_exists_do_nothing() -> void:
-	sut.new_project(TEST_DIRECTORY)
+	sut.new_project(TESTDIR)
 	sut.add_subfile("fred")
 
 	watch_signals(sut)
@@ -141,7 +142,7 @@ func test_load_subfile_not_exists_do_nothing() -> void:
 
 
 func test_load_subfile_already_loaded() -> void:
-	sut.new_project(TEST_DIRECTORY)
+	sut.new_project(TESTDIR)
 	sut.add_subfile("fred")
 	sut.load_subfile("fred")
 	watch_signals(sut)
@@ -152,7 +153,7 @@ func test_load_subfile_already_loaded() -> void:
 
 
 func test_load_subfile_emits_saving_file_if_previously_loaded_another() -> void:
-	sut.new_project(TEST_DIRECTORY)
+	sut.new_project(TESTDIR)
 	sut.add_subfile("fred")
 	sut.load_subfile("fred")
 	sut.add_subfile("tim")
@@ -164,7 +165,7 @@ func test_load_subfile_emits_saving_file_if_previously_loaded_another() -> void:
 
 
 func test_rename_active_subfile() -> void:
-	sut.new_project(TEST_DIRECTORY)
+	sut.new_project(TESTDIR)
 	sut.add_subfile("fred")
 	sut.load_subfile("fred")
 	watch_signals(sut)
@@ -182,7 +183,7 @@ func test_rename_active_subfile() -> void:
 
 
 func test_rename_active_subfile_emits_saving_file() -> void:
-	sut.new_project(TEST_DIRECTORY)
+	sut.new_project(TESTDIR)
 	sut.add_subfile("fred")
 	sut.load_subfile("fred")
 	watch_signals(sut)
@@ -194,7 +195,7 @@ func test_rename_active_subfile_emits_saving_file() -> void:
 
 
 func test_rename_active_subfile_already_exists_do_nothing() -> void:
-	sut.new_project(TEST_DIRECTORY)
+	sut.new_project(TESTDIR)
 	sut.add_subfile("fred")
 	sut.add_subfile("tim")
 	sut.load_subfile("fred")
@@ -207,9 +208,30 @@ func test_rename_active_subfile_already_exists_do_nothing() -> void:
 	assert_signal_not_emitted(sut.file_loaded)
 
 
-func test_load_project() -> void:
+func test_load_project_emits_project_loaded() -> void:
 	var settings := FileAccess.open(
-		TEST_DIRECTORY.path_join(ProjectManager.SETTINGS),
+		TESTDIR.path_join(ProjectManager.SETTINGS),
+		 FileAccess.WRITE
+	)
+	var contents := { "active": "fred" }
+	settings.store_string(JSON.stringify(contents))
+	settings.close()
+	stub(sut.load_subfile).to_do_nothing()
+	watch_signals(sut)
+
+	sut.load_project(TESTDIR)
+
+	var parameters = get_signal_parameters(sut.project_loaded)
+	if not parameters:
+		fail_test("")
+		return
+	assert_signal_emitted(sut.project_loaded)
+	assert_eq(parameters[0], contents)
+
+
+func test_load_project_call_load_file_if_active_is_non_empty() -> void:
+	var settings := FileAccess.open(
+		TESTDIR.path_join(ProjectManager.SETTINGS),
 		 FileAccess.WRITE
 	)
 	var contents := { "active": "fred" }
@@ -217,32 +239,19 @@ func test_load_project() -> void:
 	settings.close()
 
 	var file := FileAccess.open(
-		TEST_DIRECTORY.path_join("fred.%s" % ProjectManager.EXTENSION),
+		TESTDIR.path_join("fred.%s" % ProjectManager.EXTENSION),
 		 FileAccess.WRITE
 	)
-
 	watch_signals(sut)
-	sut.load_project(TEST_DIRECTORY)
 
-	var parameters = get_signal_parameters(sut.project_loaded)
-	if not parameters:
-		fail_test("")
-		return
-	assert_signal_emitted(sut.project_loaded)
-	assert_eq_deep(parameters[0], contents)
-
-	parameters = get_signal_parameters(sut.file_loaded)
-	if not parameters:
-		fail_test("")
-		return
+	sut.load_project(TESTDIR)
 
 	assert_signal_emitted(sut.file_loaded)
-	assert_eq_deep(parameters[0], {})
 
 
-func test_load_project_not_emits_file_loaded_if_active_empty() -> void:
+func test_load_project_not_calls_load_subfile_if_active_empty() -> void:
 	var settings := FileAccess.open(
-		TEST_DIRECTORY.path_join(ProjectManager.SETTINGS),
+		TESTDIR.path_join(ProjectManager.SETTINGS),
 		FileAccess.WRITE
 	)
 	var contents := {
@@ -251,27 +260,59 @@ func test_load_project_not_emits_file_loaded_if_active_empty() -> void:
 	settings.store_string(JSON.stringify(contents))
 	settings.close()
 	var fred := FileAccess.open(
-		TEST_DIRECTORY.path_join("fred.%s" % ProjectManager.EXTENSION),
+		TESTDIR.path_join("fred.%s" % ProjectManager.EXTENSION),
 		FileAccess.WRITE
 	)
 	fred.close()
-
 	watch_signals(sut)
-	sut.load_project(TEST_DIRECTORY)
+
+	sut.load_project(TESTDIR)
 
 	assert_signal_not_emitted(sut.file_loaded)
 
 
-func test_load_project_settings_not_exists_nothing_happens() -> void:
+func test_load_project_fails_if_settings_not_exists() -> void:
 	watch_signals(sut)
-	sut.load_project(TEST_DIRECTORY)
+	sut.load_project(TESTDIR)
 
 	assert_signal_not_emitted(sut.project_loaded)
 	assert_false(FileAccess.file_exists(sut.get_settings_path()))
 
 
+func test_load_project_appends_characters_to_project_loaded_data() -> void:
+	var dir := DirAccess.open(BASEDIR)
+	dir.make_dir(TESTDIR.get_basename())
+
+	FileAccess.open(
+		TESTDIR.path_join(ProjectManager.SETTINGS),
+		FileAccess.WRITE
+	)
+	FileAccess.open(
+		TESTDIR.path_join("joe.%s" % ProjectManager.EXTENSION),
+		FileAccess.WRITE
+	)
+	FileAccess.open(
+		TESTDIR.path_join("sam.%s" % ProjectManager.EXTENSION),
+		FileAccess.WRITE
+	)
+	stub(sut.load_subfile).to_do_nothing()
+	watch_signals(sut)
+
+	sut.load_project(TESTDIR)
+
+	var got = get_signal_parameters(sut.project_loaded)
+	if not got:
+		fail_test("")
+		return
+
+	var expected := {
+		Global.LOAD_PROJECT_CHARACTERS: ["joe", "sam"],
+	}
+	assert_eq_deep(got[0], expected)
+
+
 func test_save_project() -> void:
-	sut.new_project(TEST_DIRECTORY)
+	sut.new_project(TESTDIR)
 
 	watch_signals(sut)
 	sut.save_project()
@@ -280,7 +321,7 @@ func test_save_project() -> void:
 
 
 func test_remove_active_subfile() -> void:
-	sut.new_project(TEST_DIRECTORY)
+	sut.new_project(TESTDIR)
 	sut.add_subfile("tim")
 	sut.load_subfile("tim")
 
@@ -302,10 +343,10 @@ func test_add_subfile_with_empty_directory() -> void:
 	sut.add_subfile("tim")
 
 	assert_false(FileAccess.file_exists(
-		TEST_DIRECTORY.path_join("tim.%s" % ProjectManager.EXTENSION)
+		TESTDIR.path_join("tim.%s" % ProjectManager.EXTENSION)
 	))
 	assert_false(FileAccess.file_exists(
-		TEST_DIRECTORY.get_base_dir().path_join("tim.%s" % ProjectManager.EXTENSION)
+		BASEDIR.path_join("tim.%s" % ProjectManager.EXTENSION)
 	))
 
 
@@ -314,6 +355,10 @@ func test_load_subfile_with_empty_directory() -> void:
 	sut.load_subfile("tim")
 
 	assert_signal_not_emitted(sut.file_loaded)
+
+
+func test_load_subfile_emits_name_in_data() -> void:
+	fail_test("todo")
 
 
 func test_remove_active_subfile_with_empty_directory() -> void:
