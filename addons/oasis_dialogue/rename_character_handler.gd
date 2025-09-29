@@ -16,7 +16,7 @@ func _init(model: _Model, input_dialog_factory: Callable) -> void:
 
 func rename() -> void:
 	var dialog: _InputDialog = _input_dialog_factory.call()
-	dialog.set_placeholder_text("Renaming %s to..." % _model.get_active_character())
+	dialog.set_placeholder_text("Rename %s to..." % _model.get_active_character())
 	dialog.set_validation(_validate)
 	dialog.set_confirm_label("Rename")
 	dialog.canceled.connect(_on_dialog_canceled.bind(dialog))
