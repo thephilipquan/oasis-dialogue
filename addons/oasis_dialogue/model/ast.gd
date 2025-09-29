@@ -270,9 +270,9 @@ class Response:
 
 	static func from_json(json: Dictionary) -> Response:
 		return new(
-			Condition.from_jsons(json["conditions"]),
-			StringLiteral.from_json(json["text"]),
-			Action.from_jsons(json["actions"]),
+			Condition.from_jsons(json.get("conditions", [])),
+			StringLiteral.from_json(json.get("text", [])),
+			Action.from_jsons(json.get("actions", [])),
 		)
 
 	func to_json() -> Dictionary:
@@ -327,9 +327,12 @@ class Condition:
 		return conditions
 
 	static func from_json(json: Dictionary) -> Condition:
+		var value = json.get("value", null)
+		if value:
+			value = NumberLiteral.from_json(value)
 		return new(
-			json["name"],
-			NumberLiteral.from_json(json["value"]),
+			json.get("name", ""),
+			value,
 		)
 
 	func to_json() -> Dictionary:
@@ -375,9 +378,12 @@ class Action:
 		return actions
 
 	static func from_json(json: Dictionary) -> Action:
+		var value = json.get("value", null)
+		if value:
+			value = NumberLiteral.from_json(value)
 		return new(
-			json["name"],
-			NumberLiteral.from_json(json["value"]),
+			json.get("name", ""),
+			value,
 		)
 
 	func to_json() -> Dictionary:
@@ -418,9 +424,14 @@ class StringLiteral:
 		}
 
 	static func from_json(json: Dictionary) -> StringLiteral:
-		return new(
-			json["value"],
-		)
+		if not "value" in json:
+			return null
+
+		var value = json["value"]
+		if not value is String:
+			return null
+
+		return new(value)
 
 	func equals(other: ASTNode) -> bool:
 		var cast := other as StringLiteral
@@ -443,9 +454,17 @@ class NumberLiteral:
 		visitor.visit_numberliteral(self)
 
 	static func from_json(json: Dictionary) -> NumberLiteral:
-		return new(
-			json["value"],
-		)
+		if not "value" in json:
+			return null
+
+		var value = json["value"]
+		if not (
+			value is int
+			or value is float
+		):
+			return null
+
+		return new(value)
 
 	func to_json() -> Dictionary:
 		return {
