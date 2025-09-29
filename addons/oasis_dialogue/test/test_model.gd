@@ -51,9 +51,18 @@ func test_get_branches() -> void:
 	assert_eq_deep(sut.get_branches(), branches)
 
 
-func test_load_character() -> void:
+func test_load_character_sets_active() -> void:
 	var d := {
 		"name": "fred",
+	}
+
+	sut.load_character(d)
+
+	assert_eq(sut.get_active_character(), "fred")
+
+
+func test_load_character_sets_branches() -> void:
+	var d := {
 		"branches": {
 			0: {
 				"id": 0,
@@ -72,22 +81,9 @@ func test_load_character() -> void:
 
 	sut.load_character(d)
 
-	assert_eq(sut.get_active_character(), "fred")
 	var got := sut.get_branches()
 	assert_true(0 in got)
 	assert_true(1 in got)
-
-
-func test_load_character_emits_character_changed() -> void:
-	var d := {
-		"name": "fred",
-	}
-	watch_signals(sut)
-
-	sut.load_character(d)
-
-	assert_eq(sut.get_active_character(), "fred")
-	assert_signal_emitted_with_parameters(sut.character_changed, ["fred"])
 
 
 func test_load_character_with_invalid_ast() -> void:
@@ -97,11 +93,9 @@ func test_load_character_with_invalid_ast() -> void:
 
 func test_load_character_with_empty_branches() -> void:
 	var d := {
-		"name": "fred",
 		"branches": {},
 	}
 	sut.load_character(d)
-	assert_eq(sut.get_active_character(), "fred")
 	assert_eq_deep(sut.get_branches(), {})
 
 
@@ -369,18 +363,3 @@ func test_remove_active_character_clears_branches() -> void:
 	sut.remove_active_character()
 
 	assert_eq_deep(sut.get_branches().size(), 0)
-
-
-func test_remove_active_character_emits_character_changed() -> void:
-	var d := {
-		"characters": ["fred", "joe"],
-		"name": "fred",
-	}
-	sut.load_project(d)
-	sut.load_character(d)
-	sut.add_branch(0)
-	watch_signals(sut)
-
-	sut.remove_active_character()
-
-	assert_signal_emitted(sut, "character_changed", [""])

@@ -22,7 +22,3 @@ func _on_button_up() -> void:
 	ids.sort()
 	var next := _Sequence.get_next_int(ids)
 	branch_added.emit(next)
-
-
-func _on_model_character_changed(name: String) -> void:
-	visible = name != ""

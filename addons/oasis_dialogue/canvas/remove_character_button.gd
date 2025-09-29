@@ -41,7 +41,3 @@ func _on_dialog_canceled(dialog: Control) -> void:
 func _on_dialog_confirmed(dialog: Control) -> void:
 	_on_dialog_canceled(dialog)
 	character_removed.emit()
-
-
-func _on_model_character_changed(new_name: String) -> void:
-	visible = new_name != ""

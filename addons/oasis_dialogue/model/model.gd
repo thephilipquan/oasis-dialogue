@@ -4,8 +4,6 @@ const _AST := preload("res://addons/oasis_dialogue/model/ast.gd")
 const _Global := preload("res://addons/oasis_dialogue/global.gd")
 const _Visitor := preload("res://addons/oasis_dialogue/visitor/visitor.gd")
 
-signal character_changed(name: String)
-
 var _characters: Array[String] = []
 var _conditions: Array[String] = []
 var _actions: Array[String] = []
@@ -83,14 +81,12 @@ func remove_active_character() -> void:
 	_characters.erase(_active)
 	_branches.clear()
 	_active = ""
-	character_changed.emit(_active)
 
 
 func rename_active_character(to: String) -> void:
 	assert(_active and not to in _characters)
 	_characters[_characters.find(_active)] = to
 	_active = to
-	character_changed.emit(_active)
 
 
 func has_branch(id: int) -> bool:
@@ -109,7 +105,6 @@ func get_branches() -> Dictionary[int, _AST.Branch]:
 func load_character(data: Dictionary) -> void:
 	_active = data.get(_Global.LOAD_FILE_NAME, "")
 	_branches = _AST.Branch.from_jsons(data.get(_Global.FILE_BRANCHES, {}))
-	character_changed.emit(_active)
 
 
 func load_project(data: Dictionary) -> void:

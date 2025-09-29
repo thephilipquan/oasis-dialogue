@@ -99,9 +99,8 @@ func _ready() -> void:
 	remove_character.init(_model, confirm_dialog_factory)
 	remove_character.character_removed.connect(tree.remove_selected_item)
 	remove_character.character_removed.connect(_model.remove_active_character)
-
-	_model.character_changed.connect(remove_character._on_model_character_changed)
-	_model.character_changed.connect(add_branch._on_model_character_changed)
+	remove_character.character_removed.connect(add_branch.hide)
+	remove_character.character_removed.connect(remove_character.hide)
 
 	tree.character_activated.connect(_rename_character_handler.rename)
 
@@ -165,11 +164,15 @@ func init(manager: _ProjectManager) -> void:
 	manager.saving_file.connect(graph.save_character)
 	manager.saving_project.connect(_model.save_project)
 
-	var remove_character: _RemoveCharacterButton = $VBoxContainer/HeaderMarginContainer/HBoxContainer/RemoveCharacter
-	remove_character.character_removed.connect(manager.remove_active_subfile)
+	var add_branch: _AddBranchButton = $VBoxContainer/HeaderMarginContainer/HBoxContainer/AddBranch
+	manager.file_loaded.connect(add_branch.show.unbind(1))
 
 	var add_character: _AddCharacterButton = $VBoxContainer/HeaderMarginContainer/HBoxContainer/AddCharacter
 	add_character.character_added.connect(manager.add_subfile)
+
+	var remove_character: _RemoveCharacterButton = $VBoxContainer/HeaderMarginContainer/HBoxContainer/RemoveCharacter
+	remove_character.character_removed.connect(manager.remove_active_subfile)
+	manager.file_loaded.connect(remove_character.show.unbind(1))
 
 	tree.character_selected.connect(manager.load_subfile)
 
