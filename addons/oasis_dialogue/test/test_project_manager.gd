@@ -229,6 +229,73 @@ func test_load_project_emits_project_loaded() -> void:
 	assert_eq(parameters[0], contents)
 
 
+func test_load_project_fails_if_settings_not_exists() -> void:
+	watch_signals(sut)
+	sut.load_project(TESTDIR)
+
+	assert_signal_not_emitted(sut.project_loaded)
+	assert_false(FileAccess.file_exists(sut.get_settings_path()))
+
+
+func test_load_project_sets_display_names_in_conversion_dictionary() -> void:
+	var dir := DirAccess.open(BASEDIR)
+	dir.make_dir(TESTDIR.get_basename())
+
+	FileAccess.open(
+			TESTDIR.path_join(ProjectManager.SETTINGS),
+			FileAccess.WRITE
+	)
+	FileAccess.open(
+			TESTDIR.path_join("joe.%s" % ProjectManager.EXTENSION),
+			FileAccess.WRITE
+	)
+	FileAccess.open(
+			TESTDIR.path_join("sam.%s" % ProjectManager.EXTENSION),
+			FileAccess.WRITE
+	).store_string(JSON.stringify({
+			"display_name": "SAM",
+	}))
+	stub(sut.load_subfile).to_do_nothing()
+
+	sut.load_project(TESTDIR)
+
+	assert_eq_deep(sut._display_to_filename, { "SAM": "sam" })
+
+
+func test_load_project_appends_filenames_if_no_display_names() -> void:
+	var dir := DirAccess.open(BASEDIR)
+	dir.make_dir(TESTDIR.get_basename())
+
+	FileAccess.open(
+		TESTDIR.path_join(ProjectManager.SETTINGS),
+		FileAccess.WRITE
+	)
+	FileAccess.open(
+		TESTDIR.path_join("joe.%s" % ProjectManager.EXTENSION),
+		FileAccess.WRITE
+	)
+	FileAccess.open(
+		TESTDIR.path_join("sam.%s" % ProjectManager.EXTENSION),
+		FileAccess.WRITE
+	).store_string(JSON.stringify({
+			"display_name": "SAM",
+	}))
+	stub(sut.load_subfile).to_do_nothing()
+	watch_signals(sut)
+
+	sut.load_project(TESTDIR)
+
+	var got = get_signal_parameters(sut.project_loaded)
+	if not got:
+		fail_test("")
+		return
+
+	var expected := {
+		Global.LOAD_PROJECT_CHARACTERS: ["joe", "SAM"],
+	}
+	assert_eq_deep(got[0], expected)
+
+
 func test_load_project_call_load_file_if_active_is_non_empty() -> void:
 	var settings := FileAccess.open(
 		TESTDIR.path_join(ProjectManager.SETTINGS),
@@ -269,46 +336,6 @@ func test_load_project_not_calls_load_subfile_if_active_empty() -> void:
 	sut.load_project(TESTDIR)
 
 	assert_signal_not_emitted(sut.file_loaded)
-
-
-func test_load_project_fails_if_settings_not_exists() -> void:
-	watch_signals(sut)
-	sut.load_project(TESTDIR)
-
-	assert_signal_not_emitted(sut.project_loaded)
-	assert_false(FileAccess.file_exists(sut.get_settings_path()))
-
-
-func test_load_project_appends_characters_to_project_loaded_data() -> void:
-	var dir := DirAccess.open(BASEDIR)
-	dir.make_dir(TESTDIR.get_basename())
-
-	FileAccess.open(
-		TESTDIR.path_join(ProjectManager.SETTINGS),
-		FileAccess.WRITE
-	)
-	FileAccess.open(
-		TESTDIR.path_join("joe.%s" % ProjectManager.EXTENSION),
-		FileAccess.WRITE
-	)
-	FileAccess.open(
-		TESTDIR.path_join("sam.%s" % ProjectManager.EXTENSION),
-		FileAccess.WRITE
-	)
-	stub(sut.load_subfile).to_do_nothing()
-	watch_signals(sut)
-
-	sut.load_project(TESTDIR)
-
-	var got = get_signal_parameters(sut.project_loaded)
-	if not got:
-		fail_test("")
-		return
-
-	var expected := {
-		Global.LOAD_PROJECT_CHARACTERS: ["joe", "sam"],
-	}
-	assert_eq_deep(got[0], expected)
 
 
 func test_save_project() -> void:

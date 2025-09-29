@@ -12,6 +12,7 @@ signal saving_project(data: Dictionary)
 
 var _directory := ""
 var _active := ""
+var _display_to_filename: Dictionary[String, String] = {}
 
 
 func get_settings_path() -> String:
@@ -48,10 +49,25 @@ func load_project(path: String) -> void:
 		data.assign(JSON.parse_string(content))
 
 	var characters: Array[String] = []
-	for file in dir.get_files():
-		var name := file.get_slice(".", 0)
-		if name:
-			characters.push_back(name)
+	for f in dir.get_files():
+		if f == SETTINGS or f.get_extension() != EXTENSION:
+			continue
+
+		var filename := f.get_slice(".", 0)
+		var file := FileAccess.open(_directory.path_join(f), FileAccess.READ)
+		var contents := file.get_as_text()
+		if not contents:
+			characters.push_back(filename)
+			continue
+
+		var json := JSON.parse_string(contents)
+		var display_name: String = json.get("display_name", "")
+		if not display_name:
+			characters.push_back(filename)
+			continue
+		_display_to_filename[display_name] = filename
+		characters.push_back(display_name)
+
 	if characters:
 		data[_Global.LOAD_PROJECT_CHARACTERS] = characters
 
@@ -129,6 +145,7 @@ func remove_active_subfile() -> void:
 
 
 func rename_active_subfile(to_name: String) -> void:
+	var display_name = to_name
 	to_name = _format_param(to_name)
 	if not _directory or not _active:
 		return
