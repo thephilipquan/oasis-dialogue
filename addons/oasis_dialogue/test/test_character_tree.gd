@@ -39,7 +39,6 @@ func test_edit_seleted_item() -> void:
 	assert_eq(item.get_text(0), "bar")
 
 
-
 func test_set_items() -> void:
 	var items: Array[String] = [
 		"foo",

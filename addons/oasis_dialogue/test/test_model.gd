@@ -371,7 +371,6 @@ func test_remove_active_character_clears_branches() -> void:
 	assert_eq_deep(sut.get_branches().size(), 0)
 
 
-
 func test_remove_active_character_emits_character_changed() -> void:
 	var d := {
 		"characters": ["fred", "joe"],

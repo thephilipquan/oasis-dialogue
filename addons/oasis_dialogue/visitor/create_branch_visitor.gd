@@ -34,3 +34,4 @@ func finish() -> void:
 		_model.add_branch(id)
 		_graph.add_branch(id)
 	cancel()
+
