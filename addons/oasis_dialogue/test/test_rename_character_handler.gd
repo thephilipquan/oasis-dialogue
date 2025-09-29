@@ -3,10 +3,8 @@ extends GutTest
 const RenameCharacterHandler := preload("res://addons/oasis_dialogue/rename_character_handler.gd")
 const InputDialog := preload("res://addons/oasis_dialogue/input_dialog/input_dialog.gd")
 const InputDialogScene := preload("res://addons/oasis_dialogue/input_dialog/input_dialog.tscn")
-const Model := preload("res://addons/oasis_dialogue/model/model.gd")
 
 var sut: RenameCharacterHandler = null
-var model: Model = null
 var dialog: InputDialog = null
 var dialog_factory := Callable()
 
@@ -19,25 +17,25 @@ func before_all() -> void:
 
 
 func before_each() -> void:
-	model = double(Model).new()
-	sut = RenameCharacterHandler.new(model, dialog_factory)
+	sut = RenameCharacterHandler.new()
+	sut.input_dialog_factory = dialog_factory
 
 
 func test_validate_new_name() -> void:
-	stub(model.has_character).to_return(false)
+	sut.can_rename_to = func(s: String): return false
 
 	assert_eq(sut._validate("fred"), "")
 
 
 func test_validate_existing() -> void:
-	stub(model.has_character).to_return(true)
+	sut.can_rename_to = func(s: String): return true
 
 	assert_ne(sut._validate("fred"), "")
 
 
 func test_rename_confirmed() -> void:
+	sut.get_active_character = func(): return "fred"
 	watch_signals(sut)
-	stub(model.get_active_character).to_return("fred")
 
 	sut.rename()
 	dialog.confirmed.emit("tom")
@@ -46,8 +44,8 @@ func test_rename_confirmed() -> void:
 
 
 func test_rename_canceled() -> void:
+	sut.get_active_character = func(): return "fred"
 	watch_signals(sut)
-	stub(model.get_active_character).to_return("fred")
 
 	sut.rename()
 	dialog.canceled.emit()

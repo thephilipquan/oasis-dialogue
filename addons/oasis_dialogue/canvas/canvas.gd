@@ -70,7 +70,11 @@ func _ready() -> void:
 	language_server = _LanguageServer.new(lexer, parser)
 	semantic_visitors = _VisitorIterator.new()
 	restore_branch_visitors = _VisitorIterator.new()
-	_rename_character_handler = _RenameCharacterHandler.new(_model, input_dialog_factory)
+	_rename_character_handler = _RenameCharacterHandler.new()
+
+	_rename_character_handler.get_active_character = _model.get_active_character
+	_rename_character_handler.input_dialog_factory = input_dialog_factory
+	_rename_character_handler.character_renamed.connect(tree.edit_selected_item)
 
 	var update_model_visitor := _UpdateModelVisitor.new(_model)
 	var unparser_visitor := _UnparserVisitor.new(graph)
@@ -176,6 +180,7 @@ func init(manager: _ProjectManager) -> void:
 
 	tree.character_selected.connect(manager.load_subfile)
 
+	_rename_character_handler.can_rename_to = manager.can_rename_active_to
 	_rename_character_handler.character_renamed.connect(manager.rename_active_subfile)
 
 

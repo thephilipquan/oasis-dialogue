@@ -80,6 +80,36 @@ func test_new_project_creates_settings_file() -> void:
 	assert_true(FileAccess.file_exists(sut.get_settings_path()))
 
 
+func test_can_rename_active_to() -> void:
+	sut.new_project(TESTDIR)
+	sut.add_subfile("fred")
+	sut.load_subfile("fred")
+
+	assert_true(sut.can_rename_active_to("Fred"))
+
+
+func test_can_rename_active_to_with_alternate_casing() -> void:
+	sut.new_project(TESTDIR)
+	sut.add_subfile("FRED")
+	sut.load_subfile("FRED")
+
+	assert_true(sut.can_rename_active_to("fred"))
+	assert_true(sut.can_rename_active_to("Fred"))
+	assert_true(sut.can_rename_active_to("fRED"))
+
+
+func test_can_rename_active_to_other_existing() -> void:
+	sut.new_project(TESTDIR)
+	sut.add_subfile("tim")
+	sut.add_subfile("fred")
+	sut.load_subfile("fred")
+
+	assert_false(sut.can_rename_active_to("tim"))
+	assert_false(sut.can_rename_active_to("Tim"))
+	assert_false(sut.can_rename_active_to("TIM"))
+	assert_false(sut.can_rename_active_to("tIM"))
+
+
 func test_add_subfile() -> void:
 	sut.new_project(TESTDIR)
 
@@ -101,6 +131,15 @@ func test_add_subfile_already_exists_do_nothing() -> void:
 	file = FileAccess.open(sut.get_subfile_path("tim"), FileAccess.READ)
 	assert_eq(file.get_as_text(), "hey there")
 	file.close()
+
+
+func test_add_subfile_adds_display_name_to_conversion_map() -> void:
+	sut.new_project(TESTDIR)
+	sut.add_subfile("TIM")
+	sut.add_subfile("fred")
+
+	assert_eq(sut._display_to_filename.get("TIM", ""), "tim")
+	assert_eq(sut._display_to_filename.get("fred", ""), "fred")
 
 
 func test_load_subfile_emits_file_loaded() -> void:
@@ -164,16 +203,61 @@ func test_load_subfile_emits_saving_file_if_previously_loaded_another() -> void:
 	assert_signal_emitted(sut.saving_file)
 
 
-func test_rename_active_subfile() -> void:
+func test_save_active_subfile_emits_saving_file() -> void:
 	sut.new_project(TESTDIR)
 	sut.add_subfile("fred")
 	sut.load_subfile("fred")
 	watch_signals(sut)
 
+	sut.save_active_subfile()
+
+	assert_signal_emitted(sut.saving_file)
+
+
+func test_save_active_subfile_adds_display_name_to_saving_file_data() -> void:
+	sut.new_project(TESTDIR)
+	sut.add_subfile("fred")
+	sut.load_subfile("fred")
+	watch_signals(sut)
+
+	sut.save_active_subfile()
+
+	var got = get_signal_parameters(sut.saving_file)
+	if not got:
+		fail_test("")
+		return
+
+	var data: Dictionary = got[0]
+	assert_eq(data.get(Global.FILE_DISPLAY_NAME, ""), "fred")
+
+
+func test_rename_active_subfile_updates_active() -> void:
+	sut.new_project(TESTDIR)
+	sut.add_subfile("fred")
+	sut.load_subfile("fred")
+
 	sut.rename_active_subfile("tim")
 
 	assert_eq(sut._active, "tim")
-	assert_signal_emitted(sut.saving_file)
+
+
+func test_rename_active_subfile_updates_conversion_dictionary() -> void:
+	sut.new_project(TESTDIR)
+	sut.add_subfile("fred")
+	sut.load_subfile("fred")
+
+	sut.rename_active_subfile("Tim")
+
+	assert_has(sut._display_to_filename, "Tim")
+	assert_does_not_have(sut._display_to_filename, "fred")
+
+
+func test_rename_active_subfile_replaces_file() -> void:
+	sut.new_project(TESTDIR)
+	sut.add_subfile("fred")
+	sut.load_subfile("fred")
+
+	sut.rename_active_subfile("tim")
 
 	var fred := sut.get_subfile_path("fred")
 	var tim := sut.get_subfile_path("tim")
@@ -182,7 +266,7 @@ func test_rename_active_subfile() -> void:
 	assert_true(FileAccess.file_exists(tim))
 
 
-func test_rename_active_subfile_emits_saving_file() -> void:
+func test_rename_active_subfile_calls_save_active_subfile() -> void:
 	sut.new_project(TESTDIR)
 	sut.add_subfile("fred")
 	sut.load_subfile("fred")
@@ -190,8 +274,18 @@ func test_rename_active_subfile_emits_saving_file() -> void:
 
 	sut.rename_active_subfile("tim")
 
-	assert_eq(sut._active, "tim")
 	assert_signal_emitted(sut.saving_file)
+
+
+func test_rename_active_subfile_to_same_display_name_does_nothing() -> void:
+	sut.new_project(TESTDIR)
+	sut.add_subfile("FRED")
+	sut.load_subfile("FRED")
+	watch_signals(sut)
+
+	sut.rename_active_subfile("FRED")
+
+	assert_signal_not_emitted(sut.saving_file)
 
 
 func test_rename_active_subfile_already_exists_do_nothing() -> void:
@@ -205,7 +299,22 @@ func test_rename_active_subfile_already_exists_do_nothing() -> void:
 
 	assert_eq(sut._active, "fred")
 	assert_signal_not_emitted(sut.saving_file)
-	assert_signal_not_emitted(sut.file_loaded)
+
+
+func test_rename_active_subfile_old_active_display_name_is_removed_from_conversion_dictionary() -> void:
+	sut.new_project(TESTDIR)
+	sut.add_subfile("fred")
+	var file := FileAccess.open(sut.get_subfile_path("fred"), FileAccess.WRITE)
+	file.store_string(JSON.stringify({
+		"display_name": "Fred",
+	}))
+	file.close()
+	sut.load_subfile("fred")
+
+	sut.rename_active_subfile("Tim")
+
+	assert_false("Fred" in sut._display_to_filename)
+	assert_true("Tim" in sut._display_to_filename)
 
 
 func test_load_project_emits_project_loaded() -> void:
@@ -237,7 +346,7 @@ func test_load_project_fails_if_settings_not_exists() -> void:
 	assert_false(FileAccess.file_exists(sut.get_settings_path()))
 
 
-func test_load_project_sets_display_names_in_conversion_dictionary() -> void:
+func test_load_project_sets_conversion_dictionary() -> void:
 	var dir := DirAccess.open(BASEDIR)
 	dir.make_dir(TESTDIR.get_basename())
 
@@ -259,10 +368,10 @@ func test_load_project_sets_display_names_in_conversion_dictionary() -> void:
 
 	sut.load_project(TESTDIR)
 
-	assert_eq_deep(sut._display_to_filename, { "SAM": "sam" })
+	assert_eq_deep(sut._display_to_filename, { "joe": "joe", "SAM": "sam" })
 
 
-func test_load_project_appends_filenames_if_no_display_names() -> void:
+func test_load_project_emits_display_names() -> void:
 	var dir := DirAccess.open(BASEDIR)
 	dir.make_dir(TESTDIR.get_basename())
 
@@ -336,6 +445,22 @@ func test_load_project_not_calls_load_subfile_if_active_empty() -> void:
 	sut.load_project(TESTDIR)
 
 	assert_signal_not_emitted(sut.file_loaded)
+
+
+func test_load_project_clears_fields() -> void:
+	sut._directory = "baz"
+	sut._active = "foo"
+	sut._display_to_filename["foo"] = "bar"
+
+	FileAccess.open(
+		TESTDIR.path_join(ProjectManager.SETTINGS),
+		FileAccess.WRITE,
+	)
+	sut.load_project(TESTDIR)
+
+	assert_ne(sut._directory, "baz")
+	assert_ne(sut._active, "foo")
+	assert_false("bar" in sut._display_to_filename)
 
 
 func test_save_project() -> void:

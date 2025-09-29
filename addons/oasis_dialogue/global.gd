@@ -16,6 +16,7 @@ const PROJECT_ACTIONS := "actions"
 ## Put by ProjectManager when loading.
 const LOAD_FILE_NAME := "name"
 
+const FILE_DISPLAY_NAME := "display_name"
 const FILE_BRANCHES := "branches"
 const FILE_BRANCH_POSITION_OFFSETS := "branch_position_offsets"
 const FILE_BRANCH_CONNECTIONS := "branch_connections"
