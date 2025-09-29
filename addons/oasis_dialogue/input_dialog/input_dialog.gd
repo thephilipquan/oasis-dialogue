@@ -4,6 +4,8 @@ extends Control
 signal confirmed(text: String)
 signal canceled
 
+const ILLEGAL_CHARS := " <>:\"/\\|?*"
+
 var _validate := Callable()
 
 @onready
@@ -28,19 +30,19 @@ func set_cancel_label(text: String) -> void:
 
 
 func set_confirm_label(text: String) -> void:
-	var button: Button = $CenterContainer/VBoxContainer/HBoxContainer/Done
+	var button: Button = $CenterContainer/VBoxContainer/HBoxContainer/Confirm
 	button.text = text
 
 
-func _on_done_button_up() -> void:
-	_done()
+func _on_confirm_button_up() -> void:
+	_confirm()
 
 
 func _on_line_edit_text_submitted(new_text: String) -> void:
-	_done()
+	_confirm()
 
 
-func _done() -> void:
+func _confirm() -> void:
 	var name := _line_edit.text
 	var status := _validate.call(name)
 	if status:
@@ -49,9 +51,12 @@ func _done() -> void:
 
 
 func _on_line_edit_text_changed(new_text: String) -> void:
+	new_text = new_text.remove_chars(ILLEGAL_CHARS)
 	var before := _line_edit.caret_column
-	_line_edit.text = new_text.replace(" ", "")
+
+	_line_edit.text = new_text
 	_line_edit.caret_column = before
+
 	var status := _validate.call(new_text)
 	_update_status(status)
 

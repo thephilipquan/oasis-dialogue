@@ -58,7 +58,7 @@ custom_minimum_size = Vector2(128, 0)
 layout_mode = 2
 text = "cancel"
 
-[node name="Done" type="Button" parent="CenterContainer/VBoxContainer/HBoxContainer"]
+[node name="Confirm" type="Button" parent="CenterContainer/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(128, 0)
 layout_mode = 2
 text = "done"
@@ -66,4 +66,4 @@ text = "done"
 [connection signal="text_changed" from="CenterContainer/VBoxContainer/LineEdit" to="." method="_on_line_edit_text_changed"]
 [connection signal="text_submitted" from="CenterContainer/VBoxContainer/LineEdit" to="." method="_on_line_edit_text_submitted"]
 [connection signal="button_up" from="CenterContainer/VBoxContainer/HBoxContainer/Cancel" to="." method="_on_cancel_button_up"]
-[connection signal="button_up" from="CenterContainer/VBoxContainer/HBoxContainer/Done" to="." method="_on_done_button_up"]
+[connection signal="button_up" from="CenterContainer/VBoxContainer/HBoxContainer/Confirm" to="." method="_on_confirm_button_up"]
