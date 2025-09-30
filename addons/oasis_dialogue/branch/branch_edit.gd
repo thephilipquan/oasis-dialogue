@@ -70,7 +70,7 @@ func connect_branches(from_id: int, to_ids: Array[int]) -> void:
 	disable_unused_slots()
 	if to_arrange:
 		arrange_branches_around_anchor(from, to_arrange)
-	arrange_orphans()
+	arrange_orphans(from)
 
 
 func remove_branch(id: int, branch: _Branch) -> void:
@@ -128,12 +128,12 @@ func disable_unused_slots() -> void:
 
 
 ## Arranges the orphans below the left-most node.
-func arrange_orphans() -> void:
+func arrange_orphans(ignore: _Branch) -> void:
 	var anchor: GraphNode = null
 	var orphans: Array[_Branch] = []
 	for id in _branches:
 		var branch := _branches[id]
-		if not get_connection_count(branch.name, 0):
+		if not get_connection_count(branch.name, 0) and _branches[id] != ignore:
 			orphans.push_back(branch)
 		elif not anchor:
 			anchor = branch

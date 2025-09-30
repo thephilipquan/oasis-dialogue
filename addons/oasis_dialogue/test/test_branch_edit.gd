@@ -228,7 +228,7 @@ func test_arrange_orphans() -> void:
 	branches[2].position_offset = Vector2(300, 300)
 	sut.connect_node(branches[0].name, 0, branches[1].name, 0)
 
-	sut.arrange_orphans()
+	sut.arrange_orphans(null)
 
 	if not sut._tween:
 		fail_test("")
@@ -240,6 +240,29 @@ func test_arrange_orphans() -> void:
 	assert_eq(branches[1].position_offset, Vector2(200, 200))
 	assert_eq(branches[2].position_offset.x, 0.0)
 	assert_gt(branches[2].position_offset.y, 0.0)
+
+
+func test_arrange_orphans_with_ignore() -> void:
+	for i in 3:
+		sut.add_branch(i)
+		branches[i].set_slot_enabled_left(0, true)
+		branches[i].set_slot_enabled_right(0, true)
+	branches[0].position_offset = Vector2(0, 0)
+	branches[1].position_offset = Vector2(200, 200)
+	branches[2].position_offset = Vector2(300, 300)
+
+	sut.arrange_orphans(branches[1])
+
+	if not sut._tween:
+		fail_test("")
+		return
+
+	await sut._tween.finished
+
+	# Since all are orphans, the ignored is chosen as the anchor.
+	assert_eq(branches[0].position_offset.x, 200.0)
+	assert_eq(branches[1].position_offset, Vector2(200, 200))
+	assert_eq(branches[2].position_offset.x, 200.0)
 
 
 func test_load_character_creates_branches_and_emits_branch_restored() -> void:
