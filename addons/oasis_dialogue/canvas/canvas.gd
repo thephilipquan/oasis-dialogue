@@ -110,7 +110,7 @@ func _ready() -> void:
 
 	graph.init(branch_factory)
 	graph.branch_added.connect(
-		func(id: int, branch: _Branch):
+		func connect_branch_to_language_server(branch: _Branch) -> void:
 			branch.changed.connect(language_server.parse_branch_text)
 	)
 

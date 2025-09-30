@@ -7,7 +7,7 @@ const _Vector2Utils := preload("res://addons/oasis_dialogue/utils/vector2_utils.
 
 const SAVE_POSITION_OFFSET_KEY := "branch_position_offsets"
 
-signal branch_added(id: int, branch: _Branch)
+signal branch_added(branch: _Branch)
 ## Emitted when a branch
 signal branches_dirtied(id: int, dirty_ids: Array[int])
 ## Emitted when a branch is loaded from file and needs to be unparsed.
@@ -34,7 +34,7 @@ func add_branch(id: int) -> void:
 	center_node_in_graph(branch)
 
 	_branches[id] = branch
-	branch_added.emit(id, branch)
+	branch_added.emit(branch)
 
 
 func get_branch(id: int) -> _Branch:
