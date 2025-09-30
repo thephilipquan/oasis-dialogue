@@ -11,4 +11,3 @@ func _init(model: _Model) -> void:
 
 func visit_branch(branch: _AST.Branch) -> void:
 	_model.update_branch(branch)
-

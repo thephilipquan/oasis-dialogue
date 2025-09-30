@@ -8,7 +8,7 @@ const _ParseError := preload("res://addons/oasis_dialogue/model/parse_error.gd")
 const _BranchEdit := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
 
 signal parsed(ast: _AST.Branch)
-signal erred(id: int, errors: _ParseError)
+signal erred(error: _ParseError)
 
 var _lexer: _Lexer = null
 var _parser: _Parser = null
@@ -24,8 +24,10 @@ func parse_branch_text(id: int, text: String) -> void:
 	var ast := _parser.parse(tokens)
 	ast.id = id
 	var errors := _parser.get_errors()
+	for error in errors:
+		error.id = id
 	if errors:
-		erred.emit(id, errors)
+		erred.emit(errors[0])
 	else:
 		parsed.emit(ast)
 

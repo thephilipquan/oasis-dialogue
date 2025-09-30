@@ -107,6 +107,14 @@ func remove_branches() -> void:
 	_branches.clear()
 
 
+func highlight_branch(id: int, lines: Array[int]) -> void:
+	_branches[id].highlight(lines)
+
+
+func clear_branch_highlights(id: int) -> void:
+	_branches[id].highlight([])
+
+
 func disable_unused_slots() -> void:
 	for id in _branches:
 		var branch := _branches[id]

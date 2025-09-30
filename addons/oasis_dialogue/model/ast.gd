@@ -1,9 +1,14 @@
 extends RefCounted
 
 const _Visitor := preload("res://addons/oasis_dialogue/visitor/visitor.gd")
+const _type := preload("res://addons/oasis_dialogue/utils/json_utils.gd")
 
 class ASTNode:
 	extends RefCounted
+
+	func _init(line: int, column: int) -> void:
+		self.line = line
+		self.column = column
 
 	func accept(visitor: _Visitor) -> void:
 		pass
@@ -14,58 +19,6 @@ class ASTNode:
 	func equals(other: ASTNode) -> bool:
 		var cast := other as ASTNode
 		return cast != null
-
-
-#class Character:
-	#extends ASTNode
-#
-	#var name := ""
-	#var branches: Dictionary[int, Branch] = {}
-#
-	#func _init(name: String, branches: Dictionary[int, Branch]) -> void:
-		#self.name = name
-		#self.branches = branches
-#
-	#func accept(visitor: _Visitor) -> void:
-		#branches.values().map(func(n: ASTNode): n.accept(visitor))
-#
-	#static func from_jsons(jsons: Array) -> Array[Character]:
-		#var characters: Array[Character] = []
-		#for json in jsons:
-			#characters.push_back(from_json(json))
-		#return characters
-#
-	#static func from_json(json: Dictionary) -> Character:
-		#var branches: Dictionary[int, Branch] = {}
-		#for branch in Branch.from_jsons(json["branches"]):
-			#branches[branch.id] = branch
-		#return new(
-			#json["name"],
-			#branches,
-		#)
-#
-	#func to_json() -> Dictionary:
-		#return {
-			#"name": name,
-			#"branches": branches.values().map(func(n: ASTNode): return n.to_json()),
-		#}
-#
-	#func equals(other: ASTNode)-> bool:
-		#var cast := other as Character
-		#if not cast:
-			#return false
-		#if (
-			#name != cast.name
-			#or branches.size() != cast.branches.size()
-		#):
-			#return false
-		#for i in branches.size():
-			#if not branches[i].equals(cast.branches[i]):
-				#return false
-		#return true
-#
-	#func _to_string() -> String:
-		#return JSON.stringify(to_json())
 
 
 class Branch:
@@ -88,18 +41,28 @@ class Branch:
 		prompts.map(func(n: ASTNode): n.accept(visitor))
 		responses.map(func(n: ASTNode): n.accept(visitor))
 
-	static func from_jsons(jsons: Dictionary) -> Dictionary[int, Branch]:
+	static func from_jsons(jsons) -> Dictionary[int, Branch]:
+		if not jsons is Dictionary:
+			return {}
+
 		var branches: Dictionary[int, Branch] = {}
-		for id in jsons:
-			branches[id] = from_json(jsons[id])
+		for key in jsons:
+			if not _type.is_int(key):
+				continue
+			var id := _type.parse_int(key)
+			var branch = from_json(jsons[key])
+			if branch:
+				branches[id] = branch
 		return branches
 
-	static func from_json(json: Dictionary) -> Branch:
+	static func from_json(json) -> Branch:
+		if not json is Dictionary:
+			return null
 		return new(
-			json["id"],
-			Annotation.from_jsons(json["annotations"]),
-			Prompt.from_jsons(json["prompts"]),
-			Response.from_jsons(json["responses"]),
+			json.get("id", -1),
+			Annotation.from_jsons(json.get("annotations", [])),
+			Prompt.from_jsons(json.get("prompts", [])),
+			Response.from_jsons(json.get("responses", [])),
 		)
 
 	func to_json() -> Dictionary:
@@ -115,7 +78,8 @@ class Branch:
 		if not cast:
 			return false
 		if (
-			annotations.size != cast.annotations.size
+			id != other.id
+			or annotations.size != cast.annotations.size
 			or prompts.size != cast.prompts.size
 			or responses.size != cast.responses.size
 		):
@@ -137,12 +101,17 @@ class Branch:
 
 class Annotation:
 	extends ASTNode
+
+	var line := -1
+	var column := -1
 	var name := ""
 	var value: ASTNode = null
 
-	func _init(name: String, value: ASTNode) -> void:
+	func _init(name: String, value: ASTNode, line := -1, column := -1) -> void:
 		self.name = name
 		self.value = value
+		self.line = line
+		self.column = column
 
 	func accept(visitor: _Visitor) -> void:
 		visitor.visit_annotation(self)
@@ -150,21 +119,35 @@ class Annotation:
 			value.accept(visitor)
 
 	static func from_jsons(jsons: Array) -> Array[Annotation]:
+		if not jsons is Array:
+			return []
 		var annotations: Array[Annotation] = []
 		for json in jsons:
-			annotations.push_back(from_json(json))
+			var annotation := from_json(json)
+			if annotation:
+				annotations.push_back(annotation)
 		return annotations
 
-	static func from_json(json: Dictionary) -> Annotation:
+	static func from_json(json) -> Annotation:
+		if (
+			not json is Dictionary
+			or not "name" in json
+			or not json["name"] is String
+		):
+			return null
 		return new(
 			json["name"],
-			json["value"],
+			json.get("value", null),
+			json.get("line", -1),
+			json.get("column", -1),
 		)
 
 	func to_json() -> Dictionary:
 		var map := {
 			"name": name,
 			"value": value.to_json() if value else null,
+			"line": line,
+			"column": column,
 		}
 		return map
 
@@ -201,17 +184,23 @@ class Prompt:
 		text.accept(visitor)
 		actions.map(func(n: ASTNode): n.accept(visitor))
 
-	static func from_jsons(jsons: Array) -> Array[Prompt]:
+	static func from_jsons(jsons) -> Array[Prompt]:
+		if not jsons is Array:
+			return []
 		var prompts: Array[Prompt] = []
 		for json in jsons:
-			prompts.push_back(from_json(json))
+			var prompt := from_json(json)
+			if prompt:
+				prompts.push_back(prompt)
 		return prompts
 
-	static func from_json(json: Dictionary) -> Prompt:
+	static func from_json(json) -> Prompt:
+		if not json is Dictionary:
+			return null
 		return new(
-			Condition.from_jsons(json["conditions"]),
-			StringLiteral.from_json(json["text"]),
-			Action.from_jsons(json["actions"]),
+			Condition.from_jsons(json.get("conditions", [])),
+			StringLiteral.from_json(json.get("text", {})),
+			Action.from_jsons(json.get("actions", [])),
 		)
 
 	func to_json() -> Dictionary:
@@ -262,16 +251,18 @@ class Response:
 		text.accept(visitor)
 		actions.map(func(n: ASTNode): n.accept(visitor))
 
-	static func from_jsons(jsons: Array) -> Array[Response]:
+	static func from_jsons(jsons) -> Array[Response]:
 		var responses: Array[Response] = []
 		for json in jsons:
 			responses.push_back(from_json(json))
 		return responses
 
-	static func from_json(json: Dictionary) -> Response:
+	static func from_json(json) -> Response:
+		if not json is Dictionary:
+			return null
 		return new(
 			Condition.from_jsons(json.get("conditions", [])),
-			StringLiteral.from_json(json.get("text", [])),
+			StringLiteral.from_json(json.get("text", {})),
 			Action.from_jsons(json.get("actions", [])),
 		)
 
@@ -308,12 +299,17 @@ class Response:
 
 class Condition:
 	extends ASTNode
+
+	var line := -1
+	var column := -1
 	var name := ""
 	var value: NumberLiteral = null
 
-	func _init(name: String, value: NumberLiteral) -> void:
+	func _init(name: String, value: NumberLiteral, line := -1, column := -1) -> void:
 		self.name = name
 		self.value = value
+		self.line = line
+		self.column = column
 
 	func accept(visitor: _Visitor) -> void:
 		visitor.visit_condition(self)
@@ -326,19 +322,23 @@ class Condition:
 			conditions.push_back(from_json(json))
 		return conditions
 
-	static func from_json(json: Dictionary) -> Condition:
+	static func from_json(json) -> Condition:
 		var value = json.get("value", null)
 		if value:
 			value = NumberLiteral.from_json(value)
 		return new(
 			json.get("name", ""),
 			value,
+			json.get("line", -1),
+			json.get("column", -1),
 		)
 
 	func to_json() -> Dictionary:
 		return {
 			"name": name,
 			"value": value.to_json() if value else null,
+			"line": line,
+			"column": column,
 		}
 
 	func equals(other: ASTNode) -> bool:
@@ -359,12 +359,17 @@ class Condition:
 
 class Action:
 	extends ASTNode
+
+	var line := -1
+	var column := -1
 	var name := ""
 	var value: NumberLiteral = null
 
-	func _init(name: String, value: NumberLiteral) -> void:
+	func _init(name: String, value: NumberLiteral, line := -1, column := -1) -> void:
 		self.name = name
 		self.value = value
+		self.line = line
+		self.column = column
 
 	func accept(visitor: _Visitor) -> void:
 		visitor.visit_action(self)
@@ -377,19 +382,23 @@ class Action:
 			actions.push_back(from_json(json))
 		return actions
 
-	static func from_json(json: Dictionary) -> Action:
+	static func from_json(json) -> Action:
 		var value = json.get("value", null)
 		if value:
 			value = NumberLiteral.from_json(value)
 		return new(
 			json.get("name", ""),
 			value,
+			json.get("line", -1),
+			json.get("column", -1),
 		)
 
 	func to_json() -> Dictionary:
 		return {
 			"name": name,
 			"value": value.to_json() if value else null,
+			"line": line,
+			"column": column,
 		}
 
 	func equals(other: ASTNode) -> bool:
@@ -410,10 +419,15 @@ class Action:
 
 class StringLiteral:
 	extends ASTNode
+
+	var line := -1
+	var column := -1
 	var value := ""
 
-	func _init(value: String) -> void:
+	func _init(value: String, line := -1, column := -1) -> void:
 		self.value = value
+		self.line = line
+		self.column = column
 
 	func accept(visitor: _Visitor) -> void:
 		visitor.visit_stringliteral(self)
@@ -421,9 +435,14 @@ class StringLiteral:
 	func to_json() -> Dictionary:
 		return {
 			"value": value,
+			"line": line,
+			"column": column,
 		}
 
-	static func from_json(json: Dictionary) -> StringLiteral:
+	static func from_json(json) -> StringLiteral:
+		if not json is Dictionary:
+			return null
+
 		if not "value" in json:
 			return null
 
@@ -431,7 +450,11 @@ class StringLiteral:
 		if not value is String:
 			return null
 
-		return new(value)
+		return new(
+			value,
+			json.get("line", -1),
+			json.get("column", -1),
+		)
 
 	func equals(other: ASTNode) -> bool:
 		var cast := other as StringLiteral
@@ -445,30 +468,38 @@ class StringLiteral:
 
 class NumberLiteral:
 	extends ASTNode
-	var value := 0
 
-	func _init(value: int) -> void:
+	var value := 0
+	var line := -1
+	var column := -1
+
+	func _init(value: int, line := -1, column := -1) -> void:
 		self.value = value
+		self.line = line
+		self.column = column
 
 	func accept(visitor: _Visitor) -> void:
 		visitor.visit_numberliteral(self)
 
-	static func from_json(json: Dictionary) -> NumberLiteral:
-		if not "value" in json:
-			return null
-
-		var value = json["value"]
-		if not (
-			value is int
-			or value is float
+	static func from_json(json) -> NumberLiteral:
+		if (
+			not json is Dictionary
+			or not "value" in json
+			or not _type.is_int(json["value"])
 		):
 			return null
 
-		return new(value)
+		return new(
+			_type.parse_int(json["value"]),
+			json.get("line", -1),
+			json.get("column", -1),
+		)
 
 	func to_json() -> Dictionary:
 		return {
 			"value": value,
+			"line": line,
+			"column": column,
 		}
 
 	func equals(other: ASTNode) -> bool:

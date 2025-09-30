@@ -22,10 +22,10 @@ func visit_action(action: _AST.Action) -> void:
 	if action.name != _connect_keyword:
 		return
 	elif not action.value:
-		emit_error("Missing branch id after %s action." % _connect_keyword)
+		emit_error("Missing branch id after %s action." % _connect_keyword, action.line, action.column)
 		_stop.call()
 	elif action.value.value == _id:
-		emit_error("Cannot %s to itself." % _connect_keyword)
+		emit_error("Cannot %s to itself." % _connect_keyword, action.value.line, action.value.column)
 		_stop.call()
 
 
@@ -37,8 +37,11 @@ func finish() -> void:
 	cancel()
 
 
-func emit_error(message: String) -> void:
+func emit_error(message: String, line: int, column: int) -> void:
 	var error := _SemanticError.new()
 	error.id = _id
+	error.line = line
+	error.column = column
 	error.message = message
 	erred.emit(error)
+

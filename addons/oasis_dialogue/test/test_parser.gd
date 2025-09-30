@@ -16,6 +16,7 @@ func before_each() -> void:
 	lexer = Lexer.new()
 	sut = Parser.new()
 
+
 func test_peek_with_offset() -> void:
 	var source := "@rng\n"
 	sut._tokens = lexer.tokenize(source)
@@ -56,7 +57,69 @@ func test_add_error_ignores_atsign() -> void:
 		fail_test("expected error got none")
 
 
-func test_annotations_on_same_line() -> void:
+func test_parse_annotation_sets_position() -> void:
+	var source := "@rng\n@unique"
+	var tokens := lexer.tokenize(source)
+
+	var ast := sut.parse(tokens)
+
+	var rng := ast.annotations[0]
+	assert_eq(rng.line, tokens[1].line)
+	assert_eq(rng.column, tokens[1].column)
+
+	var unique := ast.annotations[1]
+	assert_eq(unique.line, tokens[4].line)
+	assert_eq(unique.column, tokens[4].column)
+
+
+func test_parse_condition_sets_position() -> void:
+	var source := "@response\n{ is_day }"
+	var tokens := lexer.tokenize(source)
+
+	var ast := sut.parse(tokens)
+
+	var response := ast.responses[0]
+	var condition := response.conditions[0]
+	assert_eq(condition.line, tokens[4].line)
+	assert_eq(condition.column, tokens[4].column)
+
+
+func test_parse_action_sets_position() -> void:
+	var source := "@response\nhello world{ is_day }"
+	var tokens := lexer.tokenize(source)
+
+	var ast := sut.parse(tokens)
+
+	var response := ast.responses[0]
+	var action := response.actions[0]
+	assert_eq(action.line, tokens[5].line)
+	assert_eq(action.column, tokens[5].column)
+
+
+func test_parse_stringliteral_sets_position() -> void:
+	var source := "@response\nhello world{ is_day }"
+	var tokens := lexer.tokenize(source)
+
+	var ast := sut.parse(tokens)
+
+	var text := ast.responses[0].text
+	assert_eq(text.line, tokens[3].line)
+	assert_eq(text.column, tokens[3].column)
+
+
+func test_parse_numberliteral_sets_position() -> void:
+	var source := "@response\nhello world{ is_day 3}"
+	var tokens := lexer.tokenize(source)
+
+	var ast := sut.parse(tokens)
+
+	var response := ast.responses[0]
+	var action := response.actions[0]
+	assert_eq(action.value.line, tokens[6].line)
+	assert_eq(action.value.column, tokens[6].column)
+
+
+func test_annotations_on_same_line_is_invalid() -> void:
 	var source := "@rng@unique"
 	var tokens := lexer.tokenize(source)
 	gut.p(tokens, 3)
@@ -70,7 +133,7 @@ func test_annotations_on_same_line() -> void:
 		fail_test("expected errors, got none")
 
 
-func test_space_between_prompt_annotation_and_body() -> void:
+func test_space_between_prompt_annotation_and_body_is_invalid() -> void:
 	var source := (
 """
 @prompt
@@ -89,7 +152,7 @@ hey there
 		fail_test("expected errors, got none")
 
 
-func test_space_between_response_annotation_and_body() -> void:
+func test_space_between_response_annotation_and_body_is_invalid() -> void:
 	var source := (
 """
 @response
@@ -108,7 +171,7 @@ hey there
 		fail_test("expected errors, got none")
 
 
-func test_space_between_prompt_body() -> void:
+func test_space_between_prompt_body_is_invalid() -> void:
 	var source := (
 """
 @prompt
@@ -128,7 +191,7 @@ you fool
 		fail_test("expected errors, got none")
 
 
-func test_space_between_response_body() -> void:
+func test_space_between_response_body_is_invalid() -> void:
 	var source := (
 """
 @response
@@ -148,7 +211,7 @@ you fool
 		fail_test("expected errors, got none")
 
 
-func test_no_prompt_body_text() -> void:
+func test_no_prompt_body_text_is_invalid() -> void:
 	var source := (
 """
 @prompt
@@ -166,7 +229,7 @@ func test_no_prompt_body_text() -> void:
 		fail_test("missing errors when there should be")
 
 
-func test_no_response_body_text() -> void:
+func test_no_response_body_text_is_invalid() -> void:
 	var source := (
 """
 @response
@@ -184,7 +247,7 @@ func test_no_response_body_text() -> void:
 		fail_test("expected errors, got none")
 
 
-func test_text_after_prompt_action() -> void:
+func test_text_after_prompt_action_is_invalid() -> void:
 	var source := (
 """
 @prompt
@@ -202,7 +265,7 @@ hey there { branch 3 } you fool
 		fail_test("expected errors, got none")
 
 
-func test_text_after_response_action() -> void:
+func test_text_after_response_action_is_invalid() -> void:
 	var source := (
 """
 @response
@@ -221,7 +284,7 @@ hey there { branch 3 } you fool
 		fail_test("expected errors, got none")
 
 
-func test_prompt_after_response() -> void:
+func test_prompt_after_response_is_invalid() -> void:
 	var source := (
 """
 @response
@@ -241,7 +304,7 @@ want something?
 		fail_test("expected errors, got none")
 
 
-func test_extra_lines_in_beginning() -> void:
+func test_extra_lines_in_beginning_is_valid() -> void:
 	var source := (
 """
 
@@ -256,7 +319,7 @@ hey there
 	assert_eq(sut.get_errors().size(), 0)
 
 
-func test_extra_lines_at_end() -> void:
+func test_extra_lines_at_end_is_valid() -> void:
 	var source := (
 """
 @rng
@@ -271,7 +334,7 @@ hey there
 	assert_eq(sut.get_errors().size(), 0)
 
 
-func test_only_prompt() -> void:
+func test_only_prompt_is_valid() -> void:
 	var source := (
 """
 @prompt
@@ -283,7 +346,7 @@ hey there
 	assert_eq(sut.get_errors().size(), 0)
 
 
-func test_only_response() -> void:
+func test_only_response_is_valid() -> void:
 	var source := (
 """
 @response

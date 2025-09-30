@@ -23,6 +23,8 @@ func visit_annotation(annotation: _AST.Annotation) -> void:
 		var error := _SemanticError.new()
 		error.id = _id
 		error.message = "There should only be 1 @%s." % annotation.name
+		error.line = annotation.line
+		error.column = annotation.column
 		erred.emit(error)
 		_stop.call()
 		return

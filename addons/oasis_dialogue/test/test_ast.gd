@@ -2,6 +2,198 @@ extends GutTest
 
 const AST := preload("res://addons/oasis_dialogue/model/ast.gd")
 
+
+class TestBranch:
+	extends GutTest
+
+	var sut: AST.Branch = null
+
+
+	func after_each() -> void:
+		sut = null
+
+
+	func test_from_json() -> void:
+		sut = AST.Branch.from_json({
+				"id": 1,
+				"annotations": [
+					{
+						"name": "a",
+					}
+				],
+				"prompts": [
+					{
+						"text": { "value": "a" },
+					},
+				],
+				"responses": [
+					{
+						"text": { "value": "b" },
+					},
+				],
+		})
+
+		assert_eq(sut.id, 1)
+		assert_eq(sut.annotations.size(), 1)
+		assert_eq(sut.prompts.size(), 1)
+		assert_eq(sut.responses.size(), 1)
+
+
+	func test_from_json_defaults() -> void:
+		sut = AST.Branch.from_json({ })
+
+		assert_eq(sut.id, -1)
+		assert_eq_deep(sut.annotations, [])
+		assert_eq_deep(sut.prompts, [])
+		assert_eq_deep(sut.responses, [])
+
+
+	func test_from_jsons_with_invalid_key_skips_item() -> void:
+		var branches := AST.Branch.from_jsons({
+				1: {
+					"prompts": [
+						{
+							"text": { "value": "a" },
+						},
+					],
+				},
+				"tom": {
+					"responses": [
+						{
+							"text": { "value": "b" },
+						},
+					],
+				},
+		})
+
+		assert_eq(branches.size(), 1)
+
+
+	func test_from_jsons_with_invalid_value_skips_item() -> void:
+		var branches := AST.Branch.from_jsons({
+				1: {
+					"prompts": [
+						{
+							"text": { "value": "a" },
+						},
+					],
+				},
+				2: "hey",
+		})
+
+		assert_eq(branches.size(), 1)
+
+
+	func test_from_jsons_returns_empty_array_if_invalid_parameter() -> void:
+		var branches := AST.Branch.from_jsons("hey")
+
+		assert_eq(branches.size(), 0)
+
+
+class TestAnnotation:
+	extends GutTest
+
+	var sut: AST.Annotation = null
+
+
+	func after_each() -> void:
+		sut = null
+
+
+	func test_from_json() -> void:
+		fail_test("")
+
+
+	func test_from_json_with_invalid_name_value_returns_null() -> void:
+		fail_test("")
+
+
+	func test_from_json_without_name_returns_null() -> void:
+		fail_test("")
+
+
+	func test_from_json_defaults_line() -> void:
+		fail_test("")
+
+
+	func test_from_json_defaults_column() -> void:
+		fail_test("")
+
+
+	func test_from_jsons_ignores_invalid_items() -> void:
+		fail_test("")
+
+
+	func test_from_jsons_returns_empty_array_if_invalid_parameter() -> void:
+		fail_test("")
+
+
+class TestPrompt:
+	extends GutTest
+
+	var sut: AST.Prompt = null
+
+
+	func after_each() -> void:
+		sut = null
+
+
+	func test_from_json() -> void:
+		sut = AST.Prompt.from_json({
+				"text": {
+					"value": "hello world",
+				},
+		})
+
+		assert_eq(sut.text.value, "hello world")
+
+
+	func test_from_json_with_conditions() -> void:
+		sut = AST.Prompt.from_json({
+				"conditions":  [
+					{
+						"name": "is_day",
+						"value": null,
+					},
+				],
+				"text": {
+					"value": "hello world",
+				},
+		})
+
+		assert_eq(sut.conditions.size(), 1)
+
+
+	func test_from_json_with_actions() -> void:
+		sut = AST.Prompt.from_json({
+				"text": {
+					"value": "hello world",
+				},
+				"actions":  [
+					{
+						"name": "foo",
+						"value": {
+							"value": 3,
+						}
+					},
+				],
+		})
+
+		assert_eq(sut.actions.size(), 1)
+
+
+	func test_from_json_with_invalid_parameter() -> void:
+		sut = AST.Prompt.from_json("hey")
+
+		assert_eq(sut, null)
+
+
+	func test_from_jsons_returns_empty_array_if_invalid_parameter() -> void:
+		var responses := AST.Prompt.from_jsons("hey")
+
+		assert_eq(responses.size(), 0)
+
+
 class TestResponse:
 	extends GutTest
 
@@ -36,7 +228,6 @@ class TestResponse:
 		})
 
 		assert_eq(sut.conditions.size(), 1)
-		assert_eq(sut.text.value, "hello world")
 
 
 	func test_from_json_with_actions() -> void:
@@ -52,11 +243,37 @@ class TestResponse:
 						}
 					},
 				],
-
 		})
 
-		assert_eq(sut.text.value, "hello world")
 		assert_eq(sut.actions.size(), 1)
+
+
+	func test_from_json_with_invalid_parameter() -> void:
+		sut = AST.Response.from_json("hey")
+
+		assert_eq(sut, null)
+
+
+	func test_from_jsons_ignores_invalid_items() -> void:
+		var responses := AST.Response.from_jsons([
+				{
+					"text": "hey"
+				},
+				{
+					"text": {
+						"value": "hello world",
+					},
+				}
+		])
+
+		assert_eq(responses.size(), 1)
+		assert_eq(responses[1].text.value, "hello world")
+
+
+	func test_from_jsons_returns_empty_array_if_invalid_parameter() -> void:
+		var responses := AST.Response.from_jsons("hey")
+
+		assert_eq(responses.size(), 0)
 
 
 class TestCondition:
@@ -69,7 +286,7 @@ class TestCondition:
 		sut = null
 
 
-	func test_from_json() -> void:
+	func test_from_json_without_value() -> void:
 		sut = AST.Condition.from_json({
 				"name": "foo",
 		})
@@ -88,6 +305,22 @@ class TestCondition:
 
 		assert_eq(sut.name, "foo")
 		assert_ne(sut.value, null)
+
+
+	func test_from_json_with_invalid_parameter() -> void:
+		fail_test("")
+
+
+	func test_from_json_with_invalid_name() -> void:
+		fail_test("")
+
+
+	func test_from_jsons_ignore_invalid_items() -> void:
+		fail_test("")
+
+
+	func test_from_jsons_returns_empty_array_if_invalid_parameter() -> void:
+		fail_test("")
 
 
 class TestAction:
@@ -100,7 +333,7 @@ class TestAction:
 		sut = null
 
 
-	func test_from_json() -> void:
+	func test_from_json_without_value() -> void:
 		sut = AST.Action.from_json({
 				"name": "foo",
 		})
@@ -119,6 +352,22 @@ class TestAction:
 
 		assert_eq(sut.name, "foo")
 		assert_ne(sut.value, null)
+
+
+	func test_from_json_with_invalid_parameter() -> void:
+		fail_test("")
+
+
+	func test_from_json_where_name_is_not_string() -> void:
+		fail_test("")
+
+
+	func test_from_jsons_ignore_invalid_items() -> void:
+		fail_test("")
+
+
+	func test_from_jsons_returns_empty_array_if_invalid_parameter() -> void:
+		fail_test("")
 
 
 class TestStringLiteral:
@@ -139,7 +388,13 @@ class TestStringLiteral:
 		assert_eq(sut.value, "foo")
 
 
-	func test_from_json_with_malformed_data() -> void:
+	func test_from_json_without_value_returns_null() -> void:
+		sut = AST.StringLiteral.from_json({ })
+
+		assert_eq(sut, null)
+
+
+	func test_from_json_with_different_type_returns_null() -> void:
 		sut = AST.StringLiteral.from_json({
 				"value": 3,
 		})
@@ -147,10 +402,19 @@ class TestStringLiteral:
 		assert_eq(sut, null)
 
 
+	func test_from_json_with_invalid_parameter() -> void:
+		fail_test("")
+
+
 	func test_to_json() -> void:
 		sut = AST.StringLiteral.new("bar")
 
-		assert_eq(sut.to_json(), { "value": "bar" })
+		var expected := {
+			"value": "bar",
+			"line": -1,
+			"column": -1,
+		}
+		assert_eq(sut.to_json(), expected)
 
 
 	func test_equals_same() -> void:
@@ -194,7 +458,7 @@ class TestNumberLiteral:
 		assert_eq(sut.value, 3)
 
 
-	func test_from_json_float() -> void:
+	func test_from_json_with_float_value_is_valid() -> void:
 		sut = AST.NumberLiteral.from_json({
 				"value": 3.0,
 		})
@@ -202,7 +466,13 @@ class TestNumberLiteral:
 		assert_eq(sut.value, 3)
 
 
-	func test_from_json_with_malformed_data() -> void:
+	func test_from_json_without_value_returns_null() -> void:
+		sut = AST.NumberLiteral.from_json({ })
+
+		assert_eq(sut, null)
+
+
+	func test_from_json_with_different_type_returns_null() -> void:
 		sut = AST.NumberLiteral.from_json({
 				"value": "hey",
 		})
@@ -210,10 +480,19 @@ class TestNumberLiteral:
 		assert_eq(sut, null)
 
 
+	func test_from_json_with_invalid_parameter() -> void:
+		fail_test("")
+
+
 	func test_to_json() -> void:
 		sut = AST.NumberLiteral.new(2)
 
-		assert_eq(sut.to_json(), { "value": 2 })
+		var expected := {
+			"value": 2,
+			"line": -1,
+			"column": -1,
+		}
+		assert_eq(sut.to_json(), expected)
 
 
 	func test_equals_same() -> void:

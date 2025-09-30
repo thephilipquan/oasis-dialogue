@@ -67,7 +67,7 @@ func add_error(expected_type: String) -> void:
 	if previous:
 		message += " after previous %s," % previous
 	message += " found %s instead" %  _Token.type_to_string(next.type)
-	var error := _ParseError.new(message, next.line, next.column)
+	var error := _ParseError.new(-1, message, next.line, next.column)
 
 	if _errors and error.line == _errors[-1].line:
 		_errors[-1] = error
@@ -144,7 +144,7 @@ func _parse_annotation() -> _AST.Annotation:
 	if token.type == _Type.ID:
 		peek_expected_type(_Type.NUMBER)
 		value = _parse_number_literal()
-	var annotation := _AST.Annotation.new(token.value, value)
+	var annotation := _AST.Annotation.new(token.value, value, token.line, token.column)
 	return annotation
 
 
@@ -221,9 +221,10 @@ func _parse_conditions() -> Array[_AST.Condition]:
 
 
 func _parse_condition() -> _AST.Condition:
-	var name := consume_expected(_Type.IDENTIFIER).value
+	var token := consume_expected(_Type.IDENTIFIER)
+	var name := token.value
 	var value := _parse_number_literal()
-	var condition := _AST.Condition.new(name, value)
+	var condition := _AST.Condition.new(name, value, token.line, token.column)
 	return condition
 
 
@@ -242,23 +243,26 @@ func _parse_actions() -> Array[_AST.Action]:
 
 
 func _parse_action() -> _AST.Action:
-	var name := consume_expected(_Type.IDENTIFIER).value
+	var token := consume_expected(_Type.IDENTIFIER)
+	var name := token.value
 	var value := _parse_number_literal()
-	var action := _AST.Action.new(name, value)
+	var action := _AST.Action.new(name, value, token.line, token.column)
 	return action
 
 
 func _parse_string_literal() -> _AST.StringLiteral:
 	if peek_type() != _Type.TEXT:
 		return null
-	var value := consume().value
-	var string_literal := _AST.StringLiteral.new(value)
+	var token := consume()
+	var value := token.value
+	var string_literal := _AST.StringLiteral.new(value, token.line, token.column)
 	return string_literal
 
 
 func _parse_number_literal() -> _AST.NumberLiteral:
 	if peek_type() != _Type.NUMBER:
 		return null
-	var value := int(consume().value)
-	var number_literal := _AST.NumberLiteral.new(value)
+	var token := consume()
+	var value := int(token.value)
+	var number_literal := _AST.NumberLiteral.new(value, token.line, token.column)
 	return number_literal

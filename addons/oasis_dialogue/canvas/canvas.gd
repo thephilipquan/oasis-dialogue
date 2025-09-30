@@ -10,10 +10,13 @@ const _InputDialog := preload("res://addons/oasis_dialogue/input_dialog/input_di
 const _ConfirmDialog := preload("res://addons/oasis_dialogue/confirm_dialog/confirm_dialog.tscn")
 const _LanguageServer := preload("res://addons/oasis_dialogue/language_server.gd")
 
+const _SemanticError := preload("res://addons/oasis_dialogue/semantic_error.gd")
+
 const _Branch := preload("res://addons/oasis_dialogue/branch/branch.gd")
 const _BranchScene := preload("res://addons/oasis_dialogue/branch/branch.tscn")
 const _BranchEdit := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
 const _Highlighter := preload("res://addons/oasis_dialogue/branch/highlighter.gd")
+const _Status := preload("res://addons/oasis_dialogue/canvas/status.gd")
 
 const _CharacterTree := preload("res://addons/oasis_dialogue/canvas/character_tree.gd")
 const _ProjectManager := preload("res://addons/oasis_dialogue/project_manager.gd")
@@ -23,6 +26,7 @@ const _Model := preload("res://addons/oasis_dialogue/model/model.gd")
 const _Lexer := preload("res://addons/oasis_dialogue/model/lexer.gd")
 const _Parser := preload("res://addons/oasis_dialogue/model/parser.gd")
 const _AST := preload("res://addons/oasis_dialogue/model/ast.gd")
+const _ParseError := preload("res://addons/oasis_dialogue/model/parse_error.gd")
 
 const _ValidateConnectVisitor := preload("res://addons/oasis_dialogue/visitor/validate_connect_visitor.gd")
 const _CreateBranchVisitor := preload("res://addons/oasis_dialogue/visitor/create_branch_visitor.gd")
@@ -31,6 +35,7 @@ const _DuplicateAnnotationVisitor := preload("res://addons/oasis_dialogue/visito
 const _EmptyBranchVisitor := preload("res://addons/oasis_dialogue/visitor/empty_branch_visitor.gd")
 const _UpdateModelVisitor := preload("res://addons/oasis_dialogue/visitor/update_model_visitor.gd")
 const _RemoveActionVisitor := preload("res://addons/oasis_dialogue/visitor/remove_action_visitor.gd")
+const _FinishCallbackVisitor := preload("res://addons/oasis_dialogue/visitor/finish_callback_visitor.gd")
 const _UnparserVisitor := preload("res://addons/oasis_dialogue/visitor/unparser_visitor.gd")
 const _VisitorIterator := preload("res://addons/oasis_dialogue/visitor/visitor_iterator.gd")
 
@@ -47,6 +52,7 @@ func _ready() -> void:
 	var add_branch: _AddBranchButton = $VBoxContainer/HeaderMarginContainer/HBoxContainer/AddBranch
 	var add_character: _AddCharacterButton = $VBoxContainer/HeaderMarginContainer/HBoxContainer/AddCharacter
 	var remove_character: _RemoveCharacterButton = $VBoxContainer/HeaderMarginContainer/HBoxContainer/RemoveCharacter
+	var status: _Status = $VBoxContainer/FooterMarginContainer/Status
 
 	var lexer := _Lexer.new()
 	var parser := _Parser.new()
@@ -66,8 +72,19 @@ func _ready() -> void:
 		branch.init(highlighter)
 		return branch
 
+	var err_branch := func err_branch(e: _SemanticError) -> void:
+		#var branch := graph.get_branch(id)
+		#branch.color_invalid()
+		status.err(e.message)
+		graph.highlight_branch(e.id, [e.line])
+
+	var parse_err_branch := func(e: _ParseError) -> void:
+		graph.highlight_branch(e.id, [e.line])
+		status.err(e.message)
+
 	_model = _Model.new()
 	language_server = _LanguageServer.new(lexer, parser)
+	language_server.erred.connect(parse_err_branch)
 	semantic_visitors = _VisitorIterator.new()
 	restore_branch_visitors = _VisitorIterator.new()
 	_rename_character_handler = _RenameCharacterHandler.new()
@@ -76,12 +93,15 @@ func _ready() -> void:
 	_rename_character_handler.input_dialog_factory = input_dialog_factory
 	_rename_character_handler.character_renamed.connect(tree.edit_selected_item)
 
+	var duplicate_annotation_visitor := _DuplicateAnnotationVisitor.new(semantic_visitors.stop)
+	duplicate_annotation_visitor.erred.connect(err_branch)
 	var update_model_visitor := _UpdateModelVisitor.new(_model)
 	var unparser_visitor := _UnparserVisitor.new(graph)
 	var validate_connect_visitor := _ValidateConnectVisitor.new(
 		_Global.CONNECT_BRANCH_KEYWORD,
 		semantic_visitors.stop,
 	)
+	validate_connect_visitor.erred.connect(err_branch)
 	var create_branch_visitor := _CreateBranchVisitor.new(
 		_Global.CONNECT_BRANCH_KEYWORD,
 		_model,
@@ -91,6 +111,11 @@ func _ready() -> void:
 		_Global.CONNECT_BRANCH_KEYWORD,
 		graph.connect_branches,
 	)
+	var clear_status_err := _FinishCallbackVisitor.new(status.clear_err.unbind(1))
+	var clear_branch_highlights_visitor := _FinishCallbackVisitor.new(graph.clear_branch_highlights)
+
+	#CREATE ERROR HANDLER THAT RECEIVES SEMANTIC ERRORS
+	#TELLS STATUS AND GRAPH
 
 	add_branch.init(_model)
 	add_branch.branch_added.connect(_model.add_branch)
@@ -117,10 +142,13 @@ func _ready() -> void:
 	language_server.parsed.connect(semantic_visitors.iterate)
 
 	semantic_visitors.set_visitors([
+		duplicate_annotation_visitor,
 		validate_connect_visitor,
 		create_branch_visitor,
 		connect_branch_visitor,
 		update_model_visitor,
+		clear_branch_highlights_visitor,
+		clear_status_err,
 	])
 
 	# Visitors to handle removal of text in affected branches after a branch
@@ -182,11 +210,6 @@ func init(manager: _ProjectManager) -> void:
 
 	_rename_character_handler.can_rename_to = manager.can_rename_active_to
 	_rename_character_handler.character_renamed.connect(manager.rename_active_subfile)
-
-
-func err_branch() -> void:
-	push_warning("err branch")
-	pass
 
 
 # var _lexer: _Lexer = null

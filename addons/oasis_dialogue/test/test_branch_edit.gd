@@ -77,6 +77,22 @@ func test_remove_branch() -> void:
 	assert_eq(sut.get_branches().size(), 0)
 
 
+func test_highlight_calls_branch_highlight() -> void:
+	sut.add_branch(2)
+
+	sut.highlight_branch(2, [0, 2, 3])
+
+	assert_called(branches[0], "highlight", [[0, 2, 3]])
+
+
+func test_clear_highlights_calls_branch_highlight() -> void:
+	sut.add_branch(3)
+
+	sut.clear_branch_highlights(3)
+
+	assert_called(branches[0], "highlight", [[]])
+
+
 func test_remove_branch_with_connections() -> void:
 	for i in 3:
 		sut.add_branch(i)
