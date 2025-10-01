@@ -1,3 +1,4 @@
+@tool
 extends Control
 
 const _FileDialogButton := preload("res://addons/oasis_dialogue/project_dialog/file_dialog_button.gd")

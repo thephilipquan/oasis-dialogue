@@ -1,6 +1,12 @@
 [gd_scene load_steps=2 format=3 uid="uid://t8shr44ts4y"]
 
-[ext_resource type="Script" uid="uid://lyfhru1ff3v1" path="res://addons/oasis_dialogue/oasis_dialogue/oasis_dialogue.gd" id="1_o56dv"]
+[ext_resource type="Script" uid="uid://lyfhru1ff3v1" path="res://addons/oasis_dialogue/oasis_dialogue/oasis_dialogue.gd" id="1_yyjwc"]
 
-[node name="OasisDialogue" type="Node"]
-script = ExtResource("1_o56dv")
+[node name="OasisDialogue" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_yyjwc")

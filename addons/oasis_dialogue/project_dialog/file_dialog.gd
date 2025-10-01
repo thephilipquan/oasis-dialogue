@@ -1,3 +1,4 @@
+@tool
 extends FileDialog
 
 signal selected(path: String)

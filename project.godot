@@ -11,7 +11,9 @@ config_version=5
 [application]
 
 config/name="oasis-dialogue"
+run/main_scene="uid://t8shr44ts4y"
 config/features=PackedStringArray("4.5", "Forward Plus")
+run/low_processor_mode=true
 config/icon="res://icon.svg"
 
 [editor_plugins]

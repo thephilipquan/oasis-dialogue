@@ -1,16 +1,16 @@
 @tool
 extends EditorPlugin
 
-const _CanvasFactory := preload("res://addons/oasis_dialogue/canvas/canvas_factory.gd")
+const _App := preload("res://addons/oasis_dialogue/oasis_dialogue/oasis_dialogue.gd")
 
-var _canvas: Control = null
+var _app: _App = null
 
 
 func _enter_tree() -> void:
-	_canvas = _CanvasFactory.create()
-	add_control_to_bottom_panel(_canvas, "Dialogue")
+	_app = _App.new()
+	add_control_to_bottom_panel(_app, "Dialogue")
 
 
 func _exit_tree() -> void:
-	remove_control_from_bottom_panel(_canvas)
-	_canvas.queue_free()
+	remove_control_from_bottom_panel(_app)
+	_app.queue_free()
