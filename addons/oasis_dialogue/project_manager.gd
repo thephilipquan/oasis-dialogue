@@ -97,7 +97,7 @@ func save_project() -> void:
 	push_warning("todo store active")
 
 	var settings := FileAccess.open(get_settings_path(), FileAccess.WRITE)
-	settings.store_string(JSON.stringify(data))
+	settings.store_string(JSON.stringify(data, "\t"))
 
 
 func add_subfile(display_name: String) -> void:
