@@ -196,10 +196,7 @@ func center_node_in_graph(node: GraphNode) -> void:
 
 func load_character(data: Dictionary) -> void:
 	_stop_tween()
-	for id in _branches:
-		_branches[id].queue_free()
-		remove_child(_branches[id])
-	_branches.clear()
+	remove_branches()
 
 	var position_offsets := data.get(_Global.FILE_BRANCH_POSITION_OFFSETS, {})
 	for key in position_offsets:
