@@ -128,6 +128,7 @@ func _ready() -> void:
 	remove_character.init(_model, confirm_dialog_factory)
 	remove_character.character_removed.connect(tree.remove_selected_item)
 	remove_character.character_removed.connect(_model.remove_active_character)
+	remove_character.character_removed.connect(graph.remove_branches)
 	remove_character.character_removed.connect(add_branch.hide)
 	remove_character.character_removed.connect(remove_character.hide)
 
