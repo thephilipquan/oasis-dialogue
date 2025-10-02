@@ -1,7 +1,7 @@
 @tool
 extends EditorPlugin
 
-const _App := preload("res://addons/oasis_dialogue/oasis_dialogue/oasis_dialogue.gd")
+const _App := preload("res://addons/oasis_dialogue/main/main.gd")
 
 var _app: _App = null
 

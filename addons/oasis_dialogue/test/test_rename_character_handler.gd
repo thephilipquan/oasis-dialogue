@@ -1,6 +1,6 @@
 extends GutTest
 
-const RenameCharacterHandler := preload("res://addons/oasis_dialogue/rename_character_handler.gd")
+const RenameCharacterHandler := preload("res://addons/oasis_dialogue/canvas/rename_character_handler.gd")
 const InputDialog := preload("res://addons/oasis_dialogue/input_dialog/input_dialog.gd")
 const InputDialogScene := preload("res://addons/oasis_dialogue/input_dialog/input_dialog.tscn")
 

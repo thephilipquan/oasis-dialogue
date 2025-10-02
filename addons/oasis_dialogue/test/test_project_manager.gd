@@ -1,7 +1,7 @@
 extends GutTest
 
 const Global := preload("res://addons/oasis_dialogue/global.gd")
-const ProjectManager := preload("res://addons/oasis_dialogue/project_manager.gd")
+const ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
 
 const BASEDIR := "res://"
 const TESTDIR := "res://test_dir"
@@ -55,7 +55,7 @@ func after_each() -> void:
 func test_get_settings_path() -> void:
 	sut._directory = "hey"
 
-	assert_eq(sut.get_settings_path(), "hey/.%s" % ProjectManager.EXTENSION)
+	assert_eq(sut.get_settings_path(), "hey/%s" % ProjectManager.SETTINGS)
 
 
 func test_get_subfile_path() -> void:

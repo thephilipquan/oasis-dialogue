@@ -3,7 +3,7 @@ extends Control
 
 const _ProjectDialog := preload("res://addons/oasis_dialogue/project_dialog/project_dialog.gd")
 const _ProjectDialogScene := preload("res://addons/oasis_dialogue/project_dialog/project_dialog.tscn")
-const _ProjectManager := preload("res://addons/oasis_dialogue/project_manager.gd")
+const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
 const _Project := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
 const _ProjectScene := preload("res://addons/oasis_dialogue/canvas/canvas.tscn")
 

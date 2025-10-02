@@ -8,7 +8,7 @@ const _RemoveCharacterButton := preload("res://addons/oasis_dialogue/canvas/remo
 const _AddBranchButton := preload("res://addons/oasis_dialogue/canvas/add_branch_button.gd")
 const _InputDialog := preload("res://addons/oasis_dialogue/input_dialog/input_dialog.tscn")
 const _ConfirmDialog := preload("res://addons/oasis_dialogue/confirm_dialog/confirm_dialog.tscn")
-const _LanguageServer := preload("res://addons/oasis_dialogue/language_server.gd")
+const _LanguageServer := preload("res://addons/oasis_dialogue/canvas/language_server.gd")
 
 const _SemanticError := preload("res://addons/oasis_dialogue/semantic_error.gd")
 
@@ -19,8 +19,8 @@ const _Highlighter := preload("res://addons/oasis_dialogue/branch/highlighter.gd
 const _Status := preload("res://addons/oasis_dialogue/canvas/status.gd")
 
 const _CharacterTree := preload("res://addons/oasis_dialogue/canvas/character_tree.gd")
-const _ProjectManager := preload("res://addons/oasis_dialogue/project_manager.gd")
-const _RenameCharacterHandler := preload("res://addons/oasis_dialogue/rename_character_handler.gd")
+const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
+const _RenameCharacterHandler := preload("res://addons/oasis_dialogue/canvas/rename_character_handler.gd")
 
 const _Model := preload("res://addons/oasis_dialogue/model/model.gd")
 const _Lexer := preload("res://addons/oasis_dialogue/model/lexer.gd")
