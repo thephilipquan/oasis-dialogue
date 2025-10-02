@@ -96,8 +96,7 @@ func save_project() -> void:
 		return
 	var data := {}
 	saving_project.emit(data)
-	push_warning("todo store active")
-
+	data[_Global.PROJECT_ACTIVE] = _active
 	var settings := FileAccess.open(get_settings_path(), FileAccess.WRITE)
 	settings.store_string(JSON.stringify(data, "\t"))
 
