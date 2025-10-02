@@ -23,7 +23,8 @@ func _on_button_up() -> void:
 	var dialog: _InputDialog = _input_dialog_factory.call()
 	dialog.set_placeholder_text("Enter character name...")
 	dialog.set_validation(_validate)
-	dialog.set_confirm_label("Add")
+	dialog.set_cancel_label("cancel")
+	dialog.set_confirm_label("add")
 	dialog.canceled.connect(_on_dialog_canceled.bind(dialog))
 	dialog.confirmed.connect(_on_dialog_confirmed.bind(dialog))
 
