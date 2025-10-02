@@ -108,3 +108,15 @@ func test_safe_get_inner_type_is_different_still_return_value() -> void:
 	)
 	var expected := [1]
 	assert_eq_deep(got, expected)
+
+
+func test_typeof_is_same() -> void:
+	var json := { "key": 3 }
+	var got := sut.is_typeof(json, "key", TYPE_INT)
+	assert_true(got)
+
+
+func test_typeof_is_not_same() -> void:
+	var json := { "key": 3 }
+	var got := sut.is_typeof(json, "key", TYPE_STRING)
+	assert_false(got)

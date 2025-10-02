@@ -4,28 +4,10 @@ const AST := preload("res://addons/oasis_dialogue/model/ast.gd")
 const UpdateModel := preload("res://addons/oasis_dialogue/visitor/update_model_visitor.gd")
 const Model := preload("res://addons/oasis_dialogue/model/model.gd")
 
-var sut: UpdateModel = null
-var model: Model = null
 
-
-func before_each() -> void:
-	model = double(Model).new()
-	sut = UpdateModel.new(model)
-
-
-func after_each() -> void:
-	sut.finish()
-
-
-func test_normal() -> void:
-	var ast := AST.Branch.new(
-		-1,
-		[],
-		[],
-		[],
-	)
-	watch_signals(sut)
+func test_passes_ast_on_finish() -> void:
+	var ast := AST.Branch.new()
+	var sut := UpdateModel.new(func(x): assert_same(x, ast))
 
 	ast.accept(sut)
-
-	assert_called(model, "update_branch", [ast])
+	sut.finish()

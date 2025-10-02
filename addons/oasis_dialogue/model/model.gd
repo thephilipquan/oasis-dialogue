@@ -44,7 +44,9 @@ func has_action(action: String) -> bool:
 func add_branch(id: int) -> void:
 	if not _active:
 		return
-	_branches[id] = _AST.Branch.new(id, [], [], [])
+	var branch := _AST.Branch.new()
+	branch.id = id
+	_branches[id] = branch
 
 
 func update_branch(ast: _AST.Branch) -> void:
@@ -105,7 +107,12 @@ func get_branches() -> Dictionary[int, _AST.Branch]:
 
 func load_character(data: Dictionary) -> void:
 	_active = _JsonUtils.safe_get(data, _Global.LOAD_FILE_NAME, "")
-	_branches = _AST.Branch.from_jsons(_JsonUtils.safe_get(data, _Global.FILE_BRANCHES, {}))
+	_branches.clear()
+
+	var branches: Dictionary = _JsonUtils.safe_get(data, _Global.FILE_BRANCHES, {})
+	for key in branches:
+		var branch := _AST.from_json(branches[key])
+		_branches[branch.id] = branch
 
 
 func load_project(data: Dictionary) -> void:

@@ -1,488 +1,363 @@
 extends GutTest
 
 const Unparser := preload("res://addons/oasis_dialogue/visitor/unparser_visitor.gd")
-const Graph := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
 const AST := preload("res://addons/oasis_dialogue/model/ast.gd")
 
-var sut: Unparser = null
-var graph: Graph = null
 
+func test_callable_passes_branch_id() -> void:
+	var sut := Unparser.new(func(id, text): assert_eq(id, 13))
+	var ast := AST.Branch.new(13)
 
-func before_each() -> void:
-	graph = double(Graph).new()
-	sut = Unparser.new(graph)
-
-
-func after_each() -> void:
+	ast.accept(sut)
 	sut.finish()
 
 
-func test_basic_annotations() -> void:
-	var root := AST.Annotation.new("rng", null)
-
-	root.accept(sut)
-
-	var expected = "@rng"
-	assert_eq(sut.get_text(), expected)
-
-
-func test_annotations_with_value() -> void:
-	var root := AST.Annotation.new("id", AST.NumberLiteral.new(27))
-
-	root.accept(sut)
-
-	var expected = "@id 27"
-	assert_eq(sut.get_text(), expected)
-
-
-func test_prompt() -> void:
-	var root := AST.Prompt.new(
-		[],
-		AST.StringLiteral.new("foo"),
-		[],
+func test_lines_are_inserted_according_to_ast_line() -> void:
+	var sut := Unparser.new(
+			func(id, text):
+				assert_eq(text, "\n\n\n\n\n")
+	)
+	var ast := AST.Branch.new(
+			-1,
+			[
+				AST.StringLiteral.new("", 2),
+				AST.StringLiteral.new("", 5),
+			]
 	)
 
-	root.accept(sut)
-
-	var expected = "@prompt\nfoo"
-	assert_eq(sut.get_text(), expected)
+	ast.accept(sut)
+	sut.finish()
 
 
-func test_prompt_with_condition() -> void:
-	var root := AST.Prompt.new(
-		[
-			AST.Condition.new("has_gold", AST.NumberLiteral.new(2)),
-		],
-		AST.StringLiteral.new("foo"),
-		[],
+func test_restoring_prompt_inserts_header_above_first_prompt_child() -> void:
+	var sut := Unparser.new(
+			func(id, text):
+				assert_eq(text, "\n\n@prompt\nfoo\nbar")
+
+	)
+	var ast := AST.Branch.new(
+			-1,
+			[
+				AST.Prompt.new(
+					-1,
+					[
+						AST.StringLiteral.new("foo", 3)
+					]
+				),
+				AST.Prompt.new(
+					-1,
+					[
+						AST.StringLiteral.new("bar", 4)
+					]
+				),
+			]
 	)
 
-	root.accept(sut)
-
-	var expected = "@prompt\n{ has_gold 2 } foo"
-	assert_eq(sut.get_text(), expected)
+	ast.accept(sut)
+	sut.finish()
 
 
-func test_prompt_with_action() -> void:
-	var root := AST.Prompt.new(
-		[],
-		AST.StringLiteral.new("foo"),
-		[
-			AST.Action.new("bar", AST.NumberLiteral.new(2)),
-		],
+func test_restoring_response_inserts_header_above_first_response_child() -> void:
+	var sut := Unparser.new(
+			func(id, text):
+				assert_eq(text, "\n@response\nfoo\nbar")
+	)
+	var ast := AST.Branch.new(
+			-1,
+			[
+				AST.Response.new(
+					-1,
+					[
+						AST.StringLiteral.new("foo", 2),
+					]
+				),
+				AST.Response.new(
+					-1,
+					[
+						AST.StringLiteral.new("bar", 3),
+					]
+				),
+			]
 	)
 
-	root.accept(sut)
-
-	var expected = "@prompt\nfoo { bar 2 }"
-	assert_eq(sut.get_text(), expected)
+	ast.accept(sut)
+	sut.finish()
 
 
-func test_response() -> void:
-	var root := AST.Response.new(
-		[],
-		AST.StringLiteral.new("foo"),
-		[],
+func test_annotations_have_atsign_inserted() -> void:
+	var sut := Unparser.new(
+			func(id: int, text: String):
+				assert_eq(text, "@foo\n@bar")
+	)
+	var ast := AST.Branch.new(
+			-1,
+			[
+				AST.Annotation.new("foo", 0),
+				AST.Annotation.new("bar", 1),
+			]
 	)
 
-	root.accept(sut)
-
-	var expected = "@response\nfoo"
-	assert_eq(sut.get_text(), expected)
-
-
-func test_response_with_condition() -> void:
-	var root := AST.Response.new(
-		[
-			AST.Condition.new("has_gold", AST.NumberLiteral.new(2)),
-		],
-		AST.StringLiteral.new("foo"),
-		[],
-	)
-
-	root.accept(sut)
-
-	var expected = "@response\n{ has_gold 2 } foo"
-	assert_eq(sut.get_text(), expected)
-
-
-func test_response_with_action() -> void:
-	var root := AST.Response.new(
-		[],
-		AST.StringLiteral.new("foo"),
-		[
-			AST.Action.new("bar", AST.NumberLiteral.new(2)),
-		],
-	)
-
-	root.accept(sut)
-
-	var expected = "@response\nfoo { bar 2 }"
-	assert_eq(sut.get_text(), expected)
+	ast.accept(sut)
+	sut.finish()
 
 
 func test_condition() -> void:
-	var root := AST.Condition.new("foo", null)
+	var sut := Unparser.new(
+			func(id, text):
+				assert_eq(text, "{ foo }")
+	)
+	var ast := AST.Branch.new(
+			-1,
+			[
+				AST.Condition.new("foo", null, 0),
+			],
+	)
 
-	root.accept(sut)
-
-	var expected = "{ foo }"
-	assert_eq(sut.get_text(), expected)
+	ast.accept(sut)
+	sut.finish()
 
 
 func test_condition_with_value() -> void:
-	var root := AST.Condition.new("foo", AST.NumberLiteral.new(28))
+	var sut := Unparser.new(
+			func(id, text):
+				assert_eq(text, "{ foo 3 }")
+	)
+	var ast := AST.Branch.new(
+			-1,
+			[
+				AST.Condition.new(
+					"foo",
+					AST.NumberLiteral.new(3),
+					0,
+				),
+			],
+	)
 
-	root.accept(sut)
+	ast.accept(sut)
+	sut.finish()
 
-	var expected = "{ foo 28 }"
-	assert_eq(sut.get_text(), expected)
+
+func test_multiple_conditions() -> void:
+	var sut := Unparser.new(
+			func(id, text):
+				assert_eq(text, "{ foo bar 3 baz 2 }")
+	)
+	var ast := AST.Branch.new(
+			-1,
+			[
+				AST.Condition.new(
+					"foo",
+					null,
+					0,
+				),
+				AST.Condition.new(
+					"bar",
+					AST.NumberLiteral.new(3),
+					0,
+				),
+				AST.Condition.new(
+					"baz",
+					AST.NumberLiteral.new(2),
+					0,
+				),
+			],
+	)
+
+	ast.accept(sut)
+	sut.finish()
 
 
 func test_action() -> void:
-	var root := AST.Action.new("foo", null)
+	var sut := Unparser.new(
+			func(id, text):
+				# Action will always come after text.
+				assert_eq(text, " { foo }")
+	)
+	var ast := AST.Branch.new(
+			-1,
+			[
+				AST.Action.new("foo", null, 0),
+			],
+	)
 
-	root.accept(sut)
-
-	# Expected should begin with a space as no action will exist without text.
-	var expected = " { foo }"
-	assert_eq(sut.get_text(), expected)
+	ast.accept(sut)
+	sut.finish()
 
 
 func test_action_with_value() -> void:
-	var root := AST.Action.new("foo", AST.NumberLiteral.new(28))
-
-	root.accept(sut)
-
-	# Expected should begin with a space as no action will exist without text.
-	var expected = " { foo 28 }"
-	assert_eq(sut.get_text(), expected)
-
-
-func test_multiple_annotations() -> void:
-	var root := AST.Branch.new(
-		-1,
-		[
-			AST.Annotation.new("rng", null),
-			AST.Annotation.new("unique", null),
-			AST.Annotation.new("id", AST.NumberLiteral.new(2)),
-		],
-		[],
-		[],
+	var sut := Unparser.new(
+			func(id, text):
+				# Action will always come after text.
+				assert_eq(text, " { foo 3 }")
+	)
+	var ast := AST.Branch.new(
+			-1,
+			[
+				AST.Action.new(
+					"foo",
+					AST.NumberLiteral.new(3, 0),
+					0,
+				),
+			],
 	)
 
-	root.accept(sut)
-
-	var expected = "@rng\n@unique\n@id 2"
-	assert_eq(sut.get_text(), expected)
-
-
-func test_no_annotations_with_prompt() -> void:
-	var root := AST.Branch.new(
-		-1,
-		[],
-		[
-			AST.Prompt.new(
-				[],
-				AST.StringLiteral.new("foobar"),
-				[],
-			),
-		],
-		[],
-	)
-
-	root.accept(sut)
-
-	var expected = "@prompt\nfoobar"
-	assert_eq(sut.get_text(), expected)
-
-
-func test_no_annotations_with_response() -> void:
-	var root := AST.Branch.new(
-		-1,
-		[],
-		[],
-		[
-			AST.Response.new(
-				[],
-				AST.StringLiteral.new("foobar"),
-				[],
-			),
-		],
-	)
-
-	root.accept(sut)
-
-	var expected = "@response\nfoobar"
-	assert_eq(sut.get_text(), expected)
-
-func test_prompt_and_response() -> void:
-	var root := AST.Branch.new(
-		-1,
-		[],
-		[
-			AST.Prompt.new(
-				[],
-				AST.StringLiteral.new("foo"),
-				[],
-			),
-		],
-		[
-			AST.Response.new(
-				[],
-				AST.StringLiteral.new("bar"),
-				[],
-			),
-		],
-	)
-
-	root.accept(sut)
-
-	var expected = "@prompt\nfoo\n@response\nbar"
-	assert_eq(sut.get_text(), expected)
-
-
-func test_prompt_with_action_and_response() -> void:
-	var root := AST.Branch.new(
-		-1,
-		[],
-		[
-			AST.Prompt.new(
-				[],
-				AST.StringLiteral.new("foo"),
-				[ AST.Action.new("do_thing", null) ],
-			),
-		],
-		[
-			AST.Response.new(
-				[],
-				AST.StringLiteral.new("bar"),
-				[],
-			),
-		],
-	)
-
-	root.accept(sut)
-
-	var expected = "@prompt\nfoo { do_thing }\n@response\nbar"
-	assert_eq(sut.get_text(), expected)
-
-
-func test_multiple_prompts() -> void:
-	var root := AST.Branch.new(
-		-1,
-		[],
-		[
-			AST.Prompt.new(
-				[],
-				AST.StringLiteral.new("foo"),
-				[ AST.Action.new("a", null) ],
-			),
-			AST.Prompt.new(
-				[],
-				AST.StringLiteral.new("bar"),
-				[],
-			),
-			AST.Prompt.new(
-				[],
-				AST.StringLiteral.new("baz"),
-				[ AST.Action.new("c", null) ],
-			),
-		],
-		[],
-	)
-
-	root.accept(sut)
-
-	var expected = "@prompt\nfoo { a }\nbar\nbaz { c }"
-	assert_eq(sut.get_text(), expected)
-
-
-func test_multiple_responses() -> void:
-	var root := AST.Branch.new(
-		-1,
-		[],
-		[],
-		[
-			AST.Response.new(
-				[],
-				AST.StringLiteral.new("foo"),
-				[ AST.Action.new("a", null) ],
-			),
-			AST.Response.new(
-				[],
-				AST.StringLiteral.new("bar"),
-				[],
-			),
-			AST.Response.new(
-				[],
-				AST.StringLiteral.new("baz"),
-				[ AST.Action.new("c", null) ],
-			),
-		],
-	)
-
-	root.accept(sut)
-
-	var expected = "@response\nfoo { a }\nbar\nbaz { c }"
-	assert_eq(sut.get_text(), expected)
-
-
-func test_multiple_prompts_and_responses() -> void:
-	var root := AST.Branch.new(
-		-1,
-		[],
-		[
-			AST.Prompt.new(
-				[],
-				AST.StringLiteral.new("foo"),
-				[ AST.Action.new("a", null) ],
-			),
-			AST.Prompt.new(
-				[],
-				AST.StringLiteral.new("bar"),
-				[],
-			),
-			AST.Prompt.new(
-				[],
-				AST.StringLiteral.new("baz"),
-				[ AST.Action.new("c", null) ],
-			),
-		],
-		[
-			AST.Response.new(
-				[],
-				AST.StringLiteral.new("foo"),
-				[ AST.Action.new("a", null) ],
-			),
-			AST.Response.new(
-				[],
-				AST.StringLiteral.new("bar"),
-				[],
-			),
-			AST.Response.new(
-				[],
-				AST.StringLiteral.new("baz"),
-				[ AST.Action.new("c", null) ],
-			),
-		],
-	)
-
-	root.accept(sut)
-
-	var expected = "@prompt\nfoo { a }\nbar\nbaz { c }\n@response\nfoo { a }\nbar\nbaz { c }"
-	assert_eq(sut.get_text(), expected)
-
-
-func test_cancel_doesnt_call_graph() -> void:
-	var root := AST.Branch.new(
-		-1,
-		[],
-		[
-			AST.Prompt.new(
-				[],
-				AST.StringLiteral.new("foo"),
-				[ AST.Action.new("do_thing", null) ],
-			),
-		],
-		[
-			AST.Response.new(
-				[],
-				AST.StringLiteral.new("bar"),
-				[],
-			),
-		],
-	)
-
-	root.accept(sut)
-	sut.cancel()
-
-	assert_not_called(graph.update_branch)
-
-
-func test_cancel_clears_members() -> void:
-	var root := AST.Branch.new(
-		-1,
-		[],
-		[
-			AST.Prompt.new(
-				[],
-				AST.StringLiteral.new("foo"),
-				[ AST.Action.new("do_thing", null) ],
-			),
-		],
-		[
-			AST.Response.new(
-				[],
-				AST.StringLiteral.new("bar"),
-				[],
-			),
-		],
-	)
-
-	root.accept(sut)
-	sut.cancel()
-
-	assert_eq(sut._text, "")
-	assert_eq(sut._id, -1)
-	assert_eq(sut._in_annotation, false)
-	assert_eq(sut._in_curly, false)
-	assert_eq(sut._seen_prompt, false)
-	assert_eq(sut._seen_response, false)
-
-
-func test_finish_calls_graph() -> void:
-	var root := AST.Branch.new(
-		-1,
-		[],
-		[
-			AST.Prompt.new(
-				[],
-				AST.StringLiteral.new("foo"),
-				[ AST.Action.new("do_thing", null) ],
-			),
-		],
-		[
-			AST.Response.new(
-				[],
-				AST.StringLiteral.new("bar"),
-				[],
-			),
-		],
-	)
-
-	root.accept(sut)
+	ast.accept(sut)
 	sut.finish()
 
-	assert_called(graph.update_branch)
 
-
-func test_finish_clears_members() -> void:
-	var root := AST.Branch.new(
-		-1,
-		[],
-		[
-			AST.Prompt.new(
-				[],
-				AST.StringLiteral.new("foo"),
-				[ AST.Action.new("do_thing", null) ],
-			),
-		],
-		[
-			AST.Response.new(
-				[],
-				AST.StringLiteral.new("bar"),
-				[],
-			),
-		],
+func test_multiple_actions() -> void:
+	var sut := Unparser.new(
+			func(id, text):
+				# Action will always come after text.
+				assert_eq(text, " { foo bar 3 baz 2 }")
+	)
+	var ast := AST.Branch.new(
+			-1,
+			[
+				AST.Action.new(
+					"foo",
+					null,
+					0,
+				),
+				AST.Action.new(
+					"bar",
+					AST.NumberLiteral.new(3),
+					0,
+				),
+				AST.Action.new(
+					"baz",
+					AST.NumberLiteral.new(2),
+					0,
+				),
+			],
 	)
 
-	root.accept(sut)
+	ast.accept(sut)
 	sut.finish()
 
-	assert_eq(sut._text, "")
-	assert_eq(sut._id, -1)
-	assert_eq(sut._in_annotation, false)
-	assert_eq(sut._in_curly, false)
-	assert_eq(sut._seen_prompt, false)
-	assert_eq(sut._seen_response, false)
+
+func test_moving_to_new_line_closes_curly_from_previous_action() -> void:
+	var sut := Unparser.new(
+			func(id, text):
+				# Action will always come after text.
+				assert_eq(text, " { foo }\n{ bar }")
+	)
+	var ast := AST.Branch.new(
+			-1,
+			[
+				AST.Action.new("foo", null, 0),
+				AST.Condition.new("bar", null, 1),
+			],
+
+	)
+
+	ast.accept(sut)
+	sut.finish()
+
+
+func test_condition_with_string_literal() -> void:
+	var sut := Unparser.new(
+			func(id, text):
+				assert_eq(text, "{ foo } hello world")
+	)
+	var ast := AST.Branch.new(
+			-1,
+			[
+				AST.Condition.new("foo", null, 0),
+				AST.StringLiteral.new("hello world", 0),
+			],
+
+	)
+
+	ast.accept(sut)
+	sut.finish()
+
+
+func test_string_literal_with_action() -> void:
+	var sut := Unparser.new(
+			func(id, text):
+				assert_eq(text, "hello world { foo }")
+	)
+	var ast := AST.Branch.new(
+			-1,
+			[
+				AST.StringLiteral.new("hello world", 0),
+				AST.Action.new("foo", null, 0),
+			],
+
+	)
+
+	ast.accept(sut)
+	sut.finish()
+
+
+func test_condition_string_literal_and_action() -> void:
+	var sut := Unparser.new(
+			func(id, text):
+				assert_eq(text, "{ foo } hello world { bar }")
+	)
+	var ast := AST.Branch.new(
+			-1,
+			[
+				AST.Condition.new("foo", null, 0),
+				AST.StringLiteral.new("hello world", 0),
+				AST.Action.new("bar", null, 0),
+			],
+
+	)
+
+	ast.accept(sut)
+	sut.finish()
+
+
+func test_recovery_prints_value() -> void:
+	var sut := Unparser.new(
+			func(id, text):
+				assert_ne(text, "")
+	)
+	var ast := AST.Branch.new(
+			-1,
+			[
+				AST.Recovery.new({ "foo": "bar" }),
+			],
+	)
+
+	ast.accept(sut)
+	sut.finish()
+
+
+func test_recovery_appends_to_current_line_if_no_line() -> void:
+	var sut := Unparser.new(
+			func(id, text: String):
+				assert_true(text.get_slice("\n", 1).contains("foo"))
+	)
+	var ast := AST.Branch.new(
+			-1,
+			[
+				AST.StringLiteral.new("hello world", 1),
+				AST.Recovery.new({ "foo": "bar" }),
+			],
+	)
+
+	ast.accept(sut)
+	sut.finish()
+
+
+func test_recovery_prints_to_specified_line() -> void:
+	var sut := Unparser.new(
+			func(id, text: String):
+				assert_true(text.get_slice("\n", 3).contains("foo"))
+	)
+	var ast := AST.Branch.new(
+			-1,
+			[
+				AST.Recovery.new({
+					"foo": "bar",
+					"line": 3,
+				}),
+			],
+	)
+
+	ast.accept(sut)
+	sut.finish()
+

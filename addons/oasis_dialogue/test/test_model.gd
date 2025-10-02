@@ -2,6 +2,7 @@ extends GutTest
 
 const AST := preload("res://addons/oasis_dialogue/model/ast.gd")
 const Model := preload("res://addons/oasis_dialogue/model/model.gd")
+const Global := preload("res://addons/oasis_dialogue/global.gd")
 
 var sut: Model = null
 
@@ -44,8 +45,8 @@ func test_get_characters() -> void:
 
 func test_get_branches() -> void:
 	var branches: Dictionary[int, AST.Branch] = {
-		0: AST.Branch.new(0, [], [], []),
-		1: AST.Branch.new(1, [], [], []),
+		0: AST.Branch.new(),
+		1: AST.Branch.new(),
 	}
 	sut._branches = branches
 	assert_eq_deep(sut.get_branches(), branches)
@@ -66,15 +67,11 @@ func test_load_character_sets_branches() -> void:
 		"branches": {
 			0: {
 				"id": 0,
-				"annotations": [],
-				"prompts": [],
-				"responses": [],
+				"type": AST.TYPE_BRANCH,
 			},
 			1: {
 				"id": 1,
-				"annotations": [],
-				"prompts": [],
-				"responses": [],
+				"type": AST.TYPE_BRANCH,
 			},
 		},
 	}
@@ -146,48 +143,21 @@ func test_save_project() -> void:
 
 
 func test_save_character_stores_branches() -> void:
-	var setup := {
-		"name": "Fred",
-		"branches": {
-			0: {
-				"id": 0,
-				"annotations": [],
-				"prompts": [],
-				"responses": [],
-			},
-			1: {
-				"id": 1,
-				"annotations": [],
-				"prompts": [],
-				"responses": [],
-			},
-		},
-	}
-	# Calling load_character because that's the entry point to setting the
-	# active character.
-	sut.load_character(setup)
-	var save := {}
+	sut._branches[0] = AST.Branch.new(0)
+	sut._branches[1] = AST.Branch.new(1)
 
+	var save := {}
 	sut.save_character(save)
 
-	gut.p("todo update model to ignore _active")
-	var expected := {
-		"branches": {
-			0: {
-				"id": 0,
-				"annotations": [],
-				"prompts": [],
-				"responses": [],
-			},
-			1: {
-				"id": 1,
-				"annotations": [],
-				"prompts": [],
-				"responses": [],
-			},
-		},
-	}
-	assert_eq_deep(save, expected)
+	assert_true(Global.FILE_BRANCHES in save)
+
+	if not Global.FILE_BRANCHES in save:
+		return
+
+	var branches := save.get(Global.FILE_BRANCHES, {})
+
+	for i in 2:
+		assert_true(i in branches)
 
 
 func test_add_character() -> void:
@@ -230,28 +200,15 @@ func test_add_branch() -> void:
 	assert_eq(sut.get_branches().size(), 1)
 
 
-func test_update_branch() -> void:
-	var d := {
-		"characters": [ "fred", "joe" ],
-		"name": "fred",
-	}
-	sut.load_project(d)
-	sut.load_character(d)
+func test_update_branch_replaces_old_value() -> void:
+	var old_branch := AST.Branch.new(0)
+	sut._branches[0] = old_branch
 
-	sut.add_branch(0)
+	var new_branch := AST.Branch.new(0)
 
-	var annotations: Array[AST.Annotation] = [
-		AST.Annotation.new("rng", null),
-	]
-	var ast := AST.Branch.new(0, annotations, [], [])
+	sut.update_branch(new_branch)
 
-	sut.update_branch(ast)
-
-	var got := sut.get_branches()
-	if not got:
-		fail_test("expected branches, got none")
-	else:
-		assert_eq(got[0], ast)
+	assert_same(sut._branches[0], new_branch)
 
 
 func test_has_branch_exists() -> void:

@@ -28,21 +28,22 @@ const _Parser := preload("res://addons/oasis_dialogue/model/parser.gd")
 const _AST := preload("res://addons/oasis_dialogue/model/ast.gd")
 const _ParseError := preload("res://addons/oasis_dialogue/model/parse_error.gd")
 
-const _ValidateConnectVisitor := preload("res://addons/oasis_dialogue/visitor/validate_connect_visitor.gd")
+const _ParseErrorVisitor := preload("res://addons/oasis_dialogue/visitor/parse_error_visitor.gd")
 const _CreateBranchVisitor := preload("res://addons/oasis_dialogue/visitor/create_branch_visitor.gd")
+const _ValidateConnectVisitor := preload("res://addons/oasis_dialogue/visitor/validate_connect_visitor.gd")
 const _ConnectBranchVisitor := preload("res://addons/oasis_dialogue/visitor/connect_branch_visitor.gd")
 const _DuplicateAnnotationVisitor := preload("res://addons/oasis_dialogue/visitor/duplicate_annotation_visitor.gd")
 const _EmptyBranchVisitor := preload("res://addons/oasis_dialogue/visitor/empty_branch_visitor.gd")
-const _UpdateModelVisitor := preload("res://addons/oasis_dialogue/visitor/update_model_visitor.gd")
 const _RemoveActionVisitor := preload("res://addons/oasis_dialogue/visitor/remove_action_visitor.gd")
 const _FinishCallbackVisitor := preload("res://addons/oasis_dialogue/visitor/finish_callback_visitor.gd")
 const _UnparserVisitor := preload("res://addons/oasis_dialogue/visitor/unparser_visitor.gd")
+const _UpdateModelVisitor := preload("res://addons/oasis_dialogue/visitor/update_model_visitor.gd")
 const _VisitorIterator := preload("res://addons/oasis_dialogue/visitor/visitor_iterator.gd")
 
 var _model: _Model = null
-var language_server:  _LanguageServer = null
-var semantic_visitors: _VisitorIterator = null
-var restore_branch_visitors: _VisitorIterator = null
+var _language_server:  _LanguageServer = null
+var _semantic_visitors: _VisitorIterator = null
+var _restore_branch_visitors: _VisitorIterator = null
 var _rename_character_handler: _RenameCharacterHandler = null
 
 
@@ -72,50 +73,14 @@ func _ready() -> void:
 		branch.init(highlighter)
 		return branch
 
-	var err_branch := func err_branch(e: _SemanticError) -> void:
-		#var branch := graph.get_branch(id)
-		#branch.color_invalid()
-		status.err(e.message)
-		graph.highlight_branch(e.id, [e.line])
-
-	var parse_err_branch := func(e: _ParseError) -> void:
-		graph.highlight_branch(e.id, [e.line])
-		status.err(e.message)
-
 	_model = _Model.new()
-	language_server = _LanguageServer.new(lexer, parser)
-	language_server.erred.connect(parse_err_branch)
-	semantic_visitors = _VisitorIterator.new()
-	restore_branch_visitors = _VisitorIterator.new()
+	_language_server = _LanguageServer.new(lexer, parser)
+	_restore_branch_visitors = _VisitorIterator.new()
 	_rename_character_handler = _RenameCharacterHandler.new()
 
 	_rename_character_handler.get_active_character = _model.get_active_character
 	_rename_character_handler.input_dialog_factory = input_dialog_factory
 	_rename_character_handler.character_renamed.connect(tree.edit_selected_item)
-
-	var duplicate_annotation_visitor := _DuplicateAnnotationVisitor.new(semantic_visitors.stop)
-	duplicate_annotation_visitor.erred.connect(err_branch)
-	var update_model_visitor := _UpdateModelVisitor.new(_model)
-	var unparser_visitor := _UnparserVisitor.new(graph)
-	var validate_connect_visitor := _ValidateConnectVisitor.new(
-		_Global.CONNECT_BRANCH_KEYWORD,
-		semantic_visitors.stop,
-	)
-	validate_connect_visitor.erred.connect(err_branch)
-	var create_branch_visitor := _CreateBranchVisitor.new(
-		_Global.CONNECT_BRANCH_KEYWORD,
-		_model,
-		graph,
-	)
-	var connect_branch_visitor := _ConnectBranchVisitor.new(
-		_Global.CONNECT_BRANCH_KEYWORD,
-		graph.connect_branches,
-	)
-	var clear_status_err := _FinishCallbackVisitor.new(status.clear_err.unbind(1))
-	var clear_branch_highlights_visitor := _FinishCallbackVisitor.new(graph.clear_branch_highlights)
-
-	#CREATE ERROR HANDLER THAT RECEIVES SEMANTIC ERRORS
-	#TELLS STATUS AND GRAPH
 
 	add_branch.init(_model)
 	add_branch.branch_added.connect(_model.add_branch)
@@ -134,15 +99,36 @@ func _ready() -> void:
 
 	tree.character_activated.connect(_rename_character_handler.rename)
 
-	graph.init(branch_factory)
-	graph.branch_added.connect(
-		func connect_branch_to_language_server(branch: _Branch) -> void:
-			branch.changed.connect(language_server.parse_branch_text)
+	_semantic_visitors = _VisitorIterator.new()
+	var on_err := func(e: _SemanticError) -> void:
+		status.err(e.message)
+		graph.highlight_branch(e.id, [e.line])
+		_semantic_visitors.stop()
+
+	var parse_error_visitor := _ParseErrorVisitor.new(on_err)
+	var empty_branch_visitor := _EmptyBranchVisitor.new(on_err)
+	var duplicate_annotation_visitor := _DuplicateAnnotationVisitor.new(on_err)
+	var update_model_visitor := _UpdateModelVisitor.new(_model.update_branch)
+	var validate_connect_visitor := _ValidateConnectVisitor.new(
+		_Global.CONNECT_BRANCH_KEYWORD,
+		on_err,
 	)
-
-	language_server.parsed.connect(semantic_visitors.iterate)
-
-	semantic_visitors.set_visitors([
+	var create_branch_visitor := _CreateBranchVisitor.new(
+		_Global.CONNECT_BRANCH_KEYWORD,
+		_model.has_branch,
+		func(id: int):
+			_model.add_branch(id)
+			graph.add_branch(id),
+	)
+	var connect_branch_visitor := _ConnectBranchVisitor.new(
+		_Global.CONNECT_BRANCH_KEYWORD,
+		graph.connect_branches,
+	)
+	var clear_status_err := _FinishCallbackVisitor.new(status.clear_err.unbind(1))
+	var clear_branch_highlights_visitor := _FinishCallbackVisitor.new(graph.clear_branch_highlights)
+	_semantic_visitors.set_visitors([
+		parse_error_visitor,
+		empty_branch_visitor,
 		duplicate_annotation_visitor,
 		validate_connect_visitor,
 		create_branch_visitor,
@@ -152,6 +138,7 @@ func _ready() -> void:
 		clear_status_err,
 	])
 
+	var unparser_visitor := _UnparserVisitor.new(graph.update_branch)
 	# Visitors to handle removal of text in affected branches after a branch
 	# is removed needs to be created on demand.
 	# Refactor this to BranchRemovalCleaner
@@ -174,15 +161,24 @@ func _ready() -> void:
 		_model.remove_branch(removed_id)
 	graph.branches_dirtied.connect(unbranch_removed)
 
+	graph.init(branch_factory)
+	graph.branch_added.connect(
+		func connect_branch_to_language_server(branch: _Branch) -> void:
+			branch.changed.connect(_language_server.parse_branch_text)
+	)
+
+	_language_server.parsed.connect(_semantic_visitors.iterate)
+
+
+	_restore_branch_visitors.set_visitors([
+		unparser_visitor,
+	])
+
 	# Refactor to BranchReconstructor
 	var restore_branch := func restore_branches(id: int) -> void:
 		var ast := _model.get_branch(id)
-		restore_branch_visitors.iterate(ast)
+		_restore_branch_visitors.iterate(ast)
 	graph.branch_restored.connect(restore_branch)
-
-	restore_branch_visitors.set_visitors([
-		unparser_visitor,
-	])
 
 
 func init(manager: _ProjectManager) -> void:

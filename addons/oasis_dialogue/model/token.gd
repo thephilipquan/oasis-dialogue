@@ -1,7 +1,7 @@
 extends RefCounted
 
 enum Type {
-	INIT = -1,
+	INIT = 0,
 
 	ATSIGN,
 	IDENTIFIER,
@@ -39,10 +39,10 @@ static func type_to_string(type: Type) -> String:
 		if type == Type[t]:
 			type_string = t
 			break
-	return type_string
+	return type_string.to_lower()
 
 
-static func types_to_string(types: Array[Type]) -> String:
+static func types_to_string(types: Array) -> String:
 	return " or ".join(types.map(func(t: Type): return type_to_string(t)))
 
 
@@ -69,4 +69,3 @@ func _to_string() -> String:
 	if type in include_value:
 		result += " (" + value + ")"
 	return result
-

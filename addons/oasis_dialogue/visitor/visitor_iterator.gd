@@ -11,7 +11,7 @@ func set_visitors(visitors: Array[_Visitor]) -> void:
 	_visitors = visitors
 
 
-func iterate(ast: _AST.ASTNode) -> void:
+func iterate(ast: _AST.AST) -> void:
 	_is_valid = true
 
 	var i := 0

@@ -1,27 +1,27 @@
 extends "res://addons/oasis_dialogue/visitor/visitor.gd"
 
-const _Model := preload("res://addons/oasis_dialogue/model/model.gd")
-const _Graph := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
-
 var _create_branch_keyword := ""
-var _model: _Model = null
-var _graph: _Graph = null
+var _branch_exists := Callable()
+var _add_branch := Callable()
 
 var _to_create: Array[int] = []
 
 
-func _init(create_branch_keyword: String, model: _Model, graph: _Graph) -> void:
+func _init(create_branch_keyword: String, branch_exists: Callable, add_branch: Callable) -> void:
 	_create_branch_keyword = create_branch_keyword
-	_model = model
-	_graph = graph
+	_branch_exists = branch_exists
+	_add_branch = add_branch
 
 
 func visit_action(action: _AST.Action) -> void:
-	if not action.name == _create_branch_keyword:
+	if action.name != _create_branch_keyword:
+		return
+
+	if not action.value:
 		return
 
 	var id := action.value.value
-	if not _model.has_branch(id):
+	if not _branch_exists.call(id):
 		_to_create.push_back(id)
 
 
@@ -31,7 +31,5 @@ func cancel() -> void:
 
 func finish() -> void:
 	for id in _to_create:
-		_model.add_branch(id)
-		_graph.add_branch(id)
+		_add_branch.call(id)
 	cancel()
-

@@ -13,7 +13,7 @@ static func parse_int(value) -> int:
 	return int(value)
 
 
-static func get_int(json: Dictionary, key: String, default: int) -> int:
+static func safe_get_int(json: Dictionary, key: String, default: int) -> int:
 	var value := json.get(key, default)
 	if is_int(value):
 		return parse_int(value)
@@ -55,3 +55,9 @@ static func safe_get(json: Dictionary, key: String, default):
 	if typeof(value) == typeof(default):
 		return value
 	return default
+
+
+static func is_typeof(json: Dictionary, key: String, type: Variant.Type) -> bool:
+	if not key in json:
+		return false
+	return typeof(json[key]) == type

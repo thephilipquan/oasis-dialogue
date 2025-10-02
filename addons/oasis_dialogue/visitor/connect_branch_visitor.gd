@@ -2,8 +2,6 @@ extends "res://addons/oasis_dialogue/visitor/visitor.gd"
 
 const _SemanticError := preload("res://addons/oasis_dialogue/semantic_error.gd")
 
-signal erred(error: _SemanticError)
-
 var _connect_keyword := ""
 var _connect_branches := Callable()
 
@@ -34,10 +32,3 @@ func cancel() -> void:
 func finish() -> void:
 	_connect_branches.call(_id, _to_branches.duplicate())
 	cancel()
-
-
-func emit_error(message: String) -> void:
-	var error := _SemanticError.new()
-	error.id = _id
-	error.message = message
-	erred.emit(error)

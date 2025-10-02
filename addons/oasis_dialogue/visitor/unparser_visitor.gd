@@ -2,25 +2,21 @@ extends "res://addons/oasis_dialogue/visitor/visitor.gd"
 
 const _BranchEdit := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
 
+var _update_graph_branch := Callable()
+
+var _id := -1
 
 var _text := ""
-var _id := -1
-var _in_annotation := false
+var _line := 0
 var _in_curly := false
 var _seen_prompt := false
 var _seen_response := false
-
-var _graph: _BranchEdit = null
-
-
-func _init(graph: _BranchEdit) -> void:
-	_graph = graph
+var _add_header := false
+var _header := ""
 
 
-func get_text() -> String:
-	if _in_curly:
-		_text += " }"
-	return _text
+func _init(update_graph_branch: Callable) -> void:
+	_update_graph_branch = update_graph_branch
 
 
 func visit_branch(branch: _AST.Branch) -> void:
@@ -28,95 +24,106 @@ func visit_branch(branch: _AST.Branch) -> void:
 
 
 func visit_annotation(annotation: _AST.Annotation) -> void:
-	var s := ""
-	if _in_annotation:
-		s += "\n"
-	_in_annotation = true
-	s += "@%s" % annotation.name
-	_text += s
+	_move_line(annotation.line)
+	_append_line("@%s" % annotation.name)
 
 
 func visit_prompt(prompt: _AST.Prompt) -> void:
-	var s := ""
-	if _in_annotation:
-		s += "\n"
-		_in_annotation = false
 	if not _seen_prompt:
-		s += "@prompt"
 		_seen_prompt = true
-	if _in_curly:
-		s += " }"
-		_in_curly = false
-	s += "\n"
-	_text += s
+		_add_header = true
+		_header = "@prompt"
 
 
 func visit_response(response: _AST.Response) -> void:
-	var s := ""
-	if _in_annotation:
-		s += "\n"
-		_in_annotation = false
-	if _in_curly:
-		s += " }"
-		_in_curly = false
 	if not _seen_response:
-		if _seen_prompt:
-			s += "\n"
-		s += "@response"
 		_seen_response = true
-
-	s += "\n"
-	_text += s
+		_add_header = true
+		_header = "@response"
 
 
 func visit_condition(condition: _AST.Condition) -> void:
+	if _add_header:
+		_add_header = false
+		_move_line(condition.line - 1)
+		_append_line(_header)
+	_move_line(condition.line)
 	var s := ""
-	if _in_curly:
-		# we are coming from an action."
-		s += " }\n"
-		_in_curly = false
 	if not _in_curly:
-		s += "{"
 		_in_curly = true
+		s += "{"
 	s += " %s" % condition.name
-	_text += s
+	_append_line(s)
 
 
 func visit_action(action: _AST.Action) -> void:
+	_move_line(action.line)
 	var s := ""
 	if not _in_curly:
-		# Coming from _text.
-		s += " {"
 		_in_curly = true
+		s += " {"
 	s += " %s" % action.name
-	_text += s
+	_append_line(s)
 
 
-func visit_stringliteral(value: _AST.StringLiteral) -> void:
+func visit_stringliteral(text: _AST.StringLiteral) -> void:
+	if _add_header:
+		_add_header = false
+		_move_line(text.line - 1)
+		_append_line(_header)
+	_move_line(text.line)
 	var s := ""
 	if _in_curly:
-		s += " } "
 		_in_curly = false
-	s += "%s" % value.value
-	_text += s
+		s += " } "
+	s += text.value
+	_append_line(s)
 
 
 func visit_numberliteral(value: _AST.NumberLiteral) -> void:
-	var s := " %d" % value.value
-	_text += s
+	_move_line(value.line)
+	_append_line(" %d" % value.value)
+
+
+func visit_recovery(recovery: _AST.Recovery) -> void:
+	var line := _line
+	if recovery.line != -1:
+		push_warning("globalize -1")
+		line = recovery.line
+	_move_line(line)
+	_append_line(recovery.message)
 
 
 func cancel() -> void:
-	_text = ""
 	_id = -1
-	_in_annotation = false
+	_text = ""
+	_line = 0
 	_in_curly = false
 	_seen_prompt = false
 	_seen_response = false
+	_add_header = false
+	_header = ""
 
 
 func finish() -> void:
 	if _in_curly:
-		_text += " }"
-	_graph.update_branch(_id, _text)
+		_append_line(" }")
+	_update_graph_branch.call(_id, _text)
 	cancel()
+
+
+func _move_line(to: int) -> void:
+	if to == -1:
+		return
+
+	if to != _line and _in_curly:
+		_append_line(" }")
+		_in_curly = false
+
+	for i in range(_line, to):
+		_text += "\n"
+	_line = to
+
+
+func _append_line(text: String) -> void:
+	_text += text

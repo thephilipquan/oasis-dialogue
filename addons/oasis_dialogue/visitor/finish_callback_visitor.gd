@@ -1,8 +1,8 @@
 ## Calls the registered callback with the [member AST.Branch.id] of the branch
 ## during [method finish].
 ## [br][br]
-## Logistically, the callback is called if the result all the visitors in the
-## [VisitorIterator] [b]is valid[/b].
+## Logistically, the callback is called if all visitors in the iterator deem
+## the AST valid.
 extends "res://addons/oasis_dialogue/visitor/visitor.gd"
 
 ## [code]func(id: int) -> void[/code]

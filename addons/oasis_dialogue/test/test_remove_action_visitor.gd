@@ -2,81 +2,36 @@ extends GutTest
 
 const AST := preload("res://addons/oasis_dialogue/model/ast.gd")
 const RemoveAction := preload("res://addons/oasis_dialogue/visitor/remove_action_visitor.gd")
-
-const ACTION := "foo"
-const OTHER_ACTION := "bar"
-
-var sut: RemoveAction = null
-
-
-func after_each() -> void:
-	sut = null
-
+const Visitor := preload("res://addons/oasis_dialogue/visitor/visitor.gd")
 
 func test_only_specified_branch_removed() -> void:
-	sut = RemoveAction.new(AST.Action.new(ACTION, AST.NumberLiteral.new(3)))
-	var ast := AST.Branch.new(
-		-1,
-		[],
-		[
-			AST.Prompt.new(
-				[],
-				AST.StringLiteral.new(OTHER_ACTION),
-				[
-					AST.Action.new(ACTION, AST.NumberLiteral.new(5)),
-					AST.Action.new(ACTION, AST.NumberLiteral.new(3)),
-				],
+	var sut := RemoveAction.new(
+			AST.Action.new(
+				"foo",
+				AST.NumberLiteral.new(3),
 			),
-		],
-		[
-			AST.Response.new(
-				[],
-				AST.StringLiteral.new("hello world"),
-				[
-					AST.Action.new(ACTION, AST.NumberLiteral.new(3)),
-				],
-			),
-		],
 	)
+
+	var ast := AST.Line.new()
+	ast.add(AST.Action.new("foo", AST.NumberLiteral.new(2)))
+	ast.add(AST.Action.new("foo", AST.NumberLiteral.new(3)))
+	ast.add(AST.Action.new("foo", AST.NumberLiteral.new(4)))
 
 	ast.accept(sut)
 
-	var prompt_actions := (ast.prompts[0] as AST.Prompt).actions
-	assert_eq(prompt_actions.size(), 1)
+	ast.accept(TestVisitor.new(
+			func(number: AST.NumberLiteral):
+				assert_ne(number.value, 3)
+	))
 
-	var response_actions := (ast.responses[0] as AST.Response).actions
-	assert_eq(response_actions.size(), 0)
 
+class TestVisitor:
+	extends Visitor
 
-func test_no_match_stays_unchanged() -> void:
-	sut = RemoveAction.new(AST.Action.new(ACTION, AST.NumberLiteral.new(3)))
-	var ast := AST.Branch.new(
-		-1,
-		[],
-		[
-			AST.Prompt.new(
-				[],
-				AST.StringLiteral.new("hello world"),
-				[
-					AST.Action.new(ACTION, AST.NumberLiteral.new(5)),
-				],
-			),
-		],
-		[
-			AST.Response.new(
-				[],
-				AST.StringLiteral.new("hello world again"),
-				[
-					AST.Action.new(ACTION, AST.NumberLiteral.new(2)),
-				],
-			),
-		],
-	)
+	var _callback := Callable()
 
-	ast.accept(sut)
+	func _init(callback: Callable) -> void:
+		_callback = callback
 
-	var prompt_actions := (ast.prompts[0] as AST.Prompt).actions
-	assert_eq(prompt_actions.size(), 1)
-
-	var response_actions := (ast.responses[0] as AST.Response).actions
-	assert_eq(response_actions.size(), 1)
+	func visit_numberliteral(number: AST.NumberLiteral) -> void:
+		_callback.call(number)

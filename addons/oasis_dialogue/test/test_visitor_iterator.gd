@@ -31,7 +31,7 @@ func test_stop() -> void:
 
 func test_iterate_resets_validity() -> void:
 	sut._is_valid = false
-	var ast := AST.Branch.new(-1, [], [], [])
+	var ast := AST.Branch.new(-1)
 
 	sut.iterate(ast)
 
@@ -43,7 +43,7 @@ func test_calls_visitor_finish() -> void:
 	sut.set_visitors([
 		visitor,
 	])
-	var ast := AST.Branch.new(-1, [], [], [])
+	var ast := AST.Branch.new(-1)
 
 	sut.iterate(ast)
 
@@ -56,7 +56,7 @@ func test_calls_visitor_cancel_when_stopped() -> void:
 	sut.set_visitors([
 		visitor,
 	])
-	var ast := AST.Branch.new(-1, [], [], [])
+	var ast := AST.Branch.new(-1)
 	stub(visitor.visit_branch).to_call(func(b: AST.Branch): sut.stop())
 
 	sut.iterate(ast)

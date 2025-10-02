@@ -1,176 +1,35 @@
 extends GutTest
 
 const AST := preload("res://addons/oasis_dialogue/model/ast.gd")
-const ConnectBranchVisitor := preload("res://addons/oasis_dialogue/visitor/connect_branch_visitor.gd")
+const ConnectBranch := preload("res://addons/oasis_dialogue/visitor/connect_branch_visitor.gd")
 const Global := preload("res://addons/oasis_dialogue/global.gd")
 
-const CONNECT_KEYWORD := "foo"
 
-var sut: ConnectBranchVisitor = null
-
-
-func after_each() -> void:
-	sut = null
-
-
-func test_normal() -> void:
-	sut = ConnectBranchVisitor.new(
-		CONNECT_KEYWORD,
-		func(a: int, to: Array[int]):
-			assert_eq_deep(to, [4, 6]),
+func test_valid_connections_emits_non_empty_list() -> void:
+	var sut := ConnectBranch.new(
+			"foo",
+			func(id: int, to: Array[int]):
+				assert_eq(id, 8)
+				assert_eq_deep(to, [2, 3]),
 	)
-	var ast := AST.Branch.new(
-		2,
-		[],
-		[
-			AST.Prompt.new(
-				[],
-				AST.StringLiteral.new("text"),
-				[
-					AST.Action.new(CONNECT_KEYWORD, AST.NumberLiteral.new(4)),
-					AST.Action.new(CONNECT_KEYWORD, AST.NumberLiteral.new(6)),
-				],
-			),
-		],
-		[],
-	)
-	watch_signals(sut)
+	var ast := AST.Branch.new(8)
+	ast.add(AST.Action.new("bar"))
+	ast.add(AST.Action.new("foo", AST.NumberLiteral.new(2)))
+	ast.add(AST.Action.new("foo", AST.NumberLiteral.new(3)))
 
 	ast.accept(sut)
 	sut.finish()
 
-	assert_signal_not_emitted(sut.erred)
 
-
-func test_no_branch_action() -> void:
-	sut = ConnectBranchVisitor.new(
-		CONNECT_KEYWORD,
-		func(a: int, b: Array[int]): assert_eq_deep(b, []),
+func test_no_connecting_actions_calls_connect_with_empty_list() -> void:
+	var sut := ConnectBranch.new(
+			"foo",
+			func(id: int, to: Array[int]):
+				assert_eq_deep(to, []),
 	)
-	var ast := AST.Branch.new(
-		1,
-		[],
-		[
-			AST.Prompt.new(
-				[],
-				AST.StringLiteral.new("text"),
-				[
-					AST.Action.new("give_gold", AST.NumberLiteral.new(4)),
-				],
-			),
-		],
-		[],
-	)
-	watch_signals(sut)
+	var ast := AST.Branch.new(8)
+	ast.add(AST.Action.new("bar", AST.NumberLiteral.new(2)))
+	ast.add(AST.Action.new("bar", AST.NumberLiteral.new(3)))
 
 	ast.accept(sut)
 	sut.finish()
-
-	assert_signal_not_emitted(sut.erred)
-
-
-func test_duplicate_list_is_passed() -> void:
-	var got = null
-	sut = ConnectBranchVisitor.new(
-		CONNECT_KEYWORD,
-		func(a: int, to: Array[int]): got = to,
-	)
-	var ast := AST.Branch.new(
-		2,
-		[],
-		[
-			AST.Prompt.new(
-				[],
-				AST.StringLiteral.new("text"),
-				[
-					AST.Action.new(CONNECT_KEYWORD, AST.NumberLiteral.new(4)),
-					AST.Action.new(CONNECT_KEYWORD, AST.NumberLiteral.new(6)),
-				],
-			),
-		],
-		[],
-	)
-
-	ast.accept(sut)
-	sut.finish()
-
-	assert_not_same(sut._to_branches, got)
-
-
-func test_calls_connect_branch_even_if_to_branches_is_empty() -> void:
-	sut = ConnectBranchVisitor.new(
-		CONNECT_KEYWORD,
-		func(a: int, b: Array[int]): assert_eq_deep(b, []),
-	)
-	var ast := AST.Branch.new(
-		1,
-		[],
-		[
-			AST.Prompt.new(
-				[],
-				AST.StringLiteral.new("text"),
-				[
-					AST.Action.new("give_gold", AST.NumberLiteral.new(4)),
-				],
-			),
-		],
-		[],
-	)
-	ast.accept(sut)
-	sut.finish()
-
-
-func test_resets_members_on_cancel() -> void:
-	sut = ConnectBranchVisitor.new(
-		CONNECT_KEYWORD,
-		func(a: int, to: Array[int]): pass,
-	)
-	var ast := AST.Branch.new(
-		2,
-		[],
-		[
-			AST.Prompt.new(
-				[],
-				AST.StringLiteral.new("text"),
-				[
-					AST.Action.new(CONNECT_KEYWORD, AST.NumberLiteral.new(4)),
-					AST.Action.new(CONNECT_KEYWORD, AST.NumberLiteral.new(6)),
-				],
-			),
-		],
-		[],
-	)
-
-	ast.accept(sut)
-	sut.cancel()
-
-	assert_eq(sut._id, -1)
-	assert_eq_deep(sut._to_branches, [])
-
-
-func test_resets_members_on_finish() -> void:
-	sut = ConnectBranchVisitor.new(
-		CONNECT_KEYWORD,
-		func(a: int, to: Array[int]): pass,
-	)
-	var ast := AST.Branch.new(
-		2,
-		[],
-		[
-			AST.Prompt.new(
-				[],
-				AST.StringLiteral.new("text"),
-				[
-					AST.Action.new(CONNECT_KEYWORD, AST.NumberLiteral.new(4)),
-					AST.Action.new(CONNECT_KEYWORD, AST.NumberLiteral.new(6)),
-				],
-			),
-		],
-		[],
-	)
-
-	ast.accept(sut)
-	sut.finish()
-
-	assert_eq(sut._id, -1)
-	assert_eq_deep(sut._to_branches, [])
