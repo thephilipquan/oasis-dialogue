@@ -284,8 +284,8 @@ func test_arrange_orphans_with_ignore() -> void:
 func test_load_character_creates_branches_and_emits_branch_restored() -> void:
 	var data := {
 		Global.FILE_BRANCH_POSITION_OFFSETS: {
-			3: {},
-			6: {},
+			"3": {},
+			"6": {},
 		},
 	}
 
@@ -301,11 +301,11 @@ func test_load_character_creates_branches_and_emits_branch_restored() -> void:
 func test_load_character_restores_branch_position_offsets() -> void:
 	var data := {
 		Global.FILE_BRANCH_POSITION_OFFSETS: {
-			0: {
+			"0": {
 				"x": 50,
 				"y": 100,
 			},
-			1: {
+			"1": {
 				"x": 150,
 				"y": 200,
 			},
@@ -345,10 +345,10 @@ func test_load_character_restores_graph_scroll_offset() -> void:
 func test_load_character_restores_branch_connections() -> void:
 	var data := {
 		Global.FILE_BRANCH_POSITION_OFFSETS: {
-			0: {},
-			1: {},
-			2: {},
-			3: {},
+			"0": {},
+			"1": {},
+			"2": {},
+			"3": {},
 		},
 		Global.FILE_BRANCH_CONNECTIONS: [
 			{
@@ -387,8 +387,8 @@ func test_load_character_restores_branch_connections() -> void:
 func test_load_character_default_branch_position_offsets() -> void:
 	var data := {
 		Global.FILE_BRANCH_POSITION_OFFSETS: {
-			0: {},
-			1: {},
+			"0": {},
+			"1": {},
 		},
 	}
 	watch_signals(sut)
@@ -412,8 +412,8 @@ func test_load_character_default_graph_zoom() -> void:
 func test_load_character_default_connections() -> void:
 	var data := {
 		Global.FILE_BRANCH_POSITION_OFFSETS: {
-			0: {},
-			1: {},
+			"0": {},
+			"1": {},
 		},
 	}
 	watch_signals(sut)
@@ -426,11 +426,11 @@ func test_load_character_default_connections() -> void:
 func test_load_character_overwrites_branches() -> void:
 	var data := {
 		Global.FILE_BRANCH_POSITION_OFFSETS: {
-			0: {
+			"0": {
 				"x": 50,
 				"y": 100,
 			},
-			1: {
+			"1": {
 				"x": 150,
 				"y": 200,
 			},
@@ -440,7 +440,7 @@ func test_load_character_overwrites_branches() -> void:
 
 	data = {
 		Global.FILE_BRANCH_POSITION_OFFSETS: {
-			0: {
+			"0": {
 				"x": 250,
 				"y": 300,
 			},

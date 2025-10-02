@@ -1,6 +1,7 @@
 extends RefCounted
 
 const _Global := preload("res://addons/oasis_dialogue/global.gd")
+const _JsonUtils := preload("res://addons/oasis_dialogue/utils/json_utils.gd")
 
 const SETTINGS := ".oasis"
 const EXTENSION := "oasis"
@@ -72,7 +73,11 @@ func load_project(path: String) -> void:
 		var display_name = filename
 		if contents:
 			var json := JSON.parse_string(contents)
-			display_name = json.get(_Global.FILE_DISPLAY_NAME, display_name)
+			display_name = _JsonUtils.safe_get(
+					json,
+					_Global.FILE_DISPLAY_NAME,
+					display_name
+			)
 
 		_display_to_filename[display_name] = filename
 		characters.push_back(display_name)
@@ -82,10 +87,7 @@ func load_project(path: String) -> void:
 
 	project_loaded.emit(data)
 
-	if (
-		_Global.PROJECT_ACTIVE in data
-		and data[_Global.PROJECT_ACTIVE] != ""
-	):
+	if _JsonUtils.safe_get(data, _Global.PROJECT_ACTIVE, "") != "":
 		load_subfile(data[_Global.PROJECT_ACTIVE])
 
 
@@ -142,7 +144,6 @@ func load_subfile(display_name: String) -> void:
 	var data := {}
 	if content:
 		data.assign(JSON.parse_string(content))
-	clean_loaded_data(data)
 
 	data[_Global.LOAD_FILE_NAME] = display_name
 
@@ -197,19 +198,6 @@ func save_active_subfile() -> void:
 
 	var file := FileAccess.open(get_subfile_path(_active), FileAccess.WRITE)
 	file.store_string(JSON.stringify(data, "\t"))
-
-
-func clean_loaded_data(data: Dictionary) -> void:
-	for key in data:
-		match key:
-			_Global.FILE_BRANCHES, _Global.FILE_BRANCH_POSITION_OFFSETS:
-				var branches: Dictionary = data[key]
-				var to_replace: Array[String] = []
-				for id in branches:
-					to_replace.push_back(id)
-				for id in to_replace:
-					branches[id.to_int()] = branches[id]
-					branches.erase(id)
 
 
 func _format_filename(value: String) -> String:

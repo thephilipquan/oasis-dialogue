@@ -3,7 +3,7 @@ extends GraphEdit
 
 const _Branch := preload("res://addons/oasis_dialogue/branch/branch.gd")
 const _Global := preload("res://addons/oasis_dialogue/global.gd")
-const _Vector2Utils := preload("res://addons/oasis_dialogue/utils/vector2_utils.gd")
+const _JsonUtils := preload("res://addons/oasis_dialogue/utils/json_utils.gd")
 
 const SAVE_POSITION_OFFSET_KEY := "branch_position_offsets"
 
@@ -198,19 +198,28 @@ func load_character(data: Dictionary) -> void:
 	_stop_tween()
 	remove_branches()
 
-	var position_offsets := data.get(_Global.FILE_BRANCH_POSITION_OFFSETS, {})
+	var position_offsets: Dictionary = _JsonUtils.safe_get(
+			data,
+			_Global.FILE_BRANCH_POSITION_OFFSETS,
+			{},
+	)
 	for key in position_offsets:
-		var id: int = key
+		if not _JsonUtils.is_int(key):
+			continue
+		var id := _JsonUtils.parse_int(key)
 		add_branch(id)
-		var offset := _Vector2Utils.from_json(position_offsets.get(key, {}))
+		var offset := _JsonUtils.get_vector2(position_offsets, key, Vector2.ZERO)
 		_branches[id].position_offset = offset
 		branch_restored.emit(id)
 
-	var branch_connections := data.get(_Global.FILE_BRANCH_CONNECTIONS, {})
+	var branch_connections: Array = _JsonUtils.safe_get(
+			data,
+			_Global.FILE_BRANCH_CONNECTIONS,
+			[],
+	)
 	for json in branch_connections:
 		var connection := _BranchConnection.from_json(json)
 		if not connection:
-			push_warning("invalid connection json %s" % json)
 			continue
 		_branches[connection.from].set_slot_enabled_right(0, true)
 		_branches[connection.to].set_slot_enabled_left(0, true)
@@ -219,19 +228,22 @@ func load_character(data: Dictionary) -> void:
 			_branches[connection.to].name, 0,
 		)
 
-	zoom = data.get(_Global.FILE_GRAPH_ZOOM, 1.0)
-	scroll_offset = _Vector2Utils.from_json(
-		data.get(_Global.FILE_GRAPH_SCROLL_OFFSET, {})
+	zoom = _JsonUtils.safe_get(data, _Global.FILE_GRAPH_ZOOM, 1.0)
+	scroll_offset = _JsonUtils.get_vector2(
+		data,
+		_Global.FILE_GRAPH_SCROLL_OFFSET,
+		Vector2.ZERO,
 	)
 
 
 func save_character(data: Dictionary) -> void:
 	var position_offsets := {}
 	for id in _branches:
-		position_offsets[id] = _Vector2Utils.to_json(_branches[id].position_offset)
+		position_offsets[id] = _JsonUtils.vector2_to_json(_branches[id].position_offset)
 	data[_Global.FILE_BRANCH_POSITION_OFFSETS] = position_offsets
 	data[_Global.FILE_GRAPH_ZOOM] = zoom
-	data[_Global.FILE_GRAPH_SCROLL_OFFSET] = _Vector2Utils.to_json(scroll_offset)
+	push_warning("todo truncate zoom")
+	data[_Global.FILE_GRAPH_SCROLL_OFFSET] = _JsonUtils.vector2_to_json(scroll_offset)
 
 	var name_to_key: Dictionary[String, int] = {}
 	for id in _branches:
@@ -271,18 +283,24 @@ class _BranchConnection:
 	var from := -1
 	var to := -1
 
-	static func from_json(json: Dictionary) -> _BranchConnection:
-		var from: int = json.get("from", -1)
-		var to: int = json.get("to", -1)
 
-		if not (from > -1 and to > -1):
+	static func from_json(json) -> _BranchConnection:
+		if not json is Dictionary:
+			return null
+
+		var from: int = _JsonUtils.safe_get(json, "from", -1)
+		var to: int = _JsonUtils.safe_get(json, "to", -1)
+
+		if not (from != -1 and to != -1):
 			return null
 
 		return new(from, to)
 
+
 	func _init(from: int, to: int) -> void:
 		self.from = from
 		self.to = to
+
 
 	func to_json() -> Dictionary:
 		return {

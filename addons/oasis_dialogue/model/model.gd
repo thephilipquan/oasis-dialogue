@@ -2,6 +2,7 @@ extends RefCounted
 
 const _AST := preload("res://addons/oasis_dialogue/model/ast.gd")
 const _Global := preload("res://addons/oasis_dialogue/global.gd")
+const _JsonUtils := preload("res://addons/oasis_dialogue/utils/json_utils.gd")
 const _Visitor := preload("res://addons/oasis_dialogue/visitor/visitor.gd")
 
 var _characters: Array[String] = []
@@ -103,23 +104,28 @@ func get_branches() -> Dictionary[int, _AST.Branch]:
 
 
 func load_character(data: Dictionary) -> void:
-	_active = data.get(_Global.LOAD_FILE_NAME, "")
-	_branches = _AST.Branch.from_jsons(data.get(_Global.FILE_BRANCHES, {}))
+	_active = _JsonUtils.safe_get(data, _Global.LOAD_FILE_NAME, "")
+	_branches = _AST.Branch.from_jsons(_JsonUtils.safe_get(data, _Global.FILE_BRANCHES, {}))
 
 
 func load_project(data: Dictionary) -> void:
-	var characters: Array[String] = []
-	characters.assign(data.get(_Global.LOAD_PROJECT_CHARACTERS, []))
+	_characters.clear()
+	var characters := _JsonUtils.safe_get(data, _Global.LOAD_PROJECT_CHARACTERS, []) as Array
+	for c in characters:
+		if c is String:
+			_characters.push_back(c)
 
-	var conditions: Array[String] = []
-	conditions.assign(data.get(_Global.PROJECT_CONDITIONS, []))
+	_conditions.clear()
+	var conditions := _JsonUtils.safe_get(data, _Global.PROJECT_CONDITIONS, []) as Array
+	for c in conditions:
+		if c is String:
+			_conditions.push_back(c)
 
-	var actions: Array[String] = []
-	actions.assign(data.get(_Global.PROJECT_ACTIONS, []))
-
-	_characters = characters
-	_conditions = conditions
-	_actions = actions
+	_actions.clear()
+	var actions := _JsonUtils.safe_get(data, _Global.PROJECT_ACTIONS, []) as Array
+	for c in actions:
+		if c is String:
+			_actions.push_back(c)
 
 
 func save_project(data: Dictionary) -> void:
