@@ -86,7 +86,7 @@ func _ready() -> void:
 	add_branch.branch_added.connect(_model.add_branch)
 	add_branch.branch_added.connect(graph.add_branch)
 
-	add_character.init(_model, input_dialog_factory)
+	add_character.init_input_dialog_factory(input_dialog_factory)
 	add_character.character_added.connect(tree.add_item)
 	add_character.character_added.connect(_model.add_character)
 
@@ -197,6 +197,7 @@ func init(manager: _ProjectManager) -> void:
 	manager.file_loaded.connect(add_branch.show.unbind(1))
 
 	var add_character: _AddCharacterButton = $VBoxContainer/HeaderMarginContainer/HBoxContainer/AddCharacter
+	add_character.init_character_exists(manager.subfile_exists)
 	add_character.character_added.connect(manager.add_subfile)
 
 	var remove_character: _RemoveCharacterButton = $VBoxContainer/HeaderMarginContainer/HBoxContainer/RemoveCharacter

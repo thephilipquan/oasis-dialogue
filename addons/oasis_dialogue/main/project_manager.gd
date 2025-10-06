@@ -33,6 +33,12 @@ func can_rename_active_to(display_name: String) -> bool:
 	return not FileAccess.file_exists(path)
 
 
+func subfile_exists(display_name: String) -> bool:
+	var filename := _format_filename(display_name)
+	var path := get_subfile_path(filename)
+	return FileAccess.file_exists(path)
+
+
 func new_project(path: String) -> void:
 	_directory = path
 	var file := FileAccess.open(get_settings_path(), FileAccess.WRITE)

@@ -6,7 +6,7 @@ const _Model := preload("res://addons/oasis_dialogue/model/model.gd")
 
 signal character_added(name: String)
 
-var _model: _Model = null
+var _character_exists := Callable()
 var _input_dialog_factory := Callable()
 
 
@@ -14,9 +14,12 @@ func _ready() -> void:
 	button_up.connect(_on_button_up)
 
 
-func init(model: _Model, input_dialog_factory: Callable) -> void:
-	_model = model
-	_input_dialog_factory = input_dialog_factory
+func init_character_exists(callback: Callable) -> void:
+	_character_exists = callback
+
+
+func init_input_dialog_factory(callback: Callable) -> void:
+	_input_dialog_factory = callback
 
 
 func _on_button_up() -> void:
@@ -43,6 +46,6 @@ func _validate(name: String) -> String:
 	var message := ""
 	if name == "":
 		message = "Character cannot be a blank."
-	elif _model.has_character(name):
+	elif _character_exists.call(name):
 		message = "%s already exists." % name
 	return message

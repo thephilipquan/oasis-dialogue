@@ -3,10 +3,8 @@ extends GutTest
 const AddCharacterButton := preload("res://addons/oasis_dialogue/canvas/add_character_button.gd")
 const InputDialog := preload("res://addons/oasis_dialogue/input_dialog/input_dialog.gd")
 const InputDialogScene := preload("res://addons/oasis_dialogue/input_dialog/input_dialog.tscn")
-const Model := preload("res://addons/oasis_dialogue/model/model.gd")
 
 var sut: AddCharacterButton = null
-var model: Model = null
 var dialog: InputDialog = null
 var dialog_factory := Callable()
 
@@ -20,8 +18,7 @@ func before_all() -> void:
 
 func before_each() -> void:
 	sut = AddCharacterButton.new()
-	model = double(Model).new()
-	sut.init(model, dialog_factory)
+	sut.init_input_dialog_factory(dialog_factory)
 
 	add_child_autofree(sut)
 
@@ -47,7 +44,7 @@ func test_dialog_cancel() -> void:
 
 
 func test_validate_new_name() -> void:
-	stub(model.has_character).to_return(false)
+	sut.init_character_exists(func(s): return false)
 
 	var got := sut._validate("fred")
 
@@ -61,7 +58,7 @@ func test_validate_blank() -> void:
 
 
 func test_validate_existing_name() -> void:
-	stub(model.has_character).to_return(true)
+	sut.init_character_exists(func(s): return true)
 
 	var got := sut._validate("fred")
 
