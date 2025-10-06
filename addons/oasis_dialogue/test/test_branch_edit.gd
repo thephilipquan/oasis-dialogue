@@ -492,7 +492,7 @@ func test_save_character_saves_graph_zoom() -> void:
 	if not key in data:
 		fail_test("")
 		return
-	assert_almost_eq(data[key], 1.55, 0.01)
+	assert_eq(data[key], 1.55)
 
 
 func test_save_character_saves_branch_scroll_offset() -> void:

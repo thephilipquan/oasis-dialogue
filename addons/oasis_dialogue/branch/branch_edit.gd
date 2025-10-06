@@ -241,8 +241,7 @@ func save_character(data: Dictionary) -> void:
 	for id in _branches:
 		position_offsets[id] = _JsonUtils.vector2_to_json(_branches[id].position_offset)
 	data[_Global.FILE_BRANCH_POSITION_OFFSETS] = position_offsets
-	data[_Global.FILE_GRAPH_ZOOM] = zoom
-	push_warning("todo truncate zoom")
+	data[_Global.FILE_GRAPH_ZOOM] = snappedf(zoom, 0.01)
 	data[_Global.FILE_GRAPH_SCROLL_OFFSET] = _JsonUtils.vector2_to_json(scroll_offset)
 
 	var name_to_key: Dictionary[String, int] = {}
