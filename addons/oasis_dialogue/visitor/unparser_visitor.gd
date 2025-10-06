@@ -88,7 +88,6 @@ func visit_numberliteral(value: _AST.NumberLiteral) -> void:
 func visit_recovery(recovery: _AST.Recovery) -> void:
 	var line := _line
 	if recovery.line != -1:
-		push_warning("globalize -1")
 		line = recovery.line
 	_move_line(line)
 	_append_line(recovery.message)
