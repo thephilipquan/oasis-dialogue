@@ -13,6 +13,8 @@ func before_all() -> void:
 	assert(BASEDIR == TESTDIR.get_base_dir())
 	var dir := DirAccess.open(BASEDIR)
 	dir.make_dir(TESTDIR.get_basename())
+	# Check if any files exist before running.
+	after_each()
 
 
 func after_all() -> void:

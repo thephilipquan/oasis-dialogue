@@ -158,6 +158,7 @@ func test_save_character_stores_branches() -> void:
 
 	for i in 2:
 		assert_true(i in branches)
+		assert_not_null(branches[i])
 
 
 func test_add_character() -> void:

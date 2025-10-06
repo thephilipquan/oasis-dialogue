@@ -507,12 +507,13 @@ func test_save_character_saves_branch_scroll_offset() -> void:
 func test_save_character_saves_branch_connections() -> void:
 	sut.add_branch(0)
 	sut.add_branch(1)
-	var data := {}
+	sut.connect_branches(0, [1])
 
+	var data := {}
 	sut.save_character(data)
 
 	const key := Global.FILE_BRANCH_CONNECTIONS
 	if not key in data:
 		fail_test("")
 		return
-	assert_eq_deep(data[key], [])
+	assert_ne_deep(data[key], [])
