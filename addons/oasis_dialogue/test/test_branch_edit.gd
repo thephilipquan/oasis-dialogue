@@ -353,11 +353,11 @@ func test_load_character_restores_branch_connections() -> void:
 		Global.FILE_BRANCH_CONNECTIONS: [
 			{
 				"from": 0,
-				"to": 1
+				"to": 1,
 			},
 			{
-				"from": 1,
-				"to": 2
+				"from": 1.0,
+				"to": 2.0,
 			},
 		],
 	}

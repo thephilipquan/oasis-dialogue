@@ -288,8 +288,8 @@ class _BranchConnection:
 		if not json is Dictionary:
 			return null
 
-		var from: int = _JsonUtils.safe_get(json, "from", -1)
-		var to: int = _JsonUtils.safe_get(json, "to", -1)
+		var from: int = _JsonUtils.safe_get_int(json, "from", -1)
+		var to: int = _JsonUtils.safe_get_int(json, "to", -1)
 
 		if not (from != -1 and to != -1):
 			return null
