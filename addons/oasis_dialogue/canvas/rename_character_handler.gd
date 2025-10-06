@@ -34,6 +34,6 @@ func _on_dialog_confirmed(name: String, dialog: Control) -> void:
 
 func _validate(name: String) -> String:
 	var message := ""
-	if can_rename_to.call(name):
+	if not can_rename_to.call(name):
 		message = "%s already exists." % name
 	return message

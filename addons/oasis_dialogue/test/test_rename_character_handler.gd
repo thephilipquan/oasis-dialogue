@@ -22,13 +22,13 @@ func before_each() -> void:
 
 
 func test_validate_new_name() -> void:
-	sut.can_rename_to = func(s: String): return false
+	sut.can_rename_to = func(s: String): return true
 
 	assert_eq(sut._validate("fred"), "")
 
 
 func test_validate_existing() -> void:
-	sut.can_rename_to = func(s: String): return true
+	sut.can_rename_to = func(s: String): return false
 
 	assert_ne(sut._validate("fred"), "")
 
