@@ -3,7 +3,7 @@ extends RefCounted
 
 static func is_int(value) -> bool:
 	if value is String:
-		return value.is_valid_int()
+		return value.is_valid_int() or value.is_valid_float()
 	return value is int or value is float
 
 

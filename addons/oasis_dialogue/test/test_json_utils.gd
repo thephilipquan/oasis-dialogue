@@ -9,12 +9,16 @@ func test_is_int_with_int_return_true() -> void:
 	assert_true(sut.is_int(3))
 
 
-func test_is_int_with_float_returns_false() -> void:
+func test_is_int_with_float_returns_true() -> void:
 	assert_true(sut.is_int(3.0))
 
 
 func test_is_int_with_string_value_return_true() -> void:
 	assert_true(sut.is_int("3"))
+
+
+func test_is_int_with_string_float_value_return_true() -> void:
+	assert_true(sut.is_int("3.0"))
 
 
 func test_is_int_with_non_number_string_return_false() -> void:
