@@ -22,6 +22,7 @@ const _CharacterTree := preload("res://addons/oasis_dialogue/canvas/character_tr
 const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
 const _RenameCharacterHandler := preload("res://addons/oasis_dialogue/canvas/rename_character_handler.gd")
 
+const _Token := preload("res://addons/oasis_dialogue/model/token.gd")
 const _Model := preload("res://addons/oasis_dialogue/model/model.gd")
 const _Lexer := preload("res://addons/oasis_dialogue/model/lexer.gd")
 const _Parser := preload("res://addons/oasis_dialogue/model/parser.gd")
@@ -37,6 +38,7 @@ const _EmptyBranchVisitor := preload("res://addons/oasis_dialogue/visitor/empty_
 const _RemoveActionVisitor := preload("res://addons/oasis_dialogue/visitor/remove_action_visitor.gd")
 const _FinishCallbackVisitor := preload("res://addons/oasis_dialogue/visitor/finish_callback_visitor.gd")
 const _UnparserVisitor := preload("res://addons/oasis_dialogue/visitor/unparser_visitor.gd")
+const _UniqueTypeVisitor := preload("res://addons/oasis_dialogue/visitor/unique_type_visitor.gd")
 const _UpdateModelVisitor := preload("res://addons/oasis_dialogue/visitor/update_model_visitor.gd")
 const _VisitorIterator := preload("res://addons/oasis_dialogue/visitor/visitor_iterator.gd")
 
@@ -107,6 +109,11 @@ func _ready() -> void:
 	var parse_error_visitor := _ParseErrorVisitor.new(on_err)
 	var empty_branch_visitor := _EmptyBranchVisitor.new(on_err)
 	var duplicate_annotation_visitor := _DuplicateAnnotationVisitor.new(on_err)
+	var unique_type_visitor := _UniqueTypeVisitor.new(
+		_Token.type_to_string(_Token.Type.RNG),
+		_Token.type_to_string(_Token.Type.SEQ),
+	)
+	unique_type_visitor.init_on_err(on_err)
 	var update_model_visitor := _UpdateModelVisitor.new(_model.update_branch)
 	var validate_connect_visitor := _ValidateConnectVisitor.new(
 		_Global.CONNECT_BRANCH_KEYWORD,
@@ -129,6 +136,7 @@ func _ready() -> void:
 		parse_error_visitor,
 		empty_branch_visitor,
 		duplicate_annotation_visitor,
+		unique_type_visitor,
 		validate_connect_visitor,
 		create_branch_visitor,
 		connect_branch_visitor,
