@@ -13,23 +13,28 @@ signal saving_project(data: Dictionary)
 
 var _directory := ""
 var _active := ""
-var _display_to_filename: Dictionary[String, String] = {}
 
 
 func get_settings_path() -> String:
 	return _directory.path_join(SETTINGS)
 
 
-func get_subfile_path(filename: String) -> String:
+## Returns the path of the file with [param name] if it were to exist in this
+## project's directory.
+## [br][br]
+## [param name] can be either display_name or filename.
+func get_subfile_path(name: String) -> String:
+	var filename := _format_filename(name)
 	return _directory.path_join(filename + "." + EXTENSION)
 
 
 func can_rename_active_to(display_name: String) -> bool:
-	var filename := _format_filename(display_name)
-	if filename == _display_to_filename[_active]:
+	var renamed_filename := _format_filename(display_name)
+	var active_filename := _format_filename(_active)
+	if renamed_filename == active_filename:
 		return true
 
-	var path := get_subfile_path(filename)
+	var path := get_subfile_path(display_name)
 	return not FileAccess.file_exists(path)
 
 
@@ -38,17 +43,13 @@ func get_active_display_name() -> String:
 
 
 func subfile_exists(display_name: String) -> bool:
-	var filename := _format_filename(display_name)
-	var path := get_subfile_path(filename)
+	var path := get_subfile_path(display_name)
 	return FileAccess.file_exists(path)
 
 
 func new_project(path: String) -> void:
 	_directory = path
 	var file := FileAccess.open(get_settings_path(), FileAccess.WRITE)
-	if not file:
-		print("ERROR: ", FileAccess.get_open_error())
-		return
 
 
 func load_project(path: String) -> void:
@@ -60,7 +61,6 @@ func load_project(path: String) -> void:
 
 	_directory = path
 	_active = ""
-	_display_to_filename.clear()
 
 	var settings := FileAccess.open(get_settings_path(), FileAccess.READ)
 	var content := settings.get_as_text()
@@ -89,7 +89,6 @@ func load_project(path: String) -> void:
 					display_name
 			)
 
-		_display_to_filename[display_name] = filename
 		characters.push_back(display_name)
 
 	if characters:
@@ -115,11 +114,8 @@ func add_subfile(display_name: String) -> void:
 	if not _directory:
 		return
 
-	var filename := _format_filename(display_name)
-	_display_to_filename[display_name] = filename
-
 	var dir := DirAccess.open(_directory)
-	var path := get_subfile_path(filename)
+	var path := get_subfile_path(display_name)
 	if dir.file_exists(path):
 		return
 
@@ -132,14 +128,11 @@ func load_subfile(display_name: String) -> void:
 	if not (
 		_directory
 		and display_name != _active
-		and display_name in _display_to_filename
 	):
 		return
 
-	var filename := _display_to_filename[display_name]
-
 	var dir := DirAccess.open(_directory)
-	var path := get_subfile_path(filename)
+	var path := get_subfile_path(display_name)
 	if not dir.file_exists(path):
 		return
 
@@ -164,8 +157,7 @@ func remove_active_subfile() -> void:
 	if not _directory or not _active:
 		return
 
-	var filename := _display_to_filename[_active]
-	var path := get_subfile_path(filename)
+	var path := get_subfile_path(_active)
 	var dir := DirAccess.open(_directory)
 	if not dir.file_exists(path):
 		return
@@ -182,7 +174,7 @@ func rename_active_subfile(to_display_name: String) -> void:
 	):
 		return
 
-	var filename := _display_to_filename[_active]
+	var filename := _format_filename(_active)
 	var to_filename := _format_filename(to_display_name)
 
 	var to_path := get_subfile_path(to_filename)
@@ -192,11 +184,9 @@ func rename_active_subfile(to_display_name: String) -> void:
 
 	var old_active = _active
 	_active = to_display_name
-	_display_to_filename[to_display_name] = to_filename
 	save_active_subfile()
 
-	dir.remove(get_subfile_path(_display_to_filename[old_active]))
-	_display_to_filename.erase(old_active)
+	dir.remove(get_subfile_path(old_active))
 
 
 func save_active_subfile() -> void:
@@ -205,7 +195,8 @@ func save_active_subfile() -> void:
 
 	data[_Global.FILE_DISPLAY_NAME] = _active
 
-	var file := FileAccess.open(get_subfile_path(_active), FileAccess.WRITE)
+	var path := get_subfile_path(_active)
+	var file := FileAccess.open(path, FileAccess.WRITE)
 	file.store_string(JSON.stringify(data, "\t"))
 
 
