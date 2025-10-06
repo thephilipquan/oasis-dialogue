@@ -5,24 +5,9 @@ const _Global := preload("res://addons/oasis_dialogue/global.gd")
 const _JsonUtils := preload("res://addons/oasis_dialogue/utils/json_utils.gd")
 const _Visitor := preload("res://addons/oasis_dialogue/visitor/visitor.gd")
 
-var _characters: Array[String] = []
 var _conditions: Array[String] = []
 var _actions: Array[String] = []
-
-var _active := ""
 var _branches: Dictionary[int, _AST.Branch] = {}
-
-
-func get_active_character() -> String:
-	return _active
-
-
-func get_character_count() -> int:
-	return _characters.size()
-
-
-func get_characters() -> Array[String]:
-	return _characters.duplicate()
 
 
 func set_conditions(conditions: Array[String]) -> void:
@@ -42,8 +27,6 @@ func has_action(action: String) -> bool:
 
 
 func add_branch(id: int) -> void:
-	if not _active:
-		return
 	var branch := _AST.Branch.new()
 	branch.id = id
 	_branches[id] = branch
@@ -67,29 +50,8 @@ func remove_branch(id: int) -> void:
 	_branches.erase(id)
 
 
-func is_active() -> bool:
-	return _active != ""
-
-
-func has_character(name: String) -> bool:
-	return name in _characters
-
-
-func add_character(name: String) -> void:
-	assert(not name in _characters)
-	_characters.push_back(name)
-
-
-func remove_active_character() -> void:
-	_characters.erase(_active)
+func clear_branches() -> void:
 	_branches.clear()
-	_active = ""
-
-
-func rename_active_character(to: String) -> void:
-	assert(_active and not to in _characters)
-	_characters[_characters.find(_active)] = to
-	_active = to
 
 
 func has_branch(id: int) -> bool:
@@ -106,7 +68,6 @@ func get_branches() -> Dictionary[int, _AST.Branch]:
 
 
 func load_character(data: Dictionary) -> void:
-	_active = _JsonUtils.safe_get(data, _Global.LOAD_FILE_NAME, "")
 	_branches.clear()
 
 	var branches: Dictionary = _JsonUtils.safe_get(data, _Global.FILE_BRANCHES, {})
@@ -116,12 +77,6 @@ func load_character(data: Dictionary) -> void:
 
 
 func load_project(data: Dictionary) -> void:
-	_characters.clear()
-	var characters := _JsonUtils.safe_get(data, _Global.LOAD_PROJECT_CHARACTERS, []) as Array
-	for c in characters:
-		if c is String:
-			_characters.push_back(c)
-
 	_conditions.clear()
 	var conditions := _JsonUtils.safe_get(data, _Global.PROJECT_CONDITIONS, []) as Array
 	for c in conditions:
@@ -136,7 +91,6 @@ func load_project(data: Dictionary) -> void:
 
 
 func save_project(data: Dictionary) -> void:
-	data[_Global.LOAD_PROJECT_CHARACTERS] = _characters
 	data[_Global.PROJECT_CONDITIONS] = _conditions
 	data[_Global.PROJECT_ACTIONS] = _actions
 

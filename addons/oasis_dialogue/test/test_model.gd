@@ -33,16 +33,6 @@ func test_actions() -> void:
 	assert_false(sut.has_action("eee"))
 
 
-func test_get_active_character() -> void:
-	sut._active = "fred"
-	assert_eq(sut.get_active_character(), "fred")
-
-
-func test_get_characters() -> void:
-	sut._characters = [ "fred", "joe" ]
-	assert_eq_deep(sut.get_characters(), [ "fred", "joe" ])
-
-
 func test_get_branches() -> void:
 	var branches: Dictionary[int, AST.Branch] = {
 		0: AST.Branch.new(),
@@ -50,16 +40,6 @@ func test_get_branches() -> void:
 	}
 	sut._branches = branches
 	assert_eq_deep(sut.get_branches(), branches)
-
-
-func test_load_character_sets_active() -> void:
-	var d := {
-		"name": "fred",
-	}
-
-	sut.load_character(d)
-
-	assert_eq(sut.get_active_character(), "fred")
 
 
 func test_load_character_sets_branches() -> void:
@@ -98,48 +78,49 @@ func test_load_character_with_empty_branches() -> void:
 
 func test_load_project() -> void:
 	var d := {
-		"characters": [ "fred", "joe" ],
-		"actions": [ "a", "b" ],
-		"conditions": [ "c", "d" ],
+		"actions": ["a", "b"],
+		"conditions": ["c", "d"],
 	}
 	sut.load_project(d)
-	assert_eq_deep(sut._characters, ["fred", "joe"])
 	assert_eq_deep(sut._actions, ["a", "b"])
 	assert_eq_deep(sut._conditions, ["c", "d"])
 
 
 func test_load_project_overwrites() -> void:
 	var d := {
-		"characters": [ "fred", "joe" ],
-		"actions": [ "a", "b" ],
-		"conditions": [ "c", "d" ],
+		"actions": ["a", "b"],
+		"conditions": ["c", "d"],
 	}
 	sut.load_project(d)
 
 	d = {
-		"characters": [ "jim", "tom" ],
-		"actions": [ "e" ],
-		"conditions": [ "f" ],
+		"actions": ["e"],
+		"conditions": ["f"],
 	}
 	sut.load_project(d)
 
-	assert_eq_deep(sut._characters, [ "jim", "tom" ])
-	assert_eq_deep(sut._actions, [ "e" ])
-	assert_eq_deep(sut._conditions, [ "f" ])
+	assert_eq_deep(sut._actions, ["e"])
+	assert_eq_deep(sut._conditions, ["f"])
 
 
-func test_save_project() -> void:
-	var before := {
-		"characters": [ "fred", "joe" ],
-		"actions": [ "a", "b" ],
-		"conditions": [ "c", "d" ],
-	}
-	sut.load_project(before)
-	var after := {}
+func test_save_project_stores_actions() -> void:
+	sut._actions = ["a", "b"]
 
-	sut.save_project(after)
+	var got := {}
+	sut.save_project(got)
 
-	assert_eq_deep(after, before)
+	assert_has(got, "actions")
+	assert_eq_deep(got["actions"], ["a", "b"])
+
+
+func test_save_project_stores_conditions() -> void:
+	sut._conditions = ["c", "d"]
+
+	var got := {}
+	sut.save_project(got)
+
+	assert_has(got, "conditions")
+	assert_eq_deep(got["conditions"], ["c", "d"])
 
 
 func test_save_character_stores_branches() -> void:
@@ -161,36 +142,9 @@ func test_save_character_stores_branches() -> void:
 		assert_not_null(branches[i])
 
 
-func test_add_character() -> void:
-	sut.add_character("foo")
-	sut.add_character("bar")
-	assert_true("foo" in sut.get_characters())
-	assert_eq_deep(sut.get_characters(), ["foo", "bar"])
-
-
-func test_rename_active_character() -> void:
-	var d := {
-		"characters": [ "fred", "joe" ],
-		"name": "fred",
-	}
-	sut.load_project(d)
-	sut.load_character(d)
-
-	sut.rename_active_character("tim")
-
-	assert_eq(sut.get_active_character(), "tim")
-	assert_eq_deep(sut.get_characters(), [ "tim", "joe" ])
-
-
-func test_add_branch_with_no_active_character() -> void:
-	sut.add_branch(0)
-
-	assert_eq(sut.get_branches().size(), 0)
-
-
 func test_add_branch() -> void:
 	var d := {
-		"characters": [ "fred", "joe" ],
+		"characters": ["fred", "joe"],
 		"name": "fred",
 	}
 	sut.load_project(d)
@@ -214,7 +168,7 @@ func test_update_branch_replaces_old_value() -> void:
 
 func test_has_branch_exists() -> void:
 	var d := {
-		"characters": [ "fred", "joe" ],
+		"characters": ["fred", "joe"],
 		"name": "fred",
 	}
 	sut.load_project(d)
@@ -227,7 +181,7 @@ func test_has_branch_exists() -> void:
 
 func test_has_branch_not_exists() -> void:
 	var d := {
-		"characters": [ "fred", "joe" ],
+		"characters": ["fred", "joe"],
 		"name": "fred",
 	}
 	sut.load_project(d)
@@ -240,7 +194,7 @@ func test_has_branch_not_exists() -> void:
 
 func test_remove_branch() -> void:
 	var d := {
-		"characters": [ "fred", "joe" ],
+		"characters": ["fred", "joe"],
 		"name": "fred",
 	}
 	sut.load_project(d)
@@ -257,7 +211,7 @@ func test_remove_branch() -> void:
 
 func test_get_branch() -> void:
 	var d := {
-		"characters": [ "fred", "joe" ],
+		"characters": ["fred", "joe"],
 		"name": "fred",
 	}
 	sut.load_project(d)
@@ -271,7 +225,7 @@ func test_get_branch() -> void:
 
 func test_get_branch_ids() -> void:
 	var d := {
-		"characters": [ "fred", "joe" ],
+		"characters": ["fred", "joe"],
 		"name": "fred",
 	}
 	sut.load_project(d)
@@ -280,36 +234,10 @@ func test_get_branch_ids() -> void:
 	sut.add_branch(1)
 	sut.add_branch(4)
 
-	assert_eq_deep(sut.get_branch_ids(), [ 1, 4 ])
+	assert_eq_deep(sut.get_branch_ids(), [1, 4])
 
 
-func test_remove_active_character_sets_active() -> void:
-	var d := {
-		"name": "fred",
-	}
-	sut.load_project(d)
-	sut.load_character(d)
-	sut.add_branch(0)
-
-	sut.remove_active_character()
-
-	assert_eq(sut.get_active_character(), "")
-
-
-func test_remove_active_character_updates_characters() -> void:
-	var d := {
-		"characters": ["fred", "joe"],
-		"name": "fred",
-	}
-	sut.load_project(d)
-	sut.load_character(d)
-
-	sut.remove_active_character()
-
-	assert_true(not "fred" in sut.get_characters())
-
-
-func test_remove_active_character_clears_branches() -> void:
+func test_clear_branches() -> void:
 	var d := {
 		"characters": ["fred"],
 		"name": "fred",
@@ -318,6 +246,6 @@ func test_remove_active_character_clears_branches() -> void:
 	sut.load_character(d)
 	sut.add_branch(0)
 
-	sut.remove_active_character()
+	sut.clear_branches()
 
 	assert_eq_deep(sut.get_branches().size(), 0)

@@ -1,29 +1,35 @@
 @tool
 extends Button
 
-const _Model := preload("res://addons/oasis_dialogue/model/model.gd")
 const _ConfirmDialog := preload("res://addons/oasis_dialogue/confirm_dialog/confirm_dialog.gd")
 
 signal character_removed
 
+var _get_branch_count := Callable()
+var _get_active_character := Callable()
 var _confirm_dialog_factory := Callable()
-
-var _model: _Model = null
 
 
 func _ready() -> void:
 	button_up.connect(_on_button_up)
 
 
-func init(model: _Model, confirm_dialog_factory: Callable) -> void:
-	_model = model
-	_confirm_dialog_factory = confirm_dialog_factory
+func init_get_branch_count(callback: Callable) -> void:
+	_get_branch_count = callback
+
+
+func init_get_active_character(callback: Callable) -> void:
+	_get_active_character = callback
+
+
+func init_confirm_dialog_factory(callback: Callable) -> void:
+	_confirm_dialog_factory = callback
 
 
 func _on_button_up() -> void:
-	if _model.get_branch_count() > 0:
+	if _get_branch_count.call() > 0:
 		var dialog: _ConfirmDialog = _confirm_dialog_factory.call()
-		var character := _model.get_active_character()
+		var character := _get_active_character.call()
 		dialog.set_message("%s has _branches. Are you sure you want to remove %s" % [character, character])
 		dialog.set_cancel_label("cancel")
 		dialog.set_confirm_label("delete")

@@ -78,7 +78,6 @@ func _ready() -> void:
 	_restore_branch_visitors = _VisitorIterator.new()
 	_rename_character_handler = _RenameCharacterHandler.new()
 
-	_rename_character_handler.get_active_character = _model.get_active_character
 	_rename_character_handler.input_dialog_factory = input_dialog_factory
 	_rename_character_handler.character_renamed.connect(tree.edit_selected_item)
 
@@ -88,11 +87,11 @@ func _ready() -> void:
 
 	add_character.init_input_dialog_factory(input_dialog_factory)
 	add_character.character_added.connect(tree.add_item)
-	add_character.character_added.connect(_model.add_character)
 
-	remove_character.init(_model, confirm_dialog_factory)
+	remove_character.init_get_branch_count(_model.get_branch_count)
+	remove_character.init_confirm_dialog_factory(confirm_dialog_factory)
 	remove_character.character_removed.connect(tree.remove_selected_item)
-	remove_character.character_removed.connect(_model.remove_active_character)
+	remove_character.character_removed.connect(_model.clear_branches)
 	remove_character.character_removed.connect(graph.remove_branches)
 	remove_character.character_removed.connect(add_branch.hide)
 	remove_character.character_removed.connect(remove_character.hide)
@@ -201,10 +200,12 @@ func init(manager: _ProjectManager) -> void:
 	add_character.character_added.connect(manager.add_subfile)
 
 	var remove_character: _RemoveCharacterButton = $VBoxContainer/HeaderMarginContainer/HBoxContainer/RemoveCharacter
+	remove_character.init_get_active_character(manager.get_active_display_name)
 	remove_character.character_removed.connect(manager.remove_active_subfile)
 	manager.file_loaded.connect(remove_character.show.unbind(1))
 
 	tree.character_selected.connect(manager.load_subfile)
 
+	_rename_character_handler.get_active_character = manager.get_active_display_name
 	_rename_character_handler.can_rename_to = manager.can_rename_active_to
 	_rename_character_handler.character_renamed.connect(manager.rename_active_subfile)

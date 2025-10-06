@@ -33,6 +33,10 @@ func can_rename_active_to(display_name: String) -> bool:
 	return not FileAccess.file_exists(path)
 
 
+func get_active_display_name() -> String:
+	return _active
+
+
 func subfile_exists(display_name: String) -> bool:
 	var filename := _format_filename(display_name)
 	var path := get_subfile_path(filename)

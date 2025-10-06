@@ -2,11 +2,9 @@ extends GutTest
 
 const ConfirmDialog := preload("res://addons/oasis_dialogue/confirm_dialog/confirm_dialog.gd")
 const ConfirmDialogScene := preload("res://addons/oasis_dialogue/confirm_dialog/confirm_dialog.tscn")
-const Model := preload("res://addons/oasis_dialogue/model/model.gd")
 const RemoveCharacterButton := preload("res://addons/oasis_dialogue/canvas/remove_character_button.gd")
 
 var sut: RemoveCharacterButton = null
-var model: Model = null
 var dialog: ConfirmDialog = null
 var dialog_factory := Callable()
 
@@ -20,15 +18,14 @@ func before_all() -> void:
 
 func before_each() -> void:
 	sut = RemoveCharacterButton.new()
-	model = double(Model).new()
-	sut.init(model, dialog_factory)
+	sut.init_confirm_dialog_factory(dialog_factory)
 
 	add_child_autofree(sut)
 
 
 func test_has_no_branches() -> void:
 	watch_signals(sut)
-	stub(model.get_branch_count).to_return(0)
+	sut.init_get_branch_count(func(): return 0)
 
 	sut._on_button_up()
 
@@ -37,8 +34,8 @@ func test_has_no_branches() -> void:
 
 func test_has_branches_confirmed() -> void:
 	watch_signals(sut)
-	stub(model.get_branch_count).to_return(1)
-	stub(model.get_active_character).to_return("")
+	sut.init_get_branch_count(func(): return 1)
+	sut.init_get_active_character(func(): return "")
 
 	sut._on_button_up()
 	dialog.confirmed.emit()
@@ -49,8 +46,8 @@ func test_has_branches_confirmed() -> void:
 
 func test_has_branches_canceled() -> void:
 	watch_signals(sut)
-	stub(model.get_branch_count).to_return(1)
-	stub(model.get_active_character).to_return("")
+	sut.init_get_branch_count(func(): return 1)
+	sut.init_get_active_character(func(): return "")
 
 	sut._on_button_up()
 	dialog.canceled.emit()

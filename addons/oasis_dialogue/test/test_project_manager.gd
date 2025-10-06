@@ -69,6 +69,12 @@ func test_get_subfile_path() -> void:
 	)
 
 
+func test_get_active_display_name_returns_active() -> void:
+	sut._active = "foo"
+
+	assert_eq(sut.get_active_display_name(), "foo")
+
+
 func test_new_project_set_directory_member() -> void:
 	sut.new_project(TESTDIR)
 
