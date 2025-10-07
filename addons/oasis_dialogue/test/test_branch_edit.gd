@@ -67,7 +67,7 @@ func test_update_branch_calls_set_text() -> void:
 	assert_called(branches[0], "set_text", ["hello world"])
 
 
-func test_remove_branch() -> void:
+func test_remove_branch_removes_branch_from_children() -> void:
 	watch_signals(sut)
 	sut.add_branch(3)
 
@@ -77,20 +77,27 @@ func test_remove_branch() -> void:
 	assert_eq(sut.get_branches().size(), 0)
 
 
-func test_highlight_calls_branch_highlight() -> void:
-	sut.add_branch(2)
-
-	sut.highlight_branch(2, [0, 2, 3])
-
-	assert_called(branches[0], "highlight", [[0, 2, 3]])
-
-
-func test_clear_highlights_calls_branch_highlight() -> void:
+func test_remove_branch_emits_branches_dirtied() -> void:
+	watch_signals(sut)
 	sut.add_branch(3)
 
-	sut.clear_branch_highlights(3)
+	sut.remove_branch(3, branches[0])
+	await wait_physics_frames(1)
 
-	assert_called(branches[0], "highlight", [[]])
+	assert_signal_emitted_with_parameters(sut.branches_dirtied, [3, []])
+
+
+func test_remove_branch_emits_branches_dirtied_with_left_connections() -> void:
+	for i in 3:
+		sut.add_branch(i)
+	sut.connect_branches(0, [1])
+	sut.connect_branches(1, [2])
+	watch_signals(sut)
+
+	sut.remove_branch(1, branches[1])
+	await wait_physics_frames(1)
+
+	assert_signal_emitted_with_parameters(sut.branches_dirtied, [1, [0]])
 
 
 func test_remove_branch_with_connections() -> void:
@@ -110,6 +117,22 @@ func test_remove_branch_with_connections() -> void:
 		sut.branches_dirtied,
 		[1, [0]],
 	)
+
+
+func test_highlight_calls_branch_highlight() -> void:
+	sut.add_branch(2)
+
+	sut.highlight_branch(2, [0, 2, 3])
+
+	assert_called(branches[0], "highlight", [[0, 2, 3]])
+
+
+func test_clear_highlights_calls_branch_highlight() -> void:
+	sut.add_branch(3)
+
+	sut.clear_branch_highlights(3)
+
+	assert_called(branches[0], "highlight", [[]])
 
 
 func test_connecting_branch_to_orphan() -> void:

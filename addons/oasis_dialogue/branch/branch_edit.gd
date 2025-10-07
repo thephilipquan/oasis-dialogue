@@ -92,8 +92,7 @@ func remove_branch(id: int, branch: _Branch) -> void:
 			if other.name in to_connections:
 				disconnect_node(branch.name, 0, other.name, 0)
 
-	if disconnected_branches:
-		branches_dirtied.emit(id, disconnected_branches)
+	branches_dirtied.emit(id, disconnected_branches)
 	disable_unused_slots()
 	_branches.erase(id)
 	remove_child(branch)
