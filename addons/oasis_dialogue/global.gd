@@ -5,8 +5,7 @@ const CONNECT_BRANCH_KEYWORD := "branch"
 ## The key for the list of character names.
 ## [br]
 ## Put by ProjectManager when loading.
-const LOAD_PROJECT_CHARACTERS := "characters"
-
+const PROJECT_CHARACTERS := "characters"
 const PROJECT_ACTIVE := "active"
 const PROJECT_CONDITIONS := "conditions"
 const PROJECT_ACTIONS := "actions"

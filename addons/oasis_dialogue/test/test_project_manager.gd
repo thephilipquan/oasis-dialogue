@@ -366,7 +366,7 @@ func test_load_project_emits_display_names() -> void:
 		return
 
 	var expected := {
-		Global.LOAD_PROJECT_CHARACTERS: ["joe", "SAM"],
+		Global.PROJECT_CHARACTERS: ["joe", "SAM"],
 	}
 	assert_eq_deep(got[0], expected)
 

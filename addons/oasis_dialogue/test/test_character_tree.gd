@@ -87,7 +87,7 @@ func test_item_activated_emits_character_activated() -> void:
 
 func test_load_project_sets_items() -> void:
 	var data := {
-		Global.LOAD_PROJECT_CHARACTERS: [
+		Global.PROJECT_CHARACTERS: [
 			"a",
 			"b",
 		],
@@ -100,7 +100,7 @@ func test_load_project_sets_items() -> void:
 
 func test_load_project_overwrites_items() -> void:
 	var data := {
-		"characters": [
+		Global.PROJECT_CHARACTERS: [
 			"a",
 			"b",
 		],
@@ -108,7 +108,7 @@ func test_load_project_overwrites_items() -> void:
 	sut.load_project(data)
 
 	data = {
-		"characters": [
+		Global.PROJECT_CHARACTERS: [
 			"c",
 			"d",
 		],
@@ -121,11 +121,11 @@ func test_load_project_overwrites_items() -> void:
 
 func test_load_project_selects_item_if_active() -> void:
 	var data := {
-		"characters": [
+		Global.PROJECT_CHARACTERS: [
 			"a",
 			"b",
 		],
-		"active": "a"
+		Global.PROJECT_ACTIVE: "a"
 	}
 	watch_signals(sut)
 

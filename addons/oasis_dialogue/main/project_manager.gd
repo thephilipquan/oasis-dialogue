@@ -94,7 +94,7 @@ func load_project(path: String) -> void:
 		characters.push_back(display_name)
 
 	if characters:
-		data[_Global.LOAD_PROJECT_CHARACTERS] = characters
+		data[_Global.PROJECT_CHARACTERS] = characters
 
 	project_loaded.emit(data)
 
