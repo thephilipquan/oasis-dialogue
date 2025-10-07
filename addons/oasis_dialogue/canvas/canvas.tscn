@@ -88,4 +88,5 @@ _timer = NodePath("StatusTimer")
 
 [node name="StatusTimer" type="Timer" parent="VBoxContainer/FooterMarginContainer/Status"]
 unique_name_in_owner = true
+wait_time = 2.0
 one_shot = true

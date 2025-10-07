@@ -82,6 +82,7 @@ func _ready() -> void:
 
 	_rename_character_handler.init_input_dialog_factory(input_dialog_factory)
 	_rename_character_handler.character_renamed.connect(tree.edit_selected_item)
+	_rename_character_handler.character_renamed.connect(status.rename_character)
 
 	add_branch.init(_model)
 	add_branch.branch_added.connect(_model.add_branch)
@@ -89,6 +90,7 @@ func _ready() -> void:
 
 	add_character.init_input_dialog_factory(input_dialog_factory)
 	add_character.character_added.connect(tree.add_item)
+	add_character.character_added.connect(status.add_character)
 
 	remove_character.init_get_branch_count(_model.get_branch_count)
 	remove_character.init_confirm_dialog_factory(confirm_dialog_factory)
@@ -97,6 +99,7 @@ func _ready() -> void:
 	remove_character.character_removed.connect(graph.remove_branches)
 	remove_character.character_removed.connect(add_branch.hide)
 	remove_character.character_removed.connect(remove_character.hide)
+	remove_character.character_removed.connect(status.remove_character)
 
 	tree.character_activated.connect(_rename_character_handler.rename)
 
@@ -191,14 +194,20 @@ func _ready() -> void:
 func init(manager: _ProjectManager) -> void:
 	var graph: _BranchEdit = $VBoxContainer/SplitContainer/BranchEdit
 	var tree: _CharacterTree = $VBoxContainer/SplitContainer/CharacterTree
+	var status: _Status = $VBoxContainer/FooterMarginContainer/Status
 
 	manager.file_loaded.connect(_model.load_character)
 	manager.file_loaded.connect(graph.load_character)
+
 	manager.project_loaded.connect(tree.load_project)
 	manager.project_loaded.connect(_model.load_project)
+
 	manager.saving_file.connect(_model.save_character)
 	manager.saving_file.connect(graph.save_character)
+	manager.saving_file.connect(status.save_file.unbind(1))
+
 	manager.saving_project.connect(_model.save_project)
+	manager.saving_project.connect(status.save_project.unbind(1))
 
 	var add_branch: _AddBranchButton = $VBoxContainer/HeaderMarginContainer/HBoxContainer/AddBranch
 	manager.file_loaded.connect(add_branch.show.unbind(1))
@@ -216,6 +225,7 @@ func init(manager: _ProjectManager) -> void:
 	save_project.button_up.connect(manager.save_project)
 
 	tree.character_selected.connect(manager.load_subfile)
+	status.init_get_active_character(manager.get_active_display_name)
 
 	_rename_character_handler.init_get_active_character(manager.get_active_display_name)
 	_rename_character_handler.init_can_rename_to(manager.can_rename_active_to)
