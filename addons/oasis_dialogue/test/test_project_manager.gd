@@ -427,13 +427,34 @@ func test_load_project_clears_fields() -> void:
 	assert_ne(sut._active, "foo")
 
 
-func test_save_project() -> void:
+func test_save_project_emits_saving_project() -> void:
 	sut.new_project(TESTDIR)
-
 	watch_signals(sut)
+
 	sut.save_project()
 
 	assert_signal_emitted(sut.saving_project)
+
+
+func test_save_project_saves_active_subfile() -> void:
+	sut.new_project(TESTDIR)
+	sut.add_subfile("fred")
+	sut.load_subfile("fred")
+	watch_signals(sut)
+
+	sut.save_project()
+
+	assert_signal_emitted(sut.saving_file)
+
+
+func test_save_project_does_not_save_active_if_no_active() -> void:
+	sut.new_project(TESTDIR)
+	sut.add_subfile("fred")
+	watch_signals(sut)
+
+	sut.save_project()
+
+	assert_signal_not_emitted(sut.saving_file)
 
 
 func test_remove_active_subfile() -> void:

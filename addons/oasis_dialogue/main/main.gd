@@ -19,7 +19,6 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
-	_manager.save_active_subfile()
 	_manager.save_project()
 
 

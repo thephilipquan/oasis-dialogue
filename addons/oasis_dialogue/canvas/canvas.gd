@@ -212,6 +212,9 @@ func init(manager: _ProjectManager) -> void:
 	remove_character.character_removed.connect(manager.remove_active_subfile)
 	manager.file_loaded.connect(remove_character.show.unbind(1))
 
+	var save_project: Button = $VBoxContainer/HeaderMarginContainer/HBoxContainer/SaveProject
+	save_project.button_up.connect(manager.save_project)
+
 	tree.character_selected.connect(manager.load_subfile)
 
 	_rename_character_handler.get_active_character = manager.get_active_display_name

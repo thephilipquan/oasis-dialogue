@@ -50,6 +50,10 @@ layout_mode = 2
 text = "add branch"
 script = ExtResource("4_wvnn7")
 
+[node name="SaveProject" type="Button" parent="VBoxContainer/HeaderMarginContainer/HBoxContainer"]
+layout_mode = 2
+text = "save project"
+
 [node name="SplitContainer" type="SplitContainer" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3

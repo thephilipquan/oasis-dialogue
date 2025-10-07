@@ -105,6 +105,9 @@ func load_project(path: String) -> void:
 func save_project() -> void:
 	assert(_directory)
 
+	if _active != "":
+		save_active_subfile()
+
 	var data := {}
 	saving_project.emit(data)
 	data[_Global.PROJECT_ACTIVE] = _active
