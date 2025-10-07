@@ -2,6 +2,7 @@
 extends Tree
 
 const _Global := preload("res://addons/oasis_dialogue/global.gd")
+const _JsonUtils := preload("res://addons/oasis_dialogue/utils/json_utils.gd")
 
 signal character_activated()
 signal character_selected(name: String)
@@ -23,7 +24,11 @@ func remove_selected_item() -> void:
 
 
 func get_selected_item() -> String:
-	return get_selected().get_text(0)
+	var text := ""
+	var selected := get_selected()
+	if selected:
+		text = selected.get_text(0)
+	return text
 
 
 func edit_selected_item(to: String) -> void:
@@ -45,6 +50,12 @@ func load_project(data: Dictionary) -> void:
 
 	for name in characters:
 		add_item(name)
+
+	var name: String = _JsonUtils.safe_get(data, _Global.PROJECT_ACTIVE, "")
+	if name:
+		for child in get_root().get_children():
+			if child.get_text(0) == name:
+				child.select(0)
 
 
 func _on_item_selected() -> void:
