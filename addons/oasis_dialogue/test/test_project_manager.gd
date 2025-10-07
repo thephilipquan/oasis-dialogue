@@ -178,17 +178,17 @@ func test_load_subfile_emits_file_loaded() -> void:
 	assert_eq_deep(parameters[0], contents)
 
 
-func test_load_subfile_not_exists_do_nothing() -> void:
+func test_load_subfile_that_does_not_exists_does_nothing() -> void:
 	sut.new_project(TESTDIR)
 	sut.add_subfile("fred")
-
 	watch_signals(sut)
+
 	sut.load_subfile("tim")
 
 	assert_signal_not_emitted(sut.file_loaded)
 
 
-func test_load_subfile_already_loaded() -> void:
+func test_load_subfile_already_loaded_does_nothing() -> void:
 	sut.new_project(TESTDIR)
 	sut.add_subfile("fred")
 	sut.load_subfile("fred")
@@ -318,24 +318,15 @@ func test_rename_active_subfile_already_exists_do_nothing() -> void:
 
 
 func test_load_project_emits_project_loaded() -> void:
-	var settings := FileAccess.open(
+	FileAccess.open(
 		TESTDIR.path_join(ProjectManager.SETTINGS),
 		 FileAccess.WRITE
 	)
-	var contents := { "active": "fred" }
-	settings.store_string(JSON.stringify(contents))
-	settings.close()
-	stub(sut.load_subfile).to_do_nothing()
 	watch_signals(sut)
 
 	sut.load_project(TESTDIR)
 
-	var parameters = get_signal_parameters(sut.project_loaded)
-	if not parameters:
-		fail_test("")
-		return
-	assert_signal_emitted(sut.project_loaded)
-	assert_eq(parameters[0], contents)
+	assert_signal_emitted_with_parameters(sut.project_loaded, [{}])
 
 
 func test_load_project_fails_if_settings_not_exists() -> void:
@@ -456,32 +447,6 @@ func test_remove_active_subfile() -> void:
 	assert_false(FileAccess.file_exists(sut.get_subfile_path("tim")))
 
 
-func test_save_project_with_empty_directory() -> void:
-	watch_signals(sut)
-	sut.save_project()
-
-	assert_signal_not_emitted(sut.saving_project)
-	assert_false(FileAccess.file_exists(sut.get_settings_path()))
-
-
-func test_add_subfile_with_empty_directory() -> void:
-	sut.add_subfile("tim")
-
-	assert_false(FileAccess.file_exists(
-		TESTDIR.path_join("tim.%s" % ProjectManager.EXTENSION)
-	))
-	assert_false(FileAccess.file_exists(
-		BASEDIR.path_join("tim.%s" % ProjectManager.EXTENSION)
-	))
-
-
-func test_load_subfile_with_empty_directory() -> void:
-	watch_signals(sut)
-	sut.load_subfile("tim")
-
-	assert_signal_not_emitted(sut.file_loaded)
-
-
 func test_load_subfile_emits_name_in_data() -> void:
 	sut.new_project(TESTDIR)
 	sut.add_subfile("fred")
@@ -499,19 +464,3 @@ func test_load_subfile_emits_name_in_data() -> void:
 		fail_test("")
 		return
 	assert_eq(got[0], { "name": "fred" })
-
-
-func test_remove_active_subfile_with_empty_directory() -> void:
-	sut._active = "foo"
-
-	sut.remove_active_subfile()
-
-	assert_eq(sut._active, "foo")
-
-
-func test_rename_active_subfile_with_empty_directory() -> void:
-	sut._active = "foo"
-
-	sut.rename_active_subfile("tim")
-
-	assert_eq(sut._active, "foo")

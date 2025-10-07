@@ -55,8 +55,10 @@ func new_project(path: String) -> void:
 func load_project(path: String) -> void:
 	var dir := DirAccess.open(path)
 	if not dir:
+		push_warning("trying to load a project at a path that does not exist")
 		return
 	if not dir.file_exists(path.path_join(SETTINGS)):
+		push_warning("trying to load a project that has no settings file")
 		return
 
 	_directory = path
@@ -101,8 +103,8 @@ func load_project(path: String) -> void:
 
 
 func save_project() -> void:
-	if not _directory:
-		return
+	assert(_directory)
+
 	var data := {}
 	saving_project.emit(data)
 	data[_Global.PROJECT_ACTIVE] = _active
@@ -111,8 +113,7 @@ func save_project() -> void:
 
 
 func add_subfile(display_name: String) -> void:
-	if not _directory:
-		return
+	assert(_directory)
 
 	var dir := DirAccess.open(_directory)
 	var path := get_subfile_path(display_name)
@@ -125,15 +126,14 @@ func add_subfile(display_name: String) -> void:
 
 
 func load_subfile(display_name: String) -> void:
-	if not (
-		_directory
-		and display_name != _active
-	):
+	assert(_directory)
+	if display_name == _active:
 		return
 
 	var dir := DirAccess.open(_directory)
 	var path := get_subfile_path(display_name)
 	if not dir.file_exists(path):
+		push_warning("Trying to load %s that does not exist" % path)
 		return
 
 	if _active:
@@ -154,8 +154,8 @@ func load_subfile(display_name: String) -> void:
 
 
 func remove_active_subfile() -> void:
-	if not _directory or not _active:
-		return
+	assert(_directory)
+	assert(_active)
 
 	var path := get_subfile_path(_active)
 	var dir := DirAccess.open(_directory)
@@ -167,11 +167,9 @@ func remove_active_subfile() -> void:
 
 
 func rename_active_subfile(to_display_name: String) -> void:
-	if (
-		not _directory
-		or not _active
-		or _active == to_display_name
-	):
+	assert(_directory)
+	assert(_active)
+	if _active == to_display_name:
 		return
 
 	var filename := _format_filename(_active)
@@ -190,6 +188,7 @@ func rename_active_subfile(to_display_name: String) -> void:
 
 
 func save_active_subfile() -> void:
+	assert(_active)
 	var data := {}
 	saving_file.emit(data)
 
