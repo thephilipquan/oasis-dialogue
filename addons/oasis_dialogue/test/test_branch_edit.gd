@@ -283,7 +283,7 @@ func test_arrange_orphans_with_ignore() -> void:
 
 func test_load_character_creates_branches_and_emits_branch_restored() -> void:
 	var data := {
-		Global.FILE_BRANCH_POSITION_OFFSETS: {
+		Global.FILE_BRANCHES: {
 			"3": {},
 			"6": {},
 		},
@@ -300,12 +300,16 @@ func test_load_character_creates_branches_and_emits_branch_restored() -> void:
 
 func test_load_character_restores_branch_position_offsets() -> void:
 	var data := {
+		Global.FILE_BRANCHES: {
+			"0": {},
+			"2": {},
+		},
 		Global.FILE_BRANCH_POSITION_OFFSETS: {
 			"0": {
 				"x": 50,
 				"y": 100,
 			},
-			"1": {
+			"2": {
 				"x": 150,
 				"y": 200,
 			},
@@ -344,7 +348,7 @@ func test_load_character_restores_graph_scroll_offset() -> void:
 
 func test_load_character_restores_branch_connections() -> void:
 	var data := {
-		Global.FILE_BRANCH_POSITION_OFFSETS: {
+		Global.FILE_BRANCHES: {
 			"0": {},
 			"1": {},
 			"2": {},
@@ -384,21 +388,6 @@ func test_load_character_restores_branch_connections() -> void:
 	assert_false(branches[3].name in to_connections)
 
 
-func test_load_character_default_branch_position_offsets() -> void:
-	var data := {
-		Global.FILE_BRANCH_POSITION_OFFSETS: {
-			"0": {},
-			"1": {},
-		},
-	}
-	watch_signals(sut)
-
-	sut.load_character(data)
-
-	assert_eq(branches[0].position_offset, Vector2(0, 0))
-	assert_eq(branches[1].position_offset, Vector2(0, 0))
-
-
 func test_load_character_default_graph_zoom() -> void:
 	sut.zoom = 1.58
 	var data := {}
@@ -411,7 +400,7 @@ func test_load_character_default_graph_zoom() -> void:
 
 func test_load_character_default_connections() -> void:
 	var data := {
-		Global.FILE_BRANCH_POSITION_OFFSETS: {
+		Global.FILE_BRANCHES: {
 			"0": {},
 			"1": {},
 		},
@@ -425,6 +414,10 @@ func test_load_character_default_connections() -> void:
 
 func test_load_character_overwrites_branches() -> void:
 	var data := {
+		Global.FILE_BRANCHES: {
+			"0": {},
+			"1": {},
+		},
 		Global.FILE_BRANCH_POSITION_OFFSETS: {
 			"0": {
 				"x": 50,
@@ -439,6 +432,9 @@ func test_load_character_overwrites_branches() -> void:
 	sut.load_character(data)
 
 	data = {
+		Global.FILE_BRANCHES: {
+			"0": {},
+		},
 		Global.FILE_BRANCH_POSITION_OFFSETS: {
 			"0": {
 				"x": 250,

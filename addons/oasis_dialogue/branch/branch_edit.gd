@@ -198,6 +198,18 @@ func load_character(data: Dictionary) -> void:
 	_stop_tween()
 	remove_branches()
 
+	var branches: Dictionary = _JsonUtils.safe_get(
+			data,
+			_Global.FILE_BRANCHES,
+			{},
+	)
+	for key in branches:
+		if not _JsonUtils.is_int(key):
+			continue
+		var id := _JsonUtils.parse_int(key)
+		add_branch(id)
+		branch_restored.emit(id)
+
 	var position_offsets: Dictionary = _JsonUtils.safe_get(
 			data,
 			_Global.FILE_BRANCH_POSITION_OFFSETS,
@@ -207,10 +219,8 @@ func load_character(data: Dictionary) -> void:
 		if not _JsonUtils.is_int(key):
 			continue
 		var id := _JsonUtils.parse_int(key)
-		add_branch(id)
 		var offset := _JsonUtils.get_vector2(position_offsets, key, Vector2.ZERO)
 		_branches[id].position_offset = offset
-		branch_restored.emit(id)
 
 	var branch_connections: Array = _JsonUtils.safe_get(
 			data,
