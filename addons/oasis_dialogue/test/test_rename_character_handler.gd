@@ -18,23 +18,23 @@ func before_all() -> void:
 
 func before_each() -> void:
 	sut = RenameCharacterHandler.new()
-	sut.input_dialog_factory = dialog_factory
+	sut.init_input_dialog_factory(dialog_factory)
 
 
 func test_validate_new_name() -> void:
-	sut.can_rename_to = func(s: String): return true
+	sut.init_can_rename_to(func(s: String): return true)
 
 	assert_eq(sut._validate("fred"), "")
 
 
 func test_validate_existing() -> void:
-	sut.can_rename_to = func(s: String): return false
+	sut.init_can_rename_to(func(s: String): return false)
 
 	assert_ne(sut._validate("fred"), "")
 
 
 func test_rename_confirmed() -> void:
-	sut.get_active_character = func(): return "fred"
+	sut.init_get_active_character(func(): return "fred")
 	watch_signals(sut)
 
 	sut.rename()
@@ -44,7 +44,7 @@ func test_rename_confirmed() -> void:
 
 
 func test_rename_canceled() -> void:
-	sut.get_active_character = func(): return "fred"
+	sut.init_get_active_character(func(): return "fred")
 	watch_signals(sut)
 
 	sut.rename()

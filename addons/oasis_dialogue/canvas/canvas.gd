@@ -80,7 +80,7 @@ func _ready() -> void:
 	_restore_branch_visitors = _VisitorIterator.new()
 	_rename_character_handler = _RenameCharacterHandler.new()
 
-	_rename_character_handler.input_dialog_factory = input_dialog_factory
+	_rename_character_handler.init_input_dialog_factory(input_dialog_factory)
 	_rename_character_handler.character_renamed.connect(tree.edit_selected_item)
 
 	add_branch.init(_model)
@@ -217,6 +217,6 @@ func init(manager: _ProjectManager) -> void:
 
 	tree.character_selected.connect(manager.load_subfile)
 
-	_rename_character_handler.get_active_character = manager.get_active_display_name
-	_rename_character_handler.can_rename_to = manager.can_rename_active_to
+	_rename_character_handler.init_get_active_character(manager.get_active_display_name)
+	_rename_character_handler.init_can_rename_to(manager.can_rename_active_to)
 	_rename_character_handler.character_renamed.connect(manager.rename_active_subfile)
