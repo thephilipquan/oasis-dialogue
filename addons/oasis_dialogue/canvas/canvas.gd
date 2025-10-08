@@ -165,8 +165,8 @@ func _ready() -> void:
 		for id in dirty_ids:
 			var ast := _model.get_branch(id)
 			visitors.iterate(ast)
-		_model.remove_branch(removed_id)
 	graph.branches_dirtied.connect(unbranch_removed)
+	graph.branch_removed.connect(_model.remove_branch)
 
 	graph.init(branch_factory)
 	graph.branch_added.connect(

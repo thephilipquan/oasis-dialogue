@@ -77,6 +77,16 @@ func test_remove_branch_removes_branch_from_children() -> void:
 	assert_eq(sut.get_branches().size(), 0)
 
 
+func test_remove_branch_emits_branch_removed() -> void:
+	watch_signals(sut)
+	sut.add_branch(3)
+
+	sut.remove_branch(7, branches[0])
+	await wait_physics_frames(1)
+
+	assert_signal_emitted_with_parameters(sut.branch_removed, [7])
+
+
 func test_remove_branch_emits_branches_dirtied() -> void:
 	watch_signals(sut)
 	sut.add_branch(3)

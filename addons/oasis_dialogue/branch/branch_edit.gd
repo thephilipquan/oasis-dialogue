@@ -8,6 +8,7 @@ const _JsonUtils := preload("res://addons/oasis_dialogue/utils/json_utils.gd")
 const SAVE_POSITION_OFFSET_KEY := "branch_position_offsets"
 
 signal branch_added(branch: _Branch)
+signal branch_removed(id: int)
 ## Emitted when a branch
 signal branches_dirtied(id: int, dirty_ids: Array[int])
 ## Emitted when a branch is loaded from file and needs to be unparsed.
@@ -92,6 +93,7 @@ func remove_branch(id: int, branch: _Branch) -> void:
 			if other.name in to_connections:
 				disconnect_node(branch.name, 0, other.name, 0)
 
+	branch_removed.emit(id)
 	branches_dirtied.emit(id, disconnected_branches)
 	disable_unused_slots()
 	_branches.erase(id)
