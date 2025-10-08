@@ -16,7 +16,10 @@ const _Branch := preload("res://addons/oasis_dialogue/branch/branch.gd")
 const _BranchScene := preload("res://addons/oasis_dialogue/branch/branch.tscn")
 const _BranchEdit := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
 const _Highlighter := preload("res://addons/oasis_dialogue/branch/highlighter.gd")
-const _Status := preload("res://addons/oasis_dialogue/canvas/status.gd")
+
+const _Status := preload("res://addons/oasis_dialogue/status/status.gd")
+const _StatusLabel := preload("res://addons/oasis_dialogue/status/status_label.gd")
+const _StatusLabelScene := preload("res://addons/oasis_dialogue/status/status_label.tscn")
 
 const _CharacterTree := preload("res://addons/oasis_dialogue/canvas/character_tree.gd")
 const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
@@ -55,7 +58,7 @@ func _ready() -> void:
 	var add_branch: _AddBranchButton = $VBoxContainer/HeaderMarginContainer/HBoxContainer/AddBranch
 	var add_character: _AddCharacterButton = $VBoxContainer/HeaderMarginContainer/HBoxContainer/AddCharacter
 	var remove_character: _RemoveCharacterButton = $VBoxContainer/HeaderMarginContainer/HBoxContainer/RemoveCharacter
-	var status: _Status = $VBoxContainer/FooterMarginContainer/Status
+	var status: _Status = $VBoxContainer/SplitContainer/BranchEdit/Status
 
 	var lexer := _Lexer.new()
 	var parser := _Parser.new()
@@ -74,6 +77,9 @@ func _ready() -> void:
 		highlighter.set_lexer(lexer)
 		branch.init(highlighter)
 		return branch
+	var status_label_factory := func():
+		var label: Label = _StatusLabelScene.instantiate()
+		return label
 
 	_model = _Model.new()
 	_language_server = _LanguageServer.new(lexer, parser)
@@ -87,6 +93,7 @@ func _ready() -> void:
 	add_branch.init(_model)
 	add_branch.branch_added.connect(_model.add_branch)
 	add_branch.branch_added.connect(graph.add_branch)
+	add_branch.branch_added.connect(status.add_branch)
 
 	add_character.init_input_dialog_factory(input_dialog_factory)
 	add_character.character_added.connect(tree.add_item)
@@ -102,10 +109,11 @@ func _ready() -> void:
 	remove_character.character_removed.connect(status.remove_character)
 
 	tree.character_activated.connect(_rename_character_handler.rename)
+	tree.character_selected.connect(status.clear_errs.unbind(1))
 
 	_semantic_visitors = _VisitorIterator.new()
 	var on_err := func(e: _SemanticError) -> void:
-		status.err(e.message)
+		status.err(e.id, e.message)
 		graph.highlight_branch(e.id, [e.line])
 		_semantic_visitors.stop()
 
@@ -127,13 +135,14 @@ func _ready() -> void:
 		_model.has_branch,
 		func(id: int):
 			_model.add_branch(id)
-			graph.add_branch(id),
+			graph.add_branch(id)
+			status.add_branch(id),
 	)
 	var connect_branch_visitor := _ConnectBranchVisitor.new(
 		_Global.CONNECT_BRANCH_KEYWORD,
 		graph.connect_branches,
 	)
-	var clear_status_err := _FinishCallbackVisitor.new(status.clear_err.unbind(1))
+	var clear_status_err := _FinishCallbackVisitor.new(status.clear_err)
 	var clear_branch_highlights_visitor := _FinishCallbackVisitor.new(graph.clear_branch_highlights)
 	_semantic_visitors.set_visitors([
 		parse_error_visitor,
@@ -170,6 +179,7 @@ func _ready() -> void:
 			visitors.iterate(ast)
 	graph.branches_dirtied.connect(unbranch_removed)
 	graph.branch_removed.connect(_model.remove_branch)
+	graph.branch_removed.connect(status.remove_branch)
 
 	graph.init(branch_factory)
 	graph.branch_added.connect(
@@ -190,11 +200,13 @@ func _ready() -> void:
 		_restore_branch_visitors.iterate(ast)
 	graph.branch_restored.connect(restore_branch)
 
+	status.init_status_label_factory(status_label_factory)
+
 
 func init(manager: _ProjectManager) -> void:
 	var graph: _BranchEdit = $VBoxContainer/SplitContainer/BranchEdit
 	var tree: _CharacterTree = $VBoxContainer/SplitContainer/CharacterTree
-	var status: _Status = $VBoxContainer/FooterMarginContainer/Status
+	var status: _Status = $VBoxContainer/SplitContainer/BranchEdit/Status
 
 	manager.file_loaded.connect(_model.load_character)
 	manager.file_loaded.connect(graph.load_character)

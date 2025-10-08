@@ -7,7 +7,7 @@
 [ext_resource type="Script" uid="uid://cwosx2xibo8sq" path="res://addons/oasis_dialogue/canvas/add_branch_button.gd" id="4_wvnn7"]
 [ext_resource type="Script" uid="uid://dug54oaf67dch" path="res://addons/oasis_dialogue/canvas/character_tree.gd" id="6_gyuj5"]
 [ext_resource type="Script" uid="uid://bnp7di4ksvma5" path="res://addons/oasis_dialogue/branch/branch_edit.gd" id="7_54gq2"]
-[ext_resource type="Script" uid="uid://djvh5vcfe2kkh" path="res://addons/oasis_dialogue/canvas/status.gd" id="8_54gq2"]
+[ext_resource type="PackedScene" uid="uid://cbhhlkh2fm53s" path="res://addons/oasis_dialogue/status/status.tscn" id="8_54gq2"]
 
 [node name="Canvas" type="Control"]
 layout_mode = 3
@@ -76,17 +76,5 @@ show_zoom_buttons = false
 show_grid_buttons = false
 script = ExtResource("7_54gq2")
 
-[node name="FooterMarginContainer" type="MarginContainer" parent="VBoxContainer"]
-layout_mode = 2
-
-[node name="Status" type="Label" parent="VBoxContainer/FooterMarginContainer" node_paths=PackedStringArray("_timer")]
-layout_mode = 2
-vertical_alignment = 1
-script = ExtResource("8_54gq2")
-_invalid_color = Color(0.9881305, 0.5623809, 0.5197464, 1)
-_timer = NodePath("StatusTimer")
-
-[node name="StatusTimer" type="Timer" parent="VBoxContainer/FooterMarginContainer/Status"]
-unique_name_in_owner = true
-wait_time = 2.0
-one_shot = true
+[node name="Status" parent="VBoxContainer/SplitContainer/BranchEdit" instance=ExtResource("8_54gq2")]
+layout_mode = 1

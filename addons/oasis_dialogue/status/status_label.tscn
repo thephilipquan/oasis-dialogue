@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://v2vf0ar25fif"]
+
+[ext_resource type="Script" uid="uid://dsw2t604fuogl" path="res://addons/oasis_dialogue/status/status_label.gd" id="1_jh85m"]
+
+[node name="StatusLabel" type="Label"]
+modulate = Color(1, 1, 1, 0)
+offset_right = 87.0
+offset_bottom = 23.0
+vertical_alignment = 1
+script = ExtResource("1_jh85m")
+_y_distance = 16
+
+[node name="Timer" type="Timer" parent="."]
+one_shot = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

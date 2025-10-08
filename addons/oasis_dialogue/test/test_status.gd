@@ -1,76 +1,92 @@
 extends GutTest
 
-const Status := preload("res://addons/oasis_dialogue/canvas/status.gd")
-
-# Too short of a value will render the timer inconsistant.
-const TEST_DURATION := 0.5
-const INVALID_COLOR := Color.RED
+const Status := preload("res://addons/oasis_dialogue/status/status.gd")
+const StatusScene := preload("res://addons/oasis_dialogue/status/status.tscn")
+const StatusLabel := preload("res://addons/oasis_dialogue/status/status_label.gd")
+const StatusLabelScene := preload("res://addons/oasis_dialogue/status/status_label.tscn")
 
 var sut: Status = null
-var timer: Timer = null
+var labels: Array[StatusLabel] = []
+
+func label_factory() -> StatusLabel:
+	var label: StatusLabel = double(StatusLabelScene).instantiate()
+	labels.push_back(label)
+	return label
 
 
 func before_each() -> void:
-	timer = Timer.new()
-	timer.one_shot = true
-	timer.wait_time = TEST_DURATION
-
-	sut = Status.new()
-	sut._invalid_color = INVALID_COLOR
-	sut._timer = timer
-	sut.add_child(timer)
-
+	labels.clear()
+	sut = StatusScene.instantiate()
+	sut.init_status_label_factory(label_factory)
 	add_child_autofree(sut)
 
 
-func test_info_displays_message() -> void:
-	sut.info("hello world")
+func test_info_adds_label_with_message() -> void:
+	sut.info("foo")
 
-	assert_eq(sut.text, "hello world")
-
-
-func test_info_sets_text_empty_after_timeout() -> void:
-	sut.info("hello world")
-
-	await wait_for_signal(timer.timeout, TEST_DURATION)
-	assert_eq(sut.text, "")
+	assert_called(labels[0], "init", ["foo", sut._duration])
 
 
-func test_info_restarts_timer() -> void:
-	sut.info("hello world")
+func test_clear_labels_removes_all_labels() -> void:
+	sut.info("foo")
+	sut.info("bar")
 
-	await wait_seconds(TEST_DURATION / 2)
-	sut.info("hello again")
+	sut.clear_labels()
+	await wait_physics_frames(1)
 
-	await wait_seconds(TEST_DURATION / 2)
-	assert_eq(sut.text, "hello again")
-
-	await wait_for_signal(timer.timeout, TEST_DURATION / 2)
-	assert_eq(sut.text, "")
+	for i in labels.size():
+		assert_null(labels[i])
 
 
-func test_info_removes_color_override() -> void:
-	sut.add_theme_color_override("font_color", Color.BLUE)
+func test_err_creates_label_with_message() -> void:
+	sut.err(3, "foo")
 
-	sut.info("hello world")
-
-	assert_false(sut.has_theme_color_override("font_color"))
+	assert_called(labels[0], "init", ["foo", 0.0])
 
 
-func test_err_sets_text() -> void:
-	sut.err("hello world")
+func test_err_with_same_id_removes_old_label() -> void:
+	sut.err(3, "foo")
+	sut.err(3, "bar")
 
-	assert_eq(sut.text, "hello world")
+	await wait_physics_frames(1)
 
-
-func test_err_sets_color_override() -> void:
-	sut.err("hello world")
-
-	assert_eq(sut.get_theme_color("font_color"), sut._invalid_color)
+	assert_null(labels[0])
 
 
-func test_err_stops_timer() -> void:
-	sut.info("hello world")
-	sut.err("err world")
+func test_err_with_different_id_appends_label() -> void:
+	sut.err(3, "foo")
+	sut.err(4, "bar")
 
-	assert_true(timer.is_stopped())
+	await wait_physics_frames(1)
+
+	assert_not_null(labels[0])
+
+
+func test_clear_err_calls_fade_on_label() -> void:
+	sut.err(3, "foo")
+
+	sut.clear_err(3)
+
+	assert_called(labels[0].fade)
+
+
+func test_clear_err_with_non_existing_id_does_nothing() -> void:
+	sut.err(3, "foo")
+
+	sut.clear_err(4)
+
+	assert_not_called(labels[0].fade)
+	assert_not_null(labels[0])
+
+
+func test_clear_errs_removes_all_errs_and_leaves_info_labels() -> void:
+	sut.err(2, "foo")
+	sut.err(3, "bar")
+	sut.err(4, "baz")
+
+	sut.clear_errs()
+
+	await wait_physics_frames(1)
+
+	for i in labels.size():
+		assert_null(labels[i])
