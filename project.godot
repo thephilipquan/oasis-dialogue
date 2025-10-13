@@ -17,6 +17,11 @@ config/features=PackedStringArray("4.5", "Forward Plus")
 run/low_processor_mode=true
 config/icon="res://icon.svg"
 
+[display]
+
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/gut/plugin.cfg", "res://addons/oasis_dialogue/plugin.cfg")
