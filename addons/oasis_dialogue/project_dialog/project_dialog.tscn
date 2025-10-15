@@ -29,16 +29,9 @@ text = "Oasis Dialogue"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="NewProject" type="Button" parent="VBoxContainer"]
+[node name="OpenProject" type="Button" parent="VBoxContainer"]
 custom_minimum_size = Vector2(256, 0)
 layout_mode = 2
 size_flags_horizontal = 4
-text = "new project"
-script = ExtResource("2_4vucw")
-
-[node name="LoadProject" type="Button" parent="VBoxContainer"]
-custom_minimum_size = Vector2(256, 0)
-layout_mode = 2
-size_flags_horizontal = 4
-text = "load"
+text = "open"
 script = ExtResource("2_4vucw")

@@ -1,8 +1,18 @@
 @tool
 extends Control
 
-const _StatusLabel := preload("res://addons/oasis_dialogue/status/status_label.gd")
+const REGISTRY_KEY := "status"
 
+const _AddBranchButton := preload("res://addons/oasis_dialogue/canvas/add_branch_button.gd")
+const _AddCharacterButton := preload("res://addons/oasis_dialogue/canvas/add_character_button.gd")
+const _BranchEdit := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
+const _Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
+const _CharacterTree := preload("res://addons/oasis_dialogue/canvas/character_tree.gd")
+const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
+const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
+const _RemoveCharacterButton := preload("res://addons/oasis_dialogue/canvas/remove_character_button.gd")
+const _RenameCharacterHandler := preload("res://addons/oasis_dialogue/canvas/rename_character_handler.gd")
+const _StatusLabel := preload("res://addons/oasis_dialogue/status/status_label.gd")
 
 @export
 var _invalid_color := Color()
@@ -16,6 +26,38 @@ var _errors: Dictionary[int, _StatusLabel] = {}
 
 @onready
 var _container: VBoxContainer = $MarginContainer/VBoxContainer
+
+
+func register(registry: _Registry) -> void:
+	registry.add(REGISTRY_KEY, self)
+
+
+func setup(registry: _Registry) -> void:
+	_status_label_factory = registry.at(_Canvas.STATUS_LABEL_FACTORY_REGISTRY_KEY)
+
+	var manager: _ProjectManager = registry.at(_ProjectManager.REGISTRY_KEY)
+	_get_active_character = manager.get_active_display_name
+
+	var _rename_character_handler: _RenameCharacterHandler = registry.at(_RenameCharacterHandler.REGISTRY_KEY)
+	_rename_character_handler.character_renamed.connect(rename_character)
+
+	var add_branch_button: _AddBranchButton = registry.at(_AddBranchButton.REGISTRY_KEY)
+	add_branch_button.branch_added.connect(add_branch)
+
+	var add_character_button: _AddCharacterButton = registry.at(_AddCharacterButton.REGISTRY_KEY)
+	add_character_button.character_added.connect(add_character)
+
+	var remove_character_button: _RemoveCharacterButton = registry.at(_RemoveCharacterButton.REGISTRY_KEY)
+	remove_character_button.character_removed.connect(remove_character)
+
+	var tree: _CharacterTree = registry.at(_CharacterTree.REGISTRY_KEY)
+	tree.character_selected.connect(clear_errs.unbind(1))
+
+	var graph: _BranchEdit = registry.at(_BranchEdit.REGISTRY_KEY)
+	graph.branch_removed.connect(remove_branch)
+
+	manager.saving_file.connect(save_file.unbind(1))
+	manager.saving_project.connect(save_project.unbind(1))
 
 
 func init_get_active_character(callback: Callable) -> void:

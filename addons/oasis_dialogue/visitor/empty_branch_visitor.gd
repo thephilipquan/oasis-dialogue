@@ -34,6 +34,7 @@ func finish() -> void:
 		error.id = _id
 		error.message = "Empty branch."
 		_on_err.call(error)
+		cancel()
 		return
 
 	cancel()

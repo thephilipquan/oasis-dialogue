@@ -1,6 +1,13 @@
-extends RefCounted
+@tool
+extends Node
 
+const REGISTRY_KEY := "remove_character_handler"
+
+const _Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
+const _CharacterTree := preload("res://addons/oasis_dialogue/canvas/character_tree.gd")
 const _InputDialog := preload("res://addons/oasis_dialogue/input_dialog/input_dialog.gd")
+const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
+const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 
 signal character_renamed(name: String)
 
@@ -10,6 +17,20 @@ var _get_active_character := Callable()
 var _input_dialog_factory := Callable()
 ## [code]func(name: String) -> bool[/code]
 var _can_rename_to := Callable()
+
+
+func register(registry: _Registry) -> void:
+	registry.add(REGISTRY_KEY, self)
+
+
+func setup(registry: _Registry) -> void:
+	var manager: _ProjectManager = registry.at(_ProjectManager.REGISTRY_KEY)
+	init_get_active_character(manager.get_active_character)
+	init_input_dialog_factory(registry.at(_Canvas.INPUT_DIALOG_FACTORY_REGISTRY_KEY))
+	init_can_rename_to(manager.can_rename_active_to)
+
+	var tree: _CharacterTree = registry.at(_CharacterTree.REGISTRY_KEY)
+	tree.character_activated.connect(rename)
 
 
 func init_get_active_character(callback: Callable) -> void:

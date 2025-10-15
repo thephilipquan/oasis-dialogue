@@ -5,19 +5,19 @@ const _FileDialog := preload("res://addons/oasis_dialogue/project_dialog/file_di
 
 signal path_selected(path: String)
 
-var _load_dialog_factory := Callable()
+var _system_dialog_factory := Callable()
 
 
 func _ready() -> void:
 	button_up.connect(_on_button_up)
 
 
-func init(load_dialog_factory: Callable) -> void:
-	_load_dialog_factory = load_dialog_factory
+func init(system_dialog_factory: Callable) -> void:
+	_system_dialog_factory = system_dialog_factory
 
 
 func _on_button_up() -> void:
-	var dialog: _FileDialog = _load_dialog_factory.call()
+	var dialog: _FileDialog = _system_dialog_factory.call()
 	dialog.selected.connect(_on_dialog_selected.bind(dialog))
 	dialog.canceled.connect(_on_dialog_canceled.bind(dialog))
 

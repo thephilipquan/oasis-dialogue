@@ -1,5 +1,13 @@
-extends RefCounted
+@tool
+extends Node
 
+const REGISTRY_KEY := "project_manager"
+
+const _RenameCharacterHandler := preload("res://addons/oasis_dialogue/canvas/rename_character_handler.gd")
+const _CharacterTree := preload("res://addons/oasis_dialogue/canvas/character_tree.gd")
+const _RemoveCharacterButton := preload("res://addons/oasis_dialogue/canvas/remove_character_button.gd")
+const _AddCharacterButton := preload("res://addons/oasis_dialogue/canvas/add_character_button.gd")
+const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 const _Global := preload("res://addons/oasis_dialogue/global.gd")
 const _JsonUtils := preload("res://addons/oasis_dialogue/utils/json_utils.gd")
 
@@ -13,6 +21,24 @@ signal saving_project(data: Dictionary)
 
 var _directory := ""
 var _active := ""
+
+
+func register(registry: _Registry) -> void:
+	registry.add(REGISTRY_KEY, self)
+
+
+func setup(registry: _Registry) -> void:
+	var add_character_button: _AddCharacterButton = registry.at(_AddCharacterButton.REGISTRY_KEY)
+	add_character_button.character_added.connect(add_subfile)
+
+	var remove_character_button: _RemoveCharacterButton = registry.at(_RemoveCharacterButton.REGISTRY_KEY)
+	remove_character_button.character_removed.connect(remove_active_subfile)
+
+	var tree: _CharacterTree = registry.at(_CharacterTree.REGISTRY_KEY)
+	tree.character_selected.connect(load_subfile)
+
+	var rename_character_handler: _RenameCharacterHandler = registry.at(_RenameCharacterHandler.REGISTRY_KEY)
+	rename_character_handler.character_renamed.connect(rename_active_subfile)
 
 
 func get_settings_path() -> String:
@@ -47,26 +73,20 @@ func subfile_exists(display_name: String) -> bool:
 	return FileAccess.file_exists(path)
 
 
-func new_project(path: String) -> void:
-	_directory = path
-	var file := FileAccess.open(get_settings_path(), FileAccess.WRITE)
-
-
-func load_project(path: String) -> void:
+func open_project(path: String) -> void:
 	var dir := DirAccess.open(path)
 	if not dir:
 		push_warning("trying to load a project at a path that does not exist")
-		return
-	if not dir.file_exists(path.path_join(SETTINGS)):
-		push_warning("trying to load a project that has no settings file")
 		return
 
 	_directory = path
 	_active = ""
 
-	var settings := FileAccess.open(get_settings_path(), FileAccess.READ)
-	var content := settings.get_as_text()
-	settings.close()
+	var content := ""
+	if dir.file_exists(get_settings_path()):
+		var settings := FileAccess.open(get_settings_path(), FileAccess.READ)
+		content = settings.get_as_text()
+		settings.close()
 
 	var data := {}
 	if content:

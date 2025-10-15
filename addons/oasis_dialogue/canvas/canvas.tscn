@@ -1,15 +1,22 @@
-[gd_scene load_steps=9 format=3 uid="uid://4plc4vhymybs"]
+[gd_scene load_steps=16 format=3 uid="uid://4plc4vhymybs"]
 
 [ext_resource type="Script" uid="uid://bkn5mac6gdvq3" path="res://addons/oasis_dialogue/canvas/canvas.gd" id="1_pyvqf"]
 [ext_resource type="Theme" uid="uid://b17l0ux5wllk5" path="res://addons/oasis_dialogue/canvas/canvas_theme.tres" id="1_ta1sa"]
 [ext_resource type="Script" uid="uid://bkmgq6oqeg575" path="res://addons/oasis_dialogue/canvas/add_character_button.gd" id="3_4e1bp"]
+[ext_resource type="Script" uid="uid://b2vsiv15rt33f" path="res://addons/oasis_dialogue/model/model.gd" id="3_ytw7q"]
+[ext_resource type="Script" uid="uid://e5g8rlgh7tl7" path="res://addons/oasis_dialogue/canvas/language_server.gd" id="4_0dkm1"]
 [ext_resource type="Script" uid="uid://collm4lemrw6i" path="res://addons/oasis_dialogue/canvas/remove_character_button.gd" id="4_6xxxj"]
 [ext_resource type="Script" uid="uid://cwosx2xibo8sq" path="res://addons/oasis_dialogue/canvas/add_branch_button.gd" id="4_wvnn7"]
+[ext_resource type="Script" uid="uid://dcu534fs10qbb" path="res://addons/oasis_dialogue/semantic_visitors.gd" id="5_65wvt"]
+[ext_resource type="Script" uid="uid://dd3w0vyq8cduv" path="res://addons/oasis_dialogue/branch_reconstructor.gd" id="6_6xxxj"]
 [ext_resource type="Script" uid="uid://dug54oaf67dch" path="res://addons/oasis_dialogue/canvas/character_tree.gd" id="6_gyuj5"]
 [ext_resource type="Script" uid="uid://bnp7di4ksvma5" path="res://addons/oasis_dialogue/branch/branch_edit.gd" id="7_54gq2"]
+[ext_resource type="Script" uid="uid://bbsmsgjqhjirr" path="res://addons/oasis_dialogue/canvas/rename_character_handler.gd" id="7_n0a6n"]
 [ext_resource type="PackedScene" uid="uid://cbhhlkh2fm53s" path="res://addons/oasis_dialogue/status/status.tscn" id="8_54gq2"]
+[ext_resource type="Script" uid="uid://bmsfi1lplad1r" path="res://addons/oasis_dialogue/unbrancher_visitors.gd" id="8_unkvg"]
+[ext_resource type="Script" uid="uid://bphp844em6apf" path="res://addons/oasis_dialogue/canvas/save_project_button.gd" id="12_h1x05"]
 
-[node name="Canvas" type="Control"]
+[node name="Canvas" type="Control" groups=["registerable"]]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -18,6 +25,24 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_ta1sa")
 script = ExtResource("1_pyvqf")
+
+[node name="Model" type="Node" parent="." groups=["registerable"]]
+script = ExtResource("3_ytw7q")
+
+[node name="LanguageServer" type="Node" parent="." groups=["registerable"]]
+script = ExtResource("4_0dkm1")
+
+[node name="SenanticVisitors" type="Node" parent="." groups=["registerable"]]
+script = ExtResource("5_65wvt")
+
+[node name="BranchReconstructor" type="Node" parent="." groups=["registerable"]]
+script = ExtResource("6_6xxxj")
+
+[node name="RenameCharacterHandler" type="Node" parent="." groups=["registerable"]]
+script = ExtResource("7_n0a6n")
+
+[node name="UnbrancherVisitors" type="Node" parent="." groups=["registerable"]]
+script = ExtResource("8_unkvg")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -33,32 +58,33 @@ layout_mode = 2
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HeaderMarginContainer"]
 layout_mode = 2
 
-[node name="AddCharacter" type="Button" parent="VBoxContainer/HeaderMarginContainer/HBoxContainer"]
+[node name="AddCharacter" type="Button" parent="VBoxContainer/HeaderMarginContainer/HBoxContainer" groups=["registerable"]]
 layout_mode = 2
 text = "add character"
 script = ExtResource("3_4e1bp")
 
-[node name="RemoveCharacter" type="Button" parent="VBoxContainer/HeaderMarginContainer/HBoxContainer"]
+[node name="RemoveCharacter" type="Button" parent="VBoxContainer/HeaderMarginContainer/HBoxContainer" groups=["registerable"]]
 visible = false
 layout_mode = 2
 text = "remove character"
 script = ExtResource("4_6xxxj")
 
-[node name="AddBranch" type="Button" parent="VBoxContainer/HeaderMarginContainer/HBoxContainer"]
+[node name="AddBranch" type="Button" parent="VBoxContainer/HeaderMarginContainer/HBoxContainer" groups=["registerable"]]
 visible = false
 layout_mode = 2
 text = "add branch"
 script = ExtResource("4_wvnn7")
 
-[node name="SaveProject" type="Button" parent="VBoxContainer/HeaderMarginContainer/HBoxContainer"]
+[node name="SaveProject" type="Button" parent="VBoxContainer/HeaderMarginContainer/HBoxContainer" groups=["registerable"]]
 layout_mode = 2
 text = "save project"
+script = ExtResource("12_h1x05")
 
 [node name="SplitContainer" type="SplitContainer" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="CharacterTree" type="Tree" parent="VBoxContainer/SplitContainer"]
+[node name="CharacterTree" type="Tree" parent="VBoxContainer/SplitContainer" groups=["registerable"]]
 custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
 hide_folding = true
@@ -66,7 +92,7 @@ hide_root = true
 scroll_horizontal_enabled = false
 script = ExtResource("6_gyuj5")
 
-[node name="BranchEdit" type="GraphEdit" parent="VBoxContainer/SplitContainer"]
+[node name="BranchEdit" type="GraphEdit" parent="VBoxContainer/SplitContainer" groups=["registerable"]]
 layout_mode = 2
 size_flags_horizontal = 3
 grid_pattern = 1
@@ -76,5 +102,5 @@ show_zoom_buttons = false
 show_grid_buttons = false
 script = ExtResource("7_54gq2")
 
-[node name="Status" parent="VBoxContainer/SplitContainer/BranchEdit" instance=ExtResource("8_54gq2")]
+[node name="Status" parent="VBoxContainer/SplitContainer/BranchEdit" groups=["registerable"] instance=ExtResource("8_54gq2")]
 layout_mode = 1

@@ -1,11 +1,16 @@
 @tool
 extends GraphEdit
 
+const REGISTRY_KEY := "branch_edit"
+
+const _Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
+const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
+const _AddBranch := preload("res://addons/oasis_dialogue/canvas/add_branch_button.gd")
+const _RemoveCharacter := preload("res://addons/oasis_dialogue/canvas/remove_character_button.gd")
+const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
 const _Branch := preload("res://addons/oasis_dialogue/branch/branch.gd")
 const _Global := preload("res://addons/oasis_dialogue/global.gd")
 const _JsonUtils := preload("res://addons/oasis_dialogue/utils/json_utils.gd")
-
-const SAVE_POSITION_OFFSET_KEY := "branch_position_offsets"
 
 signal branch_added(branch: _Branch)
 signal branch_removed(id: int)
@@ -23,8 +28,22 @@ var _branches: Dictionary[int, _Branch] = {}
 var _branch_factory := Callable()
 
 
-func init(branch_factory: Callable) -> void:
-	_branch_factory = branch_factory
+func register(registry: _Registry) -> void:
+	registry.add(REGISTRY_KEY, self)
+
+
+func setup(registry: _Registry) -> void:
+	var add_branch_button: _AddBranch = registry.at(_AddBranch.REGISTRY_KEY)
+	add_branch_button.branch_added.connect(add_branch)
+
+	var remove_character: _RemoveCharacter = registry.at(_RemoveCharacter.REGISTRY_KEY)
+	remove_character.character_removed.connect(remove_branches)
+
+	var manager: _ProjectManager = registry.at(_ProjectManager.REGISTRY_KEY)
+	manager.file_loaded.connect(load_character)
+	manager.saving_file.connect(save_character)
+
+	_branch_factory = registry.at(_Canvas.BRANCH_FACTORY_REGISTRY_KEY)
 
 
 func add_branch(id: int) -> void:

@@ -1,5 +1,7 @@
 extends RefCounted
 
+const REGISTRY_KEY := "lexer"
+
 const _Token := preload("res://addons/oasis_dialogue/model/token.gd")
 
 const _Type := _Token.Type

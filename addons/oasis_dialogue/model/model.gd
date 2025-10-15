@@ -1,13 +1,46 @@
-extends RefCounted
+@tool
+extends Node
 
+const REGISTRY_KEY := "model"
+
+const _AddBranchButton := preload("res://addons/oasis_dialogue/canvas/add_branch_button.gd")
 const _AST := preload("res://addons/oasis_dialogue/model/ast.gd")
+const _BranchEdit := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
 const _Global := preload("res://addons/oasis_dialogue/global.gd")
 const _JsonUtils := preload("res://addons/oasis_dialogue/utils/json_utils.gd")
+const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
+const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
+const _RemoveCharacterButton := preload("res://addons/oasis_dialogue/canvas/remove_character_button.gd")
 const _Visitor := preload("res://addons/oasis_dialogue/visitor/visitor.gd")
 
 var _conditions: Array[String] = []
 var _actions: Array[String] = []
 var _branches: Dictionary[int, _AST.Branch] = {}
+
+
+func register(registry: _Registry) -> void:
+	registry.add(REGISTRY_KEY, self)
+
+
+func setup(registry: _Registry) -> void:
+	var add_branch_button: _AddBranchButton = (
+			registry.at(_AddBranchButton.REGISTRY_KEY)
+	)
+	add_branch_button.branch_added.connect(add_branch)
+
+	var remove_character_button: _RemoveCharacterButton = (
+			registry.at(_RemoveCharacterButton.REGISTRY_KEY)
+	)
+	remove_character_button.character_removed.connect(clear_branches)
+
+	var graph: _BranchEdit = registry.at(_BranchEdit.REGISTRY_KEY)
+	graph.branch_removed.connect(remove_branch)
+
+	var manager: _ProjectManager = registry.at(_ProjectManager.REGISTRY_KEY)
+	manager.file_loaded.connect(load_character)
+	manager.project_loaded.connect(load_project)
+	manager.saving_file.connect(save_character)
+	manager.saving_project.connect(save_project)
 
 
 func set_conditions(conditions: Array[String]) -> void:

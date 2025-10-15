@@ -6,15 +6,16 @@ const _ProjectDialogScene := preload("res://addons/oasis_dialogue/project_dialog
 const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
 const _Project := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
 const _ProjectScene := preload("res://addons/oasis_dialogue/canvas/canvas.tscn")
+const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 
 
+var _registry: _Registry = null
 var _manager: _ProjectManager = null
 
 var _project_dialog: _ProjectDialog = null
 var _project: _Project = null
 
 func _ready() -> void:
-	_manager = _ProjectManager.new()
 	_open_project_dialog()
 
 
@@ -25,16 +26,21 @@ func _exit_tree() -> void:
 func _open_project_dialog() -> void:
 	_project_dialog = _ProjectDialogScene.instantiate()
 	add_child(_project_dialog)
-	_project_dialog.create_project_requested.connect(_on_project_dialog_selection.bind(_manager.new_project))
-	_project_dialog.load_project_requested.connect(_on_project_dialog_selection.bind(_manager.load_project))
+	_project_dialog.path_requested.connect(_on_project_path_requested)
 
 
-func _on_project_dialog_selection(path: String, callback: Callable) -> void:
+func _on_project_path_requested(path: String) -> void:
 	_project_dialog.queue_free()
 	remove_child(_project_dialog)
 
+	_manager = _ProjectManager.new()
+	_manager.add_to_group("registerable")
+	add_child(_manager)
+
 	_project = _ProjectScene.instantiate()
 	add_child(_project)
-	_project.init(_manager)
 
-	callback.call(path)
+	_registry = _Registry.new()
+	add_child(_registry)
+
+	_manager.open_project(path)

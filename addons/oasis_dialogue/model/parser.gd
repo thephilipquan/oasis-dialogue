@@ -1,5 +1,7 @@
 extends RefCounted
 
+const REGISTRY_KEY := "parser"
+
 const _AST := preload("res://addons/oasis_dialogue/model/ast.gd")
 const _Token := preload("res://addons/oasis_dialogue/model/token.gd")
 
