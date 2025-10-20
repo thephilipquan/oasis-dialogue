@@ -124,4 +124,4 @@ func test_remove() -> void:
 
 	sut._on_remove_branch_button_up()
 
-	assert_signal_emitted_with_parameters(sut.removed, [3, sut])
+	assert_signal_emitted_with_parameters(sut.removed, [3])

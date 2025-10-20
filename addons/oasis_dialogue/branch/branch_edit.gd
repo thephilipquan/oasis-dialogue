@@ -108,7 +108,8 @@ func connect_branches(from_id: int, to_ids: Array[int]) -> void:
 	arrange_orphans(from)
 
 
-func remove_branch(id: int, branch: _Branch) -> void:
+func remove_branch(id: int) -> void:
+	var branch := _branches[id]
 	var disconnected_branches: Array[int] = []
 	if get_connection_count(branch.name, 0):
 		var branch_connections := get_connection_list_from_node(branch.name)

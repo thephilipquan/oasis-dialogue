@@ -2,7 +2,7 @@
 extends GraphNode
 
 signal changed(id: int, text: String)
-signal removed(id: int, node: GraphNode)
+signal removed(id: int)
 
 @export
 var _invalid_style: StyleBox = null
@@ -80,7 +80,7 @@ func _on_parser_timer_timeout() -> void:
 
 
 func _on_remove_branch_button_up() -> void:
-	removed.emit(_id, self)
+	removed.emit(_id)
 
 
 func _on_node_selected() -> void:
