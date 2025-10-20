@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://4plc4vhymybs"]
+[gd_scene load_steps=15 format=3 uid="uid://4plc4vhymybs"]
 
 [ext_resource type="Script" uid="uid://bkn5mac6gdvq3" path="res://addons/oasis_dialogue/canvas/canvas.gd" id="1_pyvqf"]
 [ext_resource type="Theme" uid="uid://b17l0ux5wllk5" path="res://addons/oasis_dialogue/canvas/canvas_theme.tres" id="1_ta1sa"]
@@ -8,7 +8,6 @@
 [ext_resource type="Script" uid="uid://collm4lemrw6i" path="res://addons/oasis_dialogue/canvas/remove_character_button.gd" id="4_6xxxj"]
 [ext_resource type="Script" uid="uid://cwosx2xibo8sq" path="res://addons/oasis_dialogue/canvas/add_branch_button.gd" id="4_wvnn7"]
 [ext_resource type="Script" uid="uid://dcu534fs10qbb" path="res://addons/oasis_dialogue/semantic_visitors.gd" id="5_65wvt"]
-[ext_resource type="Script" uid="uid://dd3w0vyq8cduv" path="res://addons/oasis_dialogue/branch_reconstructor.gd" id="6_6xxxj"]
 [ext_resource type="Script" uid="uid://dug54oaf67dch" path="res://addons/oasis_dialogue/canvas/character_tree.gd" id="6_gyuj5"]
 [ext_resource type="Script" uid="uid://bnp7di4ksvma5" path="res://addons/oasis_dialogue/branch/branch_edit.gd" id="7_54gq2"]
 [ext_resource type="Script" uid="uid://bbsmsgjqhjirr" path="res://addons/oasis_dialogue/canvas/rename_character_handler.gd" id="7_n0a6n"]
@@ -34,9 +33,6 @@ script = ExtResource("4_0dkm1")
 
 [node name="SenanticVisitors" type="Node" parent="." groups=["registerable"]]
 script = ExtResource("5_65wvt")
-
-[node name="BranchReconstructor" type="Node" parent="." groups=["registerable"]]
-script = ExtResource("6_6xxxj")
 
 [node name="RenameCharacterHandler" type="Node" parent="." groups=["registerable"]]
 script = ExtResource("7_n0a6n")
