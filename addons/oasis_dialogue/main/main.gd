@@ -9,7 +9,6 @@ const _ProjectScene := preload("res://addons/oasis_dialogue/canvas/canvas.tscn")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 
 
-var _registry: _Registry = null
 var _manager: _ProjectManager = null
 
 var _project_dialog: _ProjectDialog = null
@@ -40,7 +39,9 @@ func _on_project_path_requested(path: String) -> void:
 	_project = _ProjectScene.instantiate()
 	add_child(_project)
 
-	_registry = _Registry.new()
-	add_child(_registry)
+	var registry := _Registry.new()
+	add_child(registry)
+	registry.queue_free()
+	remove_child(registry)
 
 	_manager.open_project(path)
