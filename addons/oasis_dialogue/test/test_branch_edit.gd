@@ -49,7 +49,7 @@ func test_remove_branch() -> void:
 	sut.remove_branch(3)
 	await wait_physics_frames(1)
 
-	assert_null(sut.get_branch(3), 0)
+	assert_eq(sut.get_branch_text(3), "")
 
 
 func test_remove_branch_emits_branch_removed() -> void:

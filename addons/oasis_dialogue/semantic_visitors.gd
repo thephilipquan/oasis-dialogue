@@ -20,7 +20,6 @@ const _FinishCallbackVisitor := preload("res://addons/oasis_dialogue/visitor/fin
 const _LanguageServer := preload("res://addons/oasis_dialogue/canvas/language_server.gd")
 const _ParseErrorVisitor := preload("res://addons/oasis_dialogue/visitor/parse_error_visitor.gd")
 const _UniqueTypeVisitor := preload("res://addons/oasis_dialogue/visitor/unique_type_visitor.gd")
-const _UpdateModelVisitor := preload("res://addons/oasis_dialogue/visitor/update_model_visitor.gd")
 const _ValidateConnectVisitor := preload("res://addons/oasis_dialogue/visitor/validate_connect_visitor.gd")
 
 var _visitors: _VisitorIterator = null
@@ -50,16 +49,14 @@ func setup(registry: _Registry) -> void:
 		_Token.type_to_string(_Token.Type.SEQ),
 	)
 	unique_type_visitor.init_on_err(on_err)
-	var update_model_visitor := _UpdateModelVisitor.new(model.update_branch)
 	var validate_connect_visitor := _ValidateConnectVisitor.new(
 		_Global.CONNECT_BRANCH_KEYWORD,
 		on_err,
 	)
 	var create_branch_visitor := _CreateBranchVisitor.new(
 		_Global.CONNECT_BRANCH_KEYWORD,
-		model.has_branch,
+		graph.has_branch,
 		func(id: int):
-			model.add_branch(id)
 			graph.add_branch(id)
 			status.add_branch(id),
 	)
@@ -77,10 +74,13 @@ func setup(registry: _Registry) -> void:
 		validate_connect_visitor,
 		create_branch_visitor,
 		connect_branch_visitor,
-		update_model_visitor,
 		clear_branch_highlights_visitor,
 		clear_status_err,
 	])
 
 	var language_server: _LanguageServer = registry.at(_LanguageServer.REGISTRY_KEY)
-	language_server.parsed.connect(_visitors.iterate)
+	graph.branch_changed.connect(
+			func semantic_visit(id: int, text: String) -> void:
+				var ast := language_server.parse_branch_text(id, text)
+				_visitors.iterate(ast)
+	)

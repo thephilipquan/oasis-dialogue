@@ -12,7 +12,8 @@ const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 const _RemoveCharacter := preload("res://addons/oasis_dialogue/canvas/remove_character_button.gd")
 const _Save := preload("res://addons/oasis_dialogue/save.gd")
 
-signal branch_added(branch: _Branch)
+## Emitted when [signal Branch.changed] is emitted.
+signal branch_changed(id: int, text: String)
 signal branch_removed(id: int)
 ## Emitted when a branch
 signal branches_dirtied(id: int, dirty_ids: Array[int])
@@ -58,15 +59,21 @@ func add_branch(id: int) -> void:
 	var branch: _Branch = _branch_factory.call()
 	add_child(branch)
 	branch.removed.connect(remove_branch)
+	branch.changed.connect(
+			func(id: int, text: String) -> void:
+				branch_changed.emit(id, text)
+	)
 	branch.set_id(id)
 	center_node_in_graph(branch)
 
 	_branches[id] = branch
-	branch_added.emit(branch)
 
 
-func get_branch(id: int) -> _Branch:
-	return _branches.get(id, null)
+func get_branch_text(id: int) -> String:
+	var branch: _Branch = _branches.get(id, null)
+	if not branch:
+		return ""
+	return branch.get_text()
 
 
 func get_branch_ids() -> Array[int]:
@@ -75,6 +82,10 @@ func get_branch_ids() -> Array[int]:
 
 func get_branch_count() -> int:
 	return _branches.size()
+
+
+func has_branch(id: int) -> bool:
+	return id in _branches
 
 
 func update_branch(id: int, text: String) -> void:

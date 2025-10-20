@@ -10,8 +10,8 @@ const _Model := preload("res://addons/oasis_dialogue/model/model.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 const _RemoveActionVisitor := preload("res://addons/oasis_dialogue/visitor/remove_action_visitor.gd")
 const _UnparserVisitor := preload("res://addons/oasis_dialogue/visitor/unparser_visitor.gd")
-const _UpdateModelVisitor := preload("res://addons/oasis_dialogue/visitor/update_model_visitor.gd")
 const _VisitorIterator := preload("res://addons/oasis_dialogue/visitor/visitor_iterator.gd")
+const _LanguageServer := preload("res://addons/oasis_dialogue/canvas/language_server.gd")
 
 
 func register(registry: _Registry) -> void:
@@ -19,11 +19,9 @@ func register(registry: _Registry) -> void:
 
 
 func setup(registry: _Registry) -> void:
-	var model: _Model = registry.at(_Model.REGISTRY_KEY)
-	var update_model_visitor := _UpdateModelVisitor.new(model.update_branch)
-
 	var graph: _BranchEdit = registry.at(_BranchEdit.REGISTRY_KEY)
 	var unparser_visitor := _UnparserVisitor.new(graph.update_branch)
+	var language_server: _LanguageServer = registry.at(_LanguageServer.REGISTRY_KEY)
 
 	# Visitors to handle removal of text in affected branches after a branch
 	# is removed needs to be created on demand.
@@ -37,11 +35,10 @@ func setup(registry: _Registry) -> void:
 					_AST.NumberLiteral.new(removed_id)
 				)
 			),
-			update_model_visitor,
 			unparser_visitor,
 		])
 
 		for id in dirty_ids:
-			var ast := model.get_branch(id)
+			var ast := language_server.parse_branch_text(id, graph.get_branch_text(id))
 			visitors.iterate(ast)
 	graph.branches_dirtied.connect(unbranch_removed)
