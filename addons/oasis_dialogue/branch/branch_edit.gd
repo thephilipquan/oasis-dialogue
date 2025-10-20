@@ -12,6 +12,8 @@ const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 const _RemoveCharacter := preload("res://addons/oasis_dialogue/canvas/remove_character_button.gd")
 const _Save := preload("res://addons/oasis_dialogue/save.gd")
 
+## Emitted when the user changes anything so the file needs to be saved.
+signal dirtied
 ## Emitted when [signal Branch.changed] is emitted.
 signal branch_changed(id: int, text: String)
 signal branch_removed(id: int)
@@ -51,7 +53,7 @@ func init_branch_factory(branch_factory: Callable) -> void:
 	_branch_factory = branch_factory
 
 
-func add_branch(id: int) -> void:
+func add_branch(id: int, silent := false) -> void:
 	if id in _branches:
 		push_warning("branch: %d already exists" % id)
 		return
@@ -62,11 +64,14 @@ func add_branch(id: int) -> void:
 	branch.changed.connect(
 			func(id: int, text: String) -> void:
 				branch_changed.emit(id, text)
+				dirtied.emit()
 	)
 	branch.set_id(id)
 	center_node_in_graph(branch)
 
 	_branches[id] = branch
+	if not silent:
+		dirtied.emit()
 
 
 func get_branch_text(id: int) -> String:
@@ -93,6 +98,7 @@ func update_branch(id: int, text: String) -> void:
 		push_warning("branch: %d does not exist" % id)
 		return
 	_branches[id].set_text(text)
+	dirtied.emit()
 
 
 func connect_branches(from_id: int, to_ids: Array[int]) -> void:
@@ -141,6 +147,7 @@ func remove_branch(id: int) -> void:
 
 	branch_removed.emit(id)
 	branches_dirtied.emit(id, disconnected_branches)
+	dirtied.emit()
 	disable_unused_slots()
 	_branches.erase(id)
 	remove_child(branch)

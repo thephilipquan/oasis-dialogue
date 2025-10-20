@@ -6,6 +6,7 @@ const EXTENSION := "oasis"
 
 const _AddCharacterButton := preload("res://addons/oasis_dialogue/canvas/add_character_button.gd")
 const _CharacterTree := preload("res://addons/oasis_dialogue/canvas/character_tree.gd")
+const _Graph := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
 const _OasisFile := preload("res://addons/oasis_dialogue/oasis_file.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 const _RemoveCharacterButton := preload("res://addons/oasis_dialogue/canvas/remove_character_button.gd")
@@ -54,6 +55,9 @@ func setup(registry: _Registry) -> void:
 
 	var rename_character_handler: _RenameCharacterHandler = registry.at(_RenameCharacterHandler.REGISTRY_KEY)
 	rename_character_handler.character_renamed.connect(rename_active_character)
+
+	var graph: _Graph = registry.at(_Graph.REGISTRY_KEY)
+	graph.dirtied.connect(mark_active_character_dirty)
 
 
 func can_rename_active_to(name: String) -> bool:

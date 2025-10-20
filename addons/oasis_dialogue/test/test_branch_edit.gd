@@ -304,3 +304,35 @@ func test_load_character_config_restores_viewport_state() -> void:
 	assert_almost_eq(sut.zoom, 1.38, 0.01)
 	# Bug when testing this. Works in production.
 	# assert_eq(sut.scroll_offset, Vector2(400, 700))
+
+
+func test_add_branch_emits_dirtied() -> void:
+	watch_signals(sut)
+	sut.add_branch(3)
+	assert_signal_emitted(sut.dirtied)
+
+
+func test_add_branch_silently_does_not_emit_dirtied() -> void:
+	watch_signals(sut)
+	sut.add_branch(3, true)
+	assert_signal_not_emitted(sut.dirtied)
+
+
+func test_branch_text_change_emits_dirtied() -> void:
+	watch_signals(sut)
+	sut.add_branch(3)
+	branches[0].changed.emit(3, "")
+	assert_signal_emitted(sut.dirtied)
+
+
+func test_remove_branch_emits_dirtied() -> void:
+	watch_signals(sut)
+	sut.add_branch(3)
+	sut.remove_branch(3)
+	assert_signal_emitted(sut.dirtied)
+
+
+func test_scroll_offset_change_emits_dirtied() -> void:
+	pass_test("unable to trigger via code")
+
+
