@@ -3,21 +3,19 @@ extends GraphEdit
 
 const REGISTRY_KEY := "branch_edit"
 
-const _Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
-const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 const _AddBranch := preload("res://addons/oasis_dialogue/canvas/add_branch_button.gd")
-const _RemoveCharacter := preload("res://addons/oasis_dialogue/canvas/remove_character_button.gd")
-const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
 const _Branch := preload("res://addons/oasis_dialogue/branch/branch.gd")
-const _Global := preload("res://addons/oasis_dialogue/global.gd")
-const _JsonUtils := preload("res://addons/oasis_dialogue/utils/json_utils.gd")
+const _Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
+const _OasisFile := preload("res://addons/oasis_dialogue/oasis_file.gd")
+const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
+const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
+const _RemoveCharacter := preload("res://addons/oasis_dialogue/canvas/remove_character_button.gd")
+const _Save := preload("res://addons/oasis_dialogue/save.gd")
 
 signal branch_added(branch: _Branch)
 signal branch_removed(id: int)
 ## Emitted when a branch
 signal branches_dirtied(id: int, dirty_ids: Array[int])
-## Emitted when a branch is loaded from file and needs to be unparsed.
-signal branch_restored(id: int)
 
 var duration: float = 0.5:
 	set(value):
@@ -40,13 +38,23 @@ func setup(registry: _Registry) -> void:
 	remove_character.character_removed.connect(remove_branches)
 
 	var manager: _ProjectManager = registry.at(_ProjectManager.REGISTRY_KEY)
-	manager.file_loaded.connect(load_character)
-	manager.saving_file.connect(save_character)
+	manager.saving_character.connect(save_character)
+	manager.character_loaded.connect(load_character)
+	manager.saving_character_config.connect(save_character_config)
+	manager.character_config_loaded.connect(load_character_config)
 
-	_branch_factory = registry.at(_Canvas.BRANCH_FACTORY_REGISTRY_KEY)
+	init_branch_factory(registry.at(_Canvas.BRANCH_FACTORY_REGISTRY_KEY))
+
+
+func init_branch_factory(branch_factory: Callable) -> void:
+	_branch_factory = branch_factory
 
 
 func add_branch(id: int) -> void:
+	if id in _branches:
+		push_warning("branch: %d already exists" % id)
+		return
+
 	var branch: _Branch = _branch_factory.call()
 	add_child(branch)
 	branch.removed.connect(remove_branch)
@@ -58,14 +66,21 @@ func add_branch(id: int) -> void:
 
 
 func get_branch(id: int) -> _Branch:
-	return _branches[id]
+	return _branches.get(id, null)
 
 
-func get_branches() -> Dictionary[int, _Branch]:
-	return _branches.duplicate()
+func get_branch_ids() -> Array[int]:
+	return _branches.keys()
+
+
+func get_branch_count() -> int:
+	return _branches.size()
 
 
 func update_branch(id: int, text: String) -> void:
+	if not id in _branches:
+		push_warning("branch: %d does not exist" % id)
+		return
 	_branches[id].set_text(text)
 
 
@@ -214,79 +229,62 @@ func center_node_in_graph(node: GraphNode) -> void:
 	node.position_offset = (size / 2 + scroll_offset) / zoom - node.size / 2
 
 
-func load_character(data: Dictionary) -> void:
+func save_character(file: _OasisFile) -> void:
+	for id in _branches:
+		file.set_value(str(id), _branches[id].get_text())
+
+
+func load_character(file: _OasisFile) -> void:
 	_stop_tween()
 	remove_branches()
 
-	var branches: Dictionary = _JsonUtils.safe_get(
-			data,
-			_Global.FILE_BRANCHES,
-			{},
-	)
-	for key in branches:
-		if not _JsonUtils.is_int(key):
+	for key in file.get_keys():
+		if not key.is_valid_int():
 			continue
-		var id := _JsonUtils.parse_int(key)
+		var id := key.to_int()
 		add_branch(id)
-		branch_restored.emit(id)
+		_branches[id].set_text(file.get_value(key, ""))
 
-	var position_offsets: Dictionary = _JsonUtils.safe_get(
-			data,
-			_Global.FILE_BRANCH_POSITION_OFFSETS,
-			{},
-	)
-	for key in position_offsets:
-		if not _JsonUtils.is_int(key):
-			continue
-		var id := _JsonUtils.parse_int(key)
-		var offset := _JsonUtils.get_vector2(position_offsets, key, Vector2.ZERO)
-		_branches[id].position_offset = offset
 
-	var branch_connections: Array = _JsonUtils.safe_get(
-			data,
-			_Global.FILE_BRANCH_CONNECTIONS,
-			[],
-	)
-	for json in branch_connections:
-		var connection := _BranchConnection.from_json(json)
-		if not connection:
-			continue
-		_branches[connection.from].set_slot_enabled_right(0, true)
-		_branches[connection.to].set_slot_enabled_left(0, true)
-		connect_node(
-			_branches[connection.from].name, 0,
-			_branches[connection.to].name, 0,
+func save_character_config(config: ConfigFile) -> void:
+	for id in _branches:
+		config.set_value(
+			_Save.Character.Config.BRANCH_POSITION_OFFSETS,
+			str(id),
+			_branches[id].position_offset,
 		)
-
-	zoom = _JsonUtils.safe_get(data, _Global.FILE_GRAPH_ZOOM, 1.0)
-	scroll_offset = _JsonUtils.get_vector2(
-		data,
-		_Global.FILE_GRAPH_SCROLL_OFFSET,
-		Vector2.ZERO,
+	config.set_value(
+			_Save.Character.Config.GRAPH,
+			_Save.Character.Config.Graph.ZOOM,
+			snappedf(zoom, 0.01),
+	)
+	config.set_value(
+			_Save.Character.Config.GRAPH,
+			_Save.Character.Config.Graph.SCROLL_OFFSET,
+			scroll_offset,
 	)
 
 
-func save_character(data: Dictionary) -> void:
-	var position_offsets := {}
-	for id in _branches:
-		position_offsets[id] = _JsonUtils.vector2_to_json(_branches[id].position_offset)
-	data[_Global.FILE_BRANCH_POSITION_OFFSETS] = position_offsets
-	data[_Global.FILE_GRAPH_ZOOM] = snappedf(zoom, 0.01)
-	data[_Global.FILE_GRAPH_SCROLL_OFFSET] = _JsonUtils.vector2_to_json(scroll_offset)
-
-	var name_to_key: Dictionary[String, int] = {}
-	for id in _branches:
-		name_to_key[_branches[id].name] = id
-
-	var simple_connections := connections.map(
-			func(d: Dictionary):
-				var connection := _BranchConnection.new(
-					name_to_key[d["from_node"]],
-					name_to_key[d["to_node"]],
-				)
-				return connection.to_json()
+func load_character_config(config: ConfigFile) -> void:
+	zoom = config.get_value(
+			_Save.Character.Config.GRAPH,
+			_Save.Character.Config.Graph.ZOOM,
+			zoom,
 	)
-	data[_Global.FILE_BRANCH_CONNECTIONS] = simple_connections
+	scroll_offset = config.get_value(
+			_Save.Character.Config.GRAPH,
+			_Save.Character.Config.Graph.SCROLL_OFFSET,
+			scroll_offset,
+	)
+	for id in _branches:
+		if config.has_section_key(
+				_Save.Character.Config.BRANCH_POSITION_OFFSETS,
+				str(id),
+		):
+			_branches[id].position_offset = config.get_value(
+					_Save.Character.Config.BRANCH_POSITION_OFFSETS,
+					str(id),
+			)
 
 
 func _setup_tween() -> void:
@@ -304,35 +302,3 @@ func _stop_tween() -> void:
 	if _tween and _tween.is_valid():
 		_tween.kill()
 		_tween = null
-
-
-class _BranchConnection:
-	extends RefCounted
-
-	var from := -1
-	var to := -1
-
-
-	static func from_json(json) -> _BranchConnection:
-		if not json is Dictionary:
-			return null
-
-		var from: int = _JsonUtils.safe_get_int(json, "from", -1)
-		var to: int = _JsonUtils.safe_get_int(json, "to", -1)
-
-		if not (from != -1 and to != -1):
-			return null
-
-		return new(from, to)
-
-
-	func _init(from: int, to: int) -> void:
-		self.from = from
-		self.to = to
-
-
-	func to_json() -> Dictionary:
-		return {
-			"from": from,
-			"to": to,
-		}

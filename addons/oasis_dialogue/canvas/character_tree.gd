@@ -8,8 +8,7 @@ const _RenameCharacterHandler := preload("res://addons/oasis_dialogue/canvas/ren
 const _AddCharacter := preload("res://addons/oasis_dialogue/canvas/add_character_button.gd")
 const _RemoveCharacter := preload("res://addons/oasis_dialogue/canvas/remove_character_button.gd")
 const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
-const _Global := preload("res://addons/oasis_dialogue/global.gd")
-const _JsonUtils := preload("res://addons/oasis_dialogue/utils/json_utils.gd")
+const _Save := preload("res://addons/oasis_dialogue/save.gd")
 
 signal character_activated()
 signal character_selected(name: String)
@@ -32,7 +31,7 @@ func setup(registry: _Registry) -> void:
 	remove_character.character_removed.connect(remove_selected_item)
 
 	var manager: _ProjectManager = registry.at(_ProjectManager.REGISTRY_KEY)
-	manager.project_loaded.connect(load_project)
+	manager.settings_loaded.connect(load_settings)
 
 
 func _ready() -> void:
@@ -44,6 +43,10 @@ func _ready() -> void:
 func add_item(text: String) -> void:
 	var item := create_item()
 	item.set_text(0, text)
+
+
+func select_item(item: TreeItem) -> void:
+	item.select(0)
 
 
 func remove_selected_item() -> void:
@@ -69,20 +72,29 @@ func set_items(items: Array[String]) -> void:
 		add_item(item)
 
 
-func load_project(data: Dictionary) -> void:
+func find_item(value: String) -> TreeItem:
 	for child in get_root().get_children():
-		child.free()
+		if child.get_text(0) == value:
+			return child
+	return null
+
+
+func load_settings(data: ConfigFile) -> void:
 	var characters: Array[String] = []
-	characters.assign(data.get(_Global.PROJECT_CHARACTERS, []))
+	characters.assign(data.get_value(_Save.Project.CHARACTERS, _Save.DUMMY, []))
+	set_items(characters)
 
-	for name in characters:
-		add_item(name)
-
-	var name: String = _JsonUtils.safe_get(data, _Global.PROJECT_ACTIVE, "")
+	var name: String = data.get_value(
+			_Save.Project.SESSION,
+			_Save.Project.Session.ACTIVE,
+			""
+	)
 	if name:
-		for child in get_root().get_children():
-			if child.get_text(0) == name:
-				child.select(0)
+		var item := find_item(name)
+		if item:
+			select_item(item)
+		else:
+			push_warning("active (%s) not found in character tree" % name)
 
 
 func _on_item_selected() -> void:

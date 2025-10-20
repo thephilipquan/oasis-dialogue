@@ -1,251 +1,62 @@
 extends GutTest
 
-const AST := preload("res://addons/oasis_dialogue/model/ast.gd")
 const Model := preload("res://addons/oasis_dialogue/model/model.gd")
-const Global := preload("res://addons/oasis_dialogue/global.gd")
+const OasisFile := preload("res://addons/oasis_dialogue/oasis_file.gd")
 
 var sut: Model = null
 
 
 func before_each() -> void:
-	sut = Model.new()
-
-
-func test_conditions() -> void:
-	var conditions: Array[String] = [
-		"has_gold",
-		"is_day",
-	]
-	sut.set_conditions(conditions)
-	assert_eq_deep(sut._conditions, conditions)
-	assert_true(sut.has_condition("has_gold"))
-	assert_false(sut.has_condition("is_night"))
+	sut = add_child_autofree(Model.new())
 
-
-func test_actions() -> void:
-	var actions: Array[String] = [
-		"foo",
-		"bar",
-	]
-	sut.set_actions(actions)
-	assert_eq_deep(sut._actions, actions)
-	assert_true(sut.has_action("foo"))
-	assert_false(sut.has_action("eee"))
 
+func test_set_conditions() -> void:
+	sut.set_conditions(["a", "b"])
+	assert_true(sut.has_condition("a"))
+	assert_true(sut.has_condition("b"))
+	assert_false(sut.has_condition("c"))
 
-func test_get_branches() -> void:
-	var branches: Dictionary[int, AST.Branch] = {
-		0: AST.Branch.new(),
-		1: AST.Branch.new(),
-	}
-	sut._branches = branches
-	assert_eq_deep(sut.get_branches(), branches)
 
+func test_set_conditions_overwrites_conditions() -> void:
+	sut.set_conditions(["a"])
+	sut.set_conditions(["c"])
+	assert_false(sut.has_condition("a"))
+	assert_true(sut.has_condition("c"))
 
-func test_load_character_sets_branches() -> void:
-	var d := {
-		"branches": {
-			0: {
-				"id": 0,
-				"type": AST.TYPE_BRANCH,
-			},
-			1: {
-				"id": 1,
-				"type": AST.TYPE_BRANCH,
-			},
-		},
-	}
 
-	sut.load_character(d)
+func test_load_conditions_restores_saved_data() -> void:
+	sut.set_conditions(["a", "b"])
+	var file := OasisFile.new()
+	sut.save_conditions(file)
 
-	var got := sut.get_branches()
-	assert_true(0 in got)
-	assert_true(1 in got)
+	before_each()
+	sut.load_conditions(file)
 
+	assert_true(sut.has_condition("a"))
+	assert_true(sut.has_condition("b"))
 
-func test_load_character_with_invalid_ast() -> void:
-	push_warning("todo")
-	pass_test("todo")
 
+func test_set_actions() -> void:
+	sut.set_actions(["a", "b"])
+	assert_true(sut.has_action("a"))
+	assert_true(sut.has_action("b"))
+	assert_false(sut.has_action("c"))
 
-func test_load_character_with_empty_branches() -> void:
-	var d := {
-		"branches": {},
-	}
-	sut.load_character(d)
-	assert_eq_deep(sut.get_branches(), {})
 
+func test_set_actions_overwrites_actions() -> void:
+	sut.set_actions(["a"])
+	sut.set_actions(["c"])
+	assert_false(sut.has_action("a"))
+	assert_true(sut.has_action("c"))
 
-func test_load_project() -> void:
-	var d := {
-		"actions": ["a", "b"],
-		"conditions": ["c", "d"],
-	}
-	sut.load_project(d)
-	assert_eq_deep(sut._actions, ["a", "b"])
-	assert_eq_deep(sut._conditions, ["c", "d"])
 
+func test_load_actions_restores_saved_data() -> void:
+	sut.set_actions(["a", "b"])
+	var file := OasisFile.new()
+	sut.save_actions(file)
 
-func test_load_project_overwrites() -> void:
-	var d := {
-		"actions": ["a", "b"],
-		"conditions": ["c", "d"],
-	}
-	sut.load_project(d)
+	before_each()
+	sut.load_actions(file)
 
-	d = {
-		"actions": ["e"],
-		"conditions": ["f"],
-	}
-	sut.load_project(d)
-
-	assert_eq_deep(sut._actions, ["e"])
-	assert_eq_deep(sut._conditions, ["f"])
-
-
-func test_save_project_stores_actions() -> void:
-	sut._actions = ["a", "b"]
-
-	var got := {}
-	sut.save_project(got)
-
-	assert_has(got, "actions")
-	assert_eq_deep(got["actions"], ["a", "b"])
-
-
-func test_save_project_stores_conditions() -> void:
-	sut._conditions = ["c", "d"]
-
-	var got := {}
-	sut.save_project(got)
-
-	assert_has(got, "conditions")
-	assert_eq_deep(got["conditions"], ["c", "d"])
-
-
-func test_save_character_stores_branches() -> void:
-	sut._branches[0] = AST.Branch.new(0)
-	sut._branches[1] = AST.Branch.new(1)
-
-	var save := {}
-	sut.save_character(save)
-
-	assert_true(Global.FILE_BRANCHES in save)
-
-	if not Global.FILE_BRANCHES in save:
-		return
-
-	var branches := save.get(Global.FILE_BRANCHES, {})
-
-	for i in 2:
-		assert_true(i in branches)
-		assert_not_null(branches[i])
-
-
-func test_add_branch() -> void:
-	var d := {
-		"characters": ["fred", "joe"],
-		"name": "fred",
-	}
-	sut.load_project(d)
-	sut.load_character(d)
-
-	sut.add_branch(0)
-
-	assert_eq(sut.get_branches().size(), 1)
-
-
-func test_update_branch_replaces_old_value() -> void:
-	var old_branch := AST.Branch.new(0)
-	sut._branches[0] = old_branch
-
-	var new_branch := AST.Branch.new(0)
-
-	sut.update_branch(new_branch)
-
-	assert_same(sut._branches[0], new_branch)
-
-
-func test_has_branch_exists() -> void:
-	var d := {
-		"characters": ["fred", "joe"],
-		"name": "fred",
-	}
-	sut.load_project(d)
-	sut.load_character(d)
-
-	sut.add_branch(3)
-
-	assert_true(sut.has_branch(3))
-
-
-func test_has_branch_not_exists() -> void:
-	var d := {
-		"characters": ["fred", "joe"],
-		"name": "fred",
-	}
-	sut.load_project(d)
-	sut.load_character(d)
-
-	sut.add_branch(3)
-
-	assert_false(sut.has_branch(2))
-
-
-func test_remove_branch() -> void:
-	var d := {
-		"characters": ["fred", "joe"],
-		"name": "fred",
-	}
-	sut.load_project(d)
-	sut.load_character(d)
-
-	sut.add_branch(3)
-	sut.add_branch(8)
-	sut.add_branch(13)
-
-	sut.remove_branch(8)
-
-	assert_false(sut.has_branch(8))
-
-
-func test_get_branch() -> void:
-	var d := {
-		"characters": ["fred", "joe"],
-		"name": "fred",
-	}
-	sut.load_project(d)
-	sut.load_character(d)
-
-	sut.add_branch(0)
-
-	var ast := sut.get_branch(0)
-	assert_ne(ast, null)
-
-
-func test_get_branch_ids() -> void:
-	var d := {
-		"characters": ["fred", "joe"],
-		"name": "fred",
-	}
-	sut.load_project(d)
-	sut.load_character(d)
-
-	sut.add_branch(1)
-	sut.add_branch(4)
-
-	assert_eq_deep(sut.get_branch_ids(), [1, 4])
-
-
-func test_clear_branches() -> void:
-	var d := {
-		"characters": ["fred"],
-		"name": "fred",
-	}
-	sut.load_project(d)
-	sut.load_character(d)
-	sut.add_branch(0)
-
-	sut.clear_branches()
-
-	assert_eq_deep(sut.get_branches().size(), 0)
+	assert_true(sut.has_action("a"))
+	assert_true(sut.has_action("b"))

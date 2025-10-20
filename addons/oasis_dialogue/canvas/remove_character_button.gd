@@ -5,7 +5,7 @@ const REGISTRY_KEY := "remove_character_button"
 
 const _Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
 const _ConfirmDialog := preload("res://addons/oasis_dialogue/confirm_dialog/confirm_dialog.gd")
-const _Model := preload("res://addons/oasis_dialogue/model/model.gd")
+const _Graph := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
 const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 
@@ -22,14 +22,28 @@ func register(registry: _Registry) -> void:
 
 func setup(registry: _Registry) -> void:
 	var manager: _ProjectManager = registry.at(_ProjectManager.REGISTRY_KEY)
-	_get_active_character = manager.get_active_display_name
+	init_get_active_character(manager.get_active_character)
 
-	var model: _Model = registry.at(_Model.REGISTRY_KEY)
-	_get_branch_count = model.get_branch_count
+	var graph: _Graph = registry.at(_Graph.REGISTRY_KEY)
+	init_get_branch_count(graph.get_branch_count)
 
-	_confirm_dialog_factory = registry.at(_Canvas.CONFIRM_DIALOG_FACTORY_REGISTRY_KEY)
+	init_confirm_dialog_factory(
+			registry.at(_Canvas.CONFIRM_DIALOG_FACTORY_REGISTRY_KEY)
+	)
 
-	manager.file_loaded.connect(show.unbind(1))
+	manager.character_loaded.connect(show.unbind(1))
+
+
+func init_get_branch_count(callback: Callable) -> void:
+	_get_branch_count = callback
+
+
+func init_get_active_character(callback: Callable) -> void:
+	_get_active_character = callback
+
+
+func init_confirm_dialog_factory(callback: Callable) -> void:
+	_confirm_dialog_factory = callback
 
 
 func _ready() -> void:

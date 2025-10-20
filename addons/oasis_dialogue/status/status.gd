@@ -36,7 +36,7 @@ func setup(registry: _Registry) -> void:
 	_status_label_factory = registry.at(_Canvas.STATUS_LABEL_FACTORY_REGISTRY_KEY)
 
 	var manager: _ProjectManager = registry.at(_ProjectManager.REGISTRY_KEY)
-	_get_active_character = manager.get_active_display_name
+	_get_active_character = manager.get_active_character
 
 	var _rename_character_handler: _RenameCharacterHandler = registry.at(_RenameCharacterHandler.REGISTRY_KEY)
 	_rename_character_handler.character_renamed.connect(rename_character)
@@ -56,8 +56,8 @@ func setup(registry: _Registry) -> void:
 	var graph: _BranchEdit = registry.at(_BranchEdit.REGISTRY_KEY)
 	graph.branch_removed.connect(remove_branch)
 
-	manager.saving_file.connect(save_file.unbind(1))
-	manager.saving_project.connect(save_project.unbind(1))
+	manager.saving_character.connect(save_file.unbind(1))
+	manager.saving_settings.connect(save_project.unbind(1))
 
 
 func init_get_active_character(callback: Callable) -> void:

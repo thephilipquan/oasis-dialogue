@@ -44,6 +44,10 @@ func set_text(text: String) -> void:
 	_code_edit.text = text
 
 
+func get_text() -> String:
+	return _code_edit.text
+
+
 func highlight(line_errors: Array[int]) -> void:
 	_is_erred = line_errors.size() > 0
 
