@@ -3,6 +3,7 @@ extends Tree
 
 const REGISTRY_KEY := "character_tree"
 
+const _Graph := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 const _RenameCharacterHandler := preload("res://addons/oasis_dialogue/canvas/rename_character_handler.gd")
 const _AddCharacter := preload("res://addons/oasis_dialogue/canvas/add_character_button.gd")
@@ -12,6 +13,8 @@ const _Save := preload("res://addons/oasis_dialogue/save.gd")
 
 signal character_activated()
 signal character_selected(name: String)
+
+const _DIRTY_SYMBOL := " *"
 
 
 func register(registry: _Registry) -> void:
@@ -32,6 +35,10 @@ func setup(registry: _Registry) -> void:
 
 	var manager: _ProjectManager = registry.at(_ProjectManager.REGISTRY_KEY)
 	manager.settings_loaded.connect(load_settings)
+	manager.character_saved.connect(unmark_dirty)
+
+	var graph: _Graph = registry.at(_Graph.REGISTRY_KEY)
+	graph.dirtied.connect(mark_active_dirty)
 
 
 func _ready() -> void:
@@ -66,6 +73,23 @@ func edit_selected_item(to: String) -> void:
 	item.set_text(0, to)
 
 
+func mark_active_dirty() -> void:
+	var text := get_selected_item()
+	if _is_dirty(text):
+		return
+	text = _dirty_text(text)
+	edit_selected_item(text)
+
+
+func unmark_dirty(name: String) -> void:
+	var text := _dirty_text(name)
+	var item := find_item(text)
+	if not item:
+		push_warning("couldn't find item (%s) to undirty" % name)
+		return
+	item.set_text(0, name)
+
+
 func set_items(items: Array[String]) -> void:
 	get_root().get_children().map(func(t: TreeItem): t.free())
 	for item in items:
@@ -98,8 +122,23 @@ func load_settings(data: ConfigFile) -> void:
 
 
 func _on_item_selected() -> void:
-	character_selected.emit(get_selected_item())
+	var name := get_selected_item()
+	name = _clean_text(name)
+	character_selected.emit(name)
 
 
 func _on_item_activated():
 	character_activated.emit()
+
+
+func _dirty_text(text: String) -> String:
+	return "%s%s" % [text, _DIRTY_SYMBOL]
+
+
+func _clean_text(text: String) -> String:
+	return text.rstrip(_DIRTY_SYMBOL)
+
+
+func _is_dirty(text: String) -> bool:
+	return text.ends_with(_DIRTY_SYMBOL)
+
