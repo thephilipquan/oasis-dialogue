@@ -78,6 +78,14 @@ func test_get_active_character_returns_loaded_character() -> void:
 	assert_eq(sut.get_active_character(), "Fred")
 
 
+func test_dirty_api() -> void:
+	sut.open_project(TESTDIR)
+	sut.add_and_load_character("fred")
+	sut.mark_active_character_dirty()
+
+	assert_true(sut.active_is_dirty())
+
+
 func test_open_project_restores_settings() -> void:
 	sut.open_project(TESTDIR)
 	sut.saving_settings.connect(
@@ -185,6 +193,15 @@ func test_save_character_emits_saving_character() -> void:
 	assert_signal_emitted(sut.saving_character)
 
 
+func test_save_character_emits_character_saved() -> void:
+	sut.open_project(TESTDIR)
+	sut.add_and_load_character("fred")
+
+	watch_signals(sut)
+	sut.save_active_character()
+	assert_signal_emitted(sut.character_saved)
+
+
 func test_save_character_config_emits_saving_character_config() -> void:
 	sut.open_project(TESTDIR)
 	sut.add_and_load_character("fred")
@@ -253,6 +270,16 @@ func test_switching_characters_restores_unsaved_changes() -> void:
 	sut.load_character("fred")
 
 
+func test_switching_character_does_not_emit_character_saved() -> void:
+	sut.open_project(TESTDIR)
+	sut.add_and_load_character("fred")
+	sut.mark_active_character_dirty()
+	watch_signals(sut)
+	sut.add_and_load_character("tom")
+
+	assert_signal_not_emitted(sut.character_saved)
+
+
 func test_switching_characters_restores_config() -> void:
 	sut.open_project(TESTDIR)
 	sut.add_and_load_character("fred")
@@ -303,6 +330,19 @@ func test_save_project_saves_unsaved_changes() -> void:
 			CONNECT_ONE_SHOT,
 	)
 	sut.load_character("tom")
+
+
+func test_save_project_emits_character_saved_for_each_dirty_file() -> void:
+	sut.open_project(TESTDIR)
+	sut.add_and_load_character("fred")
+	sut.mark_active_character_dirty()
+	sut.add_and_load_character("tom")
+	sut.mark_active_character_dirty()
+	watch_signals(sut)
+
+	sut.save_project()
+	assert_signal_emitted_with_parameters(sut.character_saved, ["tom"], 0)
+	assert_signal_emitted_with_parameters(sut.character_saved, ["fred"], 1)
 
 
 func test_remove_active_character() -> void:

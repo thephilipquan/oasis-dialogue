@@ -21,6 +21,7 @@ var _duration := 2.0
 
 var _get_active_character := Callable()
 var _status_label_factory := Callable()
+var _active_is_dirty := Callable()
 
 var _errors: Dictionary[int, _StatusLabel] = {}
 
@@ -33,10 +34,11 @@ func register(registry: _Registry) -> void:
 
 
 func setup(registry: _Registry) -> void:
-	_status_label_factory = registry.at(_Canvas.STATUS_LABEL_FACTORY_REGISTRY_KEY)
+	init_status_label_factory(registry.at(_Canvas.STATUS_LABEL_FACTORY_REGISTRY_KEY))
 
 	var manager: _ProjectManager = registry.at(_ProjectManager.REGISTRY_KEY)
-	_get_active_character = manager.get_active_character
+	init_get_active_character(manager.get_active_character)
+	init_active_is_dirty(manager.active_is_dirty)
 
 	var _rename_character_handler: _RenameCharacterHandler = registry.at(_RenameCharacterHandler.REGISTRY_KEY)
 	_rename_character_handler.character_renamed.connect(rename_character)
@@ -56,7 +58,7 @@ func setup(registry: _Registry) -> void:
 	var graph: _BranchEdit = registry.at(_BranchEdit.REGISTRY_KEY)
 	graph.branch_removed.connect(remove_branch)
 
-	manager.saving_character.connect(save_file.unbind(1))
+	manager.character_saved.connect(save_character)
 	manager.saving_settings.connect(save_project.unbind(1))
 
 
@@ -66,6 +68,10 @@ func init_get_active_character(callback: Callable) -> void:
 
 func init_status_label_factory(status_label_factory: Callable) -> void:
 	_status_label_factory = status_label_factory
+
+
+func init_active_is_dirty(callback: Callable) -> void:
+	_active_is_dirty = callback
 
 
 func add_branch(id: int) -> void:
@@ -88,8 +94,8 @@ func add_character(name: String) -> void:
 	info("Added %s" % name)
 
 
-func save_file() -> void:
-	info("Saved %s" % _get_active_character.call())
+func save_character(name: String) -> void:
+	info("Saved %s" % name)
 
 
 func save_project() -> void:

@@ -20,6 +20,7 @@ const _CONDITIONS := "conditions"
 
 signal saving_character(file: _OasisFile)
 signal character_loaded(file: _OasisFile)
+signal character_saved(name: String)
 
 signal saving_character_config(file: ConfigFile)
 signal character_config_loaded(file: ConfigFile)
@@ -88,6 +89,10 @@ func mark_active_character_dirty() -> void:
 	_is_dirty = true
 
 
+func active_is_dirty() -> bool:
+	return _is_dirty
+
+
 func quit() -> void:
 	var dir := DirAccess.open(_directory.path_join(_SETTINGS_DIR))
 	for name in _dirty_characters:
@@ -144,6 +149,8 @@ func open_project(path: String) -> void:
 func save_project() -> void:
 	assert(_directory)
 
+	if _is_dirty:
+		save_active_character()
 	if _active:
 		save_active_character_config()
 	for name in _dirty_characters:
@@ -289,6 +296,7 @@ func save_active_character() -> void:
 
 	_is_dirty = false
 	_erase_dirty_character(_active)
+	character_saved.emit(_active)
 
 
 func save_active_character_temp() -> void:
@@ -319,6 +327,7 @@ func replace_save_with_temp(name: String) -> void:
 
 	DirAccess.open(_directory).remove(temp_path)
 	_erase_dirty_character(name)
+	character_saved.emit(name)
 
 
 func _format_character_filename(name: String) -> String:
