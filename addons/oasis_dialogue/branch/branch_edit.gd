@@ -19,6 +19,7 @@ signal branch_changed(id: int, text: String)
 signal branch_removed(id: int)
 ## Emitted when a branch
 signal branches_dirtied(id: int, dirty_ids: Array[int])
+signal pretty_requested(id: int)
 
 var duration: float = 0.5:
 	set(value):
@@ -26,6 +27,7 @@ var duration: float = 0.5:
 
 var _tween: Tween = null
 var _branches: Dictionary[int, _Branch] = {}
+var _dirty_branches: Array[int] = []
 var _branch_factory := Callable()
 
 
@@ -61,11 +63,7 @@ func add_branch(id: int, silent := false) -> void:
 	var branch: _Branch = _branch_factory.call()
 	add_child(branch)
 	branch.removed.connect(remove_branch)
-	branch.changed.connect(
-			func(id: int, text: String) -> void:
-				branch_changed.emit(id, text)
-				dirtied.emit()
-	)
+	branch.changed.connect(_on_branch_changed)
 	branch.set_id(id)
 	center_node_in_graph(branch)
 
@@ -93,12 +91,13 @@ func has_branch(id: int) -> bool:
 	return id in _branches
 
 
-func update_branch(id: int, text: String) -> void:
+func update_branch(id: int, text: String, silent := false) -> void:
 	if not id in _branches:
 		push_warning("branch: %d does not exist" % id)
 		return
 	_branches[id].set_text(text)
-	dirtied.emit()
+	if not silent:
+		dirtied.emit()
 
 
 func connect_branches(from_id: int, to_ids: Array[int]) -> void:
@@ -249,6 +248,9 @@ func center_node_in_graph(node: GraphNode) -> void:
 
 
 func save_character(file: _OasisFile) -> void:
+	for id in _dirty_branches:
+		pretty_requested.emit(id)
+	_dirty_branches.clear()
 	for id in _branches:
 		var section := str(id)
 		var branch := _branches[id]
@@ -301,6 +303,12 @@ func load_character_config(config: ConfigFile) -> void:
 			_Save.Character.Config.Graph.SCROLL_OFFSET,
 			scroll_offset,
 	)
+
+
+func _on_branch_changed(id: int, text: String) -> void:
+	branch_changed.emit(id, text)
+	_dirty_branches.push_back(id)
+	dirtied.emit()
 
 
 func _setup_tween() -> void:

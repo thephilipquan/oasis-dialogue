@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://4plc4vhymybs"]
+[gd_scene load_steps=16 format=3 uid="uid://4plc4vhymybs"]
 
 [ext_resource type="Script" uid="uid://bkn5mac6gdvq3" path="res://addons/oasis_dialogue/canvas/canvas.gd" id="1_pyvqf"]
 [ext_resource type="Theme" uid="uid://b17l0ux5wllk5" path="res://addons/oasis_dialogue/canvas/canvas_theme.tres" id="1_ta1sa"]
@@ -12,6 +12,7 @@
 [ext_resource type="Script" uid="uid://bnp7di4ksvma5" path="res://addons/oasis_dialogue/branch/branch_edit.gd" id="7_54gq2"]
 [ext_resource type="Script" uid="uid://bbsmsgjqhjirr" path="res://addons/oasis_dialogue/canvas/rename_character_handler.gd" id="7_n0a6n"]
 [ext_resource type="PackedScene" uid="uid://cbhhlkh2fm53s" path="res://addons/oasis_dialogue/status/status.tscn" id="8_54gq2"]
+[ext_resource type="Script" uid="uid://crlgqb4exlb5x" path="res://addons/oasis_dialogue/branch_prettier.gd" id="8_h1x05"]
 [ext_resource type="Script" uid="uid://bmsfi1lplad1r" path="res://addons/oasis_dialogue/unbrancher_visitors.gd" id="8_unkvg"]
 [ext_resource type="Script" uid="uid://bphp844em6apf" path="res://addons/oasis_dialogue/canvas/save_project_button.gd" id="12_h1x05"]
 
@@ -39,6 +40,9 @@ script = ExtResource("7_n0a6n")
 
 [node name="UnbrancherVisitors" type="Node" parent="." groups=["registerable"]]
 script = ExtResource("8_unkvg")
+
+[node name="BranchPrettier" type="Node" parent="." groups=["registerable"]]
+script = ExtResource("8_h1x05")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1

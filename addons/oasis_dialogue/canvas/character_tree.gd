@@ -141,4 +141,3 @@ func _clean_text(text: String) -> String:
 
 func _is_dirty(text: String) -> bool:
 	return text.ends_with(_DIRTY_SYMBOL)
-

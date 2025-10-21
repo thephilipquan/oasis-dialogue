@@ -336,3 +336,29 @@ func test_scroll_offset_change_emits_dirtied() -> void:
 	pass_test("unable to trigger via code")
 
 
+func test_pretty_requested_only_on_dirty_branches() -> void:
+	sut.add_branch(0)
+	sut.add_branch(2)
+	sut.add_branch(5)
+	# Simulate braches changing.
+	branches[1].changed.emit(2, "")
+	branches[2].changed.emit(5, "")
+	watch_signals(sut)
+	sut.save_character(OasisFile.new())
+	assert_signal_emitted_with_parameters(sut.pretty_requested, [2], 0)
+	assert_signal_emitted_with_parameters(sut.pretty_requested, [5], 1)
+
+
+func test_saving_resets_dirty_branches() -> void:
+	sut.add_branch(0)
+	sut.add_branch(1)
+	# Simulate braches changing.
+	branches[0].changed.emit(0, "")
+	sut.save_character(OasisFile.new())
+
+	# Simulate braches changing.
+	branches[1].changed.emit(1, "")
+	watch_signals(sut)
+	sut.save_character(OasisFile.new())
+	assert_signal_emitted_with_parameters(sut.pretty_requested, [1], 0)
+	assert_signal_emit_count(sut.pretty_requested, 1)
