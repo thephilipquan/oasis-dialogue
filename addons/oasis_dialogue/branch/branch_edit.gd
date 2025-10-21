@@ -231,28 +231,34 @@ func center_node_in_graph(node: GraphNode) -> void:
 
 func save_character(file: _OasisFile) -> void:
 	for id in _branches:
-		file.set_value(str(id), _branches[id].get_text())
+		var section := str(id)
+		var branch := _branches[id]
+		file.set_value(section, _Save.Character.Branch.VALUE, branch.get_text())
+		file.set_value(section, _Save.Character.Branch.POSITION_OFFSET, branch.position_offset)
 
 
 func load_character(file: _OasisFile) -> void:
 	_stop_tween()
 	remove_branches()
 
-	for key in file.get_keys():
+	for key in file.get_sections():
 		if not key.is_valid_int():
 			continue
+
 		var id := key.to_int()
-		add_branch(id)
-		_branches[id].set_text(file.get_value(key, ""))
+		add_branch(id, true)
+
+		var branch = _branches[id]
+		branch.set_text(file.get_value(key, _Save.Character.Branch.VALUE, ""))
+		branch.position_offset = file.get_value(
+				key,
+				_Save.Character.Branch.POSITION_OFFSET,
+				Vector2.ZERO
+		)
 
 
 func save_character_config(config: ConfigFile) -> void:
-	for id in _branches:
-		config.set_value(
-			_Save.Character.Config.BRANCH_POSITION_OFFSETS,
-			str(id),
-			_branches[id].position_offset,
-		)
+	const section := "graph"
 	config.set_value(
 			_Save.Character.Config.GRAPH,
 			_Save.Character.Config.Graph.ZOOM,
@@ -276,15 +282,6 @@ func load_character_config(config: ConfigFile) -> void:
 			_Save.Character.Config.Graph.SCROLL_OFFSET,
 			scroll_offset,
 	)
-	for id in _branches:
-		if config.has_section_key(
-				_Save.Character.Config.BRANCH_POSITION_OFFSETS,
-				str(id),
-		):
-			_branches[id].position_offset = config.get_value(
-					_Save.Character.Config.BRANCH_POSITION_OFFSETS,
-					str(id),
-			)
 
 
 func _setup_tween() -> void:

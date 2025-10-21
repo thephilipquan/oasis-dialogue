@@ -118,7 +118,11 @@ func open_project(path: String) -> void:
 		elif filename == _CONDITIONS:
 			conditions_loaded.emit(file)
 		else:
-			var name: String = file.get_value(_Save.Character.DISPLAY_NAME, filename)
+			var name: String = file.get_value(
+					_Save.Character.DATA,
+					_Save.Character.Data.DISPLAY_NAME,
+					filename
+			)
 			characters.push_back(name)
 			var temp_path := _character_to_temp_path(name)
 			if dir.file_exists(temp_path):
@@ -366,7 +370,8 @@ func _save_character(name: String, path: String) -> void:
 	var file := _OasisFile.new()
 	saving_character.emit(file)
 	file.set_value(
-			_Save.Character.DISPLAY_NAME,
+			_Save.Character.DATA,
+			_Save.Character.Data.DISPLAY_NAME,
 			name,
 	)
 	file.save(path)

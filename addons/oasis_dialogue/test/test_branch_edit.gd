@@ -268,26 +268,26 @@ func test_arrange_orphans_with_ignore() -> void:
 
 func test_load_character_restores_saved_branches() -> void:
 	sut.add_branch(3)
+	stub(branches[0].get_text).to_return("a")
+	branches[0].position_offset = Vector2(50, 100)
+
 	sut.add_branch(7)
-	stub(sut.get_branch(3).get_text).to_return("a")
-	stub(sut.get_branch(7).get_text).to_return("b\nc")
+	stub(branches[1].get_text).to_return("b\nc")
+	branches[1].position_offset = Vector2(150, 200)
+
 	var file := OasisFile.new()
 	sut.save_character(file)
 
 	before_each()
 	sut.load_character(file)
 
-	assert_not_null(sut.get_branch(3))
-	assert_not_null(sut.get_branch(7))
-	assert_called(sut.get_branch(3), "set_text", ["a"])
-	assert_called(sut.get_branch(7), "set_text", ["b\nc"])
+	assert_called(branches[0], "set_text", ["a"])
+	assert_eq(branches[0].position_offset, Vector2(50, 100))
+	assert_called(branches[1], "set_text", ["b\nc"])
+	assert_eq(branches[1].position_offset, Vector2(150, 200))
 
 
 func test_load_character_config_restores_viewport_state() -> void:
-	sut.add_branch(0)
-	branches[0].position_offset = Vector2(50, 100)
-	sut.add_branch(1)
-	branches[1].position_offset = Vector2(150, 200)
 	sut.zoom = 1.38
 	sut.scroll_offset = Vector2(400, 700)
 
@@ -301,8 +301,6 @@ func test_load_character_config_restores_viewport_state() -> void:
 	before_each()
 	sut.load_character(file)
 	sut.load_character_config(config)
-	assert_eq(branches[0].position_offset, Vector2(50, 100))
-	assert_eq(branches[1].position_offset, Vector2(150, 200))
 	assert_almost_eq(sut.zoom, 1.38, 0.01)
 	# Bug when testing this. Works in production.
 	# assert_eq(sut.scroll_offset, Vector2(400, 700))

@@ -41,18 +41,18 @@ func has_action(action: String) -> bool:
 
 
 func save_conditions(file: _OasisFile) -> void:
-	file.set_value(_Save.DUMMY, "\n".join(_conditions))
+	file.set_value(_Save.Project.CONDITIONS, _Save.DUMMY, "\n".join(_conditions))
 
 
 func load_conditions(file: _OasisFile) -> void:
-	var text: String = file.get_value(_Save.DUMMY, "")
+	var text: String = file.get_value(_Save.Project.CONDITIONS, _Save.DUMMY, "")
 	set_conditions(text.split("\n"))
 
 
 func save_actions(file: _OasisFile) -> void:
-	file.set_value(_Save.DUMMY, "\n".join(_actions))
+	file.set_value(_Save.Project.ACTIONS, _Save.DUMMY, "\n".join(_actions))
 
 
 func load_actions(file: _OasisFile) -> void:
-	var text: String = file.get_value(_Save.DUMMY, "")
+	var text: String = file.get_value(_Save.Project.ACTIONS, _Save.DUMMY, "")
 	set_actions(text.split("\n"))

@@ -98,14 +98,14 @@ func test_open_project_restores_conditions() -> void:
 	sut.open_project(TESTDIR)
 	sut.saving_conditions.connect(
 			func(data: OasisFile):
-				data.set_value(Save.DUMMY, "a\nb")
+				data.set_value(Save.Project.CONDITIONS, Save.DUMMY, "a\nb")
 	)
 	sut.save_project()
 
 	sut = add_child_autofree(ProjectManager.new())
 	sut.conditions_loaded.connect(
 			func(data: OasisFile):
-				assert_eq_deep(data.get_value(Save.DUMMY), "a\nb")
+				assert_eq_deep(data.get_value(Save.Project.CONDITIONS, Save.DUMMY), "a\nb")
 	)
 	sut.open_project(TESTDIR)
 
@@ -114,14 +114,14 @@ func test_open_project_restores_actions() -> void:
 	sut.open_project(TESTDIR)
 	sut.saving_actions.connect(
 			func(data: OasisFile):
-				data.set_value(Save.DUMMY, "a\nb")
+				data.set_value(Save.Project.ACTIONS, Save.DUMMY, "a\nb")
 	)
 	sut.save_project()
 
 	sut = add_child_autofree(ProjectManager.new())
 	sut.actions_loaded.connect(
 			func(data: OasisFile):
-				assert_eq_deep(data.get_value(Save.DUMMY), "a\nb")
+				assert_eq_deep(data.get_value(Save.Project.ACTIONS, Save.DUMMY), "a\nb")
 	)
 	sut.open_project(TESTDIR)
 
@@ -132,7 +132,7 @@ func test_unexpected_quit_restores_unsaved_changes() -> void:
 	sut.mark_active_character_dirty()
 	sut.saving_character.connect(
 			func(data: OasisFile):
-				data.set_value("a", "b"),
+				data.set_value("a", "b", "c"),
 			CONNECT_ONE_SHOT,
 	)
 	sut.add_and_load_character("tom")
@@ -141,7 +141,7 @@ func test_unexpected_quit_restores_unsaved_changes() -> void:
 	sut.open_project(TESTDIR)
 	sut.character_loaded.connect(
 			func(data: OasisFile):
-				assert_eq(data.get_value("a", ""), "b"),
+				assert_eq(data.get_value("a", "b", ""), "c"),
 	)
 	sut.load_character("fred")
 
@@ -152,7 +152,7 @@ func test_quit_removes_unsaved_changes() -> void:
 	sut.mark_active_character_dirty()
 	sut.saving_character.connect(
 			func(data: OasisFile):
-				data.set_value("a", "b"),
+				data.set_value("a", "b", "c"),
 			CONNECT_ONE_SHOT,
 	)
 	sut.add_and_load_character("tom")
@@ -162,7 +162,7 @@ func test_quit_removes_unsaved_changes() -> void:
 	sut.open_project(TESTDIR)
 	sut.character_loaded.connect(
 			func(data: OasisFile):
-				assert_false(data.has_key("a")),
+				assert_false(data.has_section_key("a", "b")),
 	)
 	sut.load_character("fred")
 
@@ -200,7 +200,7 @@ func test_load_character_restores_saved_character_data() -> void:
 	sut.mark_active_character_dirty()
 	sut.saving_character.connect(
 			func(data: OasisFile):
-				data.set_value("a", "hello world")
+				data.set_value("a", "b", "hello world")
 	)
 	sut.save_active_character()
 	sut.quit()
@@ -209,7 +209,7 @@ func test_load_character_restores_saved_character_data() -> void:
 	sut.open_project(TESTDIR)
 	sut.character_loaded.connect(
 			func(data: OasisFile):
-				assert_eq(data.get_value("a", ""), "hello world")
+				assert_eq(data.get_value("a", "b", ""), "hello world")
 	)
 	sut.load_character("fred")
 
@@ -242,13 +242,13 @@ func test_switching_characters_restores_unsaved_changes() -> void:
 	sut.mark_active_character_dirty()
 	sut.saving_character.connect(
 			func(data: OasisFile):
-				data.set_value("a", "b"),
+				data.set_value("a", "b", "c"),
 			CONNECT_ONE_SHOT,
 	)
 	sut.load_character("tom")
 	sut.character_loaded.connect(
 			func(data: OasisFile):
-				assert_eq(data.get_value("a", ""), "b")
+				assert_eq(data.get_value("a", "b", ""), "c")
 	)
 	sut.load_character("fred")
 
@@ -276,14 +276,14 @@ func test_save_project_saves_unsaved_changes() -> void:
 	sut.mark_active_character_dirty()
 	sut.saving_character.connect(
 			func(data: OasisFile):
-				data.set_value("a", "b"),
+				data.set_value("a", "b", "c"),
 			CONNECT_ONE_SHOT,
 	)
 	sut.add_and_load_character("tom")
 	sut.mark_active_character_dirty()
 	sut.saving_character.connect(
 			func(data: OasisFile):
-				data.set_value("c", "d"),
+				data.set_value("d", "e", "f"),
 			CONNECT_ONE_SHOT,
 	)
 	sut.save_project()
@@ -293,13 +293,13 @@ func test_save_project_saves_unsaved_changes() -> void:
 	sut.open_project(TESTDIR)
 	sut.character_loaded.connect(
 			func(data: OasisFile):
-				assert_eq(data.get_value("a", ""), "b"),
+				assert_eq(data.get_value("a", "b", ""), "c"),
 			CONNECT_ONE_SHOT,
 	)
 	sut.load_character("fred")
 	sut.character_loaded.connect(
 			func(data: OasisFile):
-				assert_eq(data.get_value("c", ""), "d"),
+				assert_eq(data.get_value("d", "e", ""), "f"),
 			CONNECT_ONE_SHOT,
 	)
 	sut.load_character("tom")
@@ -319,7 +319,7 @@ func test_remove_active_character_removes_unsaved_changes() -> void:
 	sut.mark_active_character_dirty()
 	sut.saving_character.connect(
 			func(data: OasisFile):
-				data.set_value("a", "b"),
+				data.set_value("a", "b", "c"),
 			CONNECT_ONE_SHOT,
 	)
 	sut.add_and_load_character("tom")
@@ -329,7 +329,7 @@ func test_remove_active_character_removes_unsaved_changes() -> void:
 
 	sut.character_loaded.connect(
 			func(data: OasisFile):
-				assert_false(data.has_key("a")),
+				assert_false(data.has_section_key("a", "b")),
 	)
 	sut.add_and_load_character("fred")
 
@@ -360,7 +360,7 @@ func test_rename_active_character_removes_previous_name_data() -> void:
 	sut.mark_active_character_dirty()
 	sut.saving_character.connect(
 			func(file: OasisFile):
-				file.set_value("a", "b"),
+				file.set_value("a", "b", "c"),
 			CONNECT_ONE_SHOT,
 	)
 	sut.saving_character_config.connect(
@@ -374,7 +374,7 @@ func test_rename_active_character_removes_previous_name_data() -> void:
 	sut.rename_active_character("bob")
 	sut.character_loaded.connect(
 			func(file: OasisFile):
-				assert_false(file.has_key("a"), "fred temp file was never removed"),
+				assert_false(file.has_section_key("a", "b"), "fred temp file was never removed"),
 	)
 	sut.character_config_loaded.connect(
 			func(file: ConfigFile):
