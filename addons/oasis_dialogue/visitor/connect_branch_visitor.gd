@@ -4,14 +4,16 @@ const _SemanticError := preload("res://addons/oasis_dialogue/semantic_error.gd")
 
 var _connect_keyword := ""
 var _connect_branches := Callable()
+var _is_interactive_connect := Callable()
 
 var _id := -1
 var _to_branches: Array[int] = []
 
 
-func _init(connect_keyword: String, connect_branches: Callable) -> void:
+func _init(connect_keyword: String, connect_branches: Callable, is_interactive_connect: Callable) -> void:
 	_connect_keyword = connect_keyword
 	_connect_branches = connect_branches
+	_is_interactive_connect = is_interactive_connect
 
 
 func visit_branch(branch: _AST.Branch) -> void:
@@ -30,5 +32,10 @@ func cancel() -> void:
 
 
 func finish() -> void:
-	_connect_branches.call(_id, _to_branches.duplicate())
+	var is_interactive: bool = _is_interactive_connect.call()
+	_connect_branches.call(
+			_id,
+			_to_branches.duplicate(),
+			is_interactive,
+	)
 	cancel()

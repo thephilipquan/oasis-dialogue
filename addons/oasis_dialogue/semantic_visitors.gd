@@ -63,6 +63,7 @@ func setup(registry: _Registry) -> void:
 	var connect_branch_visitor := _ConnectBranchVisitor.new(
 		_Global.CONNECT_BRANCH_KEYWORD,
 		graph.connect_branches,
+		func is_interactive_connect(): return graph.is_interactive_connect(),
 	)
 	var clear_status_err := _FinishCallbackVisitor.new(status.clear_err)
 	var clear_branch_highlights_visitor := _FinishCallbackVisitor.new(graph.clear_branch_highlights)
@@ -79,8 +80,8 @@ func setup(registry: _Registry) -> void:
 	])
 
 	var language_server: _LanguageServer = registry.at(_LanguageServer.REGISTRY_KEY)
-	graph.branch_changed.connect(
-			func semantic_visit(id: int, text: String) -> void:
-				var ast := language_server.parse_branch_text(id, text)
-				_visitors.iterate(ast)
-	)
+	var semantic_visit := func semantic_visit(id: int, text: String) -> void:
+			var ast := language_server.parse_branch_text(id, text)
+			_visitors.iterate(ast)
+
+	graph.branch_changed.connect(semantic_visit)

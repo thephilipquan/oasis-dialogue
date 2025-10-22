@@ -29,6 +29,7 @@ var _tween: Tween = null
 var _branches: Dictionary[int, _Branch] = {}
 var _dirty_branches: Array[int] = []
 var _branch_factory := Callable()
+var _is_restoring_branches := false
 
 
 func register(registry: _Registry) -> void:
@@ -100,7 +101,17 @@ func update_branch(id: int, text: String, silent := false) -> void:
 		dirtied.emit()
 
 
-func connect_branches(from_id: int, to_ids: Array[int]) -> void:
+func is_interactive_connect() -> bool:
+	return not _is_restoring_branches
+
+
+## Connect the branches from [param from_id] to [param to_ids].
+## [br][br]
+## By defafult, connecting branches is [i]interactive[/i], such that
+## [BranchEdit] will move orphan branches out of the way and bring connecting
+## orphan branches into view. If you only want to connect without any
+## movement, make [param static] false.
+func connect_branches(from_id: int, to_ids: Array[int], interactive := true) -> void:
 	var to_arrange: Array[_Branch] = []
 	var from := _branches[from_id]
 	from.set_slot_enabled_right(0, to_ids.size())
@@ -117,6 +128,9 @@ func connect_branches(from_id: int, to_ids: Array[int]) -> void:
 			connect_node(from.name, 0, to.name, 0)
 		elif not is_in and is_connected:
 			disconnect_node(from.name, 0, to.name, 0)
+
+	if not interactive:
+		return
 
 	disable_unused_slots()
 	if to_arrange:
@@ -276,6 +290,11 @@ func load_character(file: _OasisFile) -> void:
 				_Save.Character.Branch.POSITION_OFFSET,
 				Vector2.ZERO
 		)
+
+	_is_restoring_branches = true
+	for id in _branches:
+		branch_changed.emit(id, get_branch_text(id))
+	_is_restoring_branches = false
 
 
 func save_character_config(config: ConfigFile) -> void:
