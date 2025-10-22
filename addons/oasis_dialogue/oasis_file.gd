@@ -135,7 +135,7 @@ func _parse_value(value: String):
 	elif value.to_lower() == "false":
 		return false
 
-	var regex := RegEx.create_from_string(r"Vector2\(([\d\.]+),[ ]*([\d\.]+)\)")
+	var regex := RegEx.create_from_string(r"Vector2\(([\d\.-]+),[ ]*([\d\.-]+)\)")
 	var m := regex.search(value)
 	if m:
 		var x := m.strings[1].to_float()

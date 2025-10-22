@@ -94,14 +94,14 @@ func test_parsing_bool() -> void:
 
 
 func test_parsing_vector2() -> void:
-	sut.set_value("a", "b", Vector2(4, 6))
-	sut.set_value("c", "d", Vector2(1.234, 5.678))
+	sut.set_value("a", "b", Vector2(4, -6))
+	sut.set_value("c", "d", Vector2(-1.234, 5.678))
 	var text := sut.encode_to_text()
 
 	sut = OasisFile.new()
 	sut.parse(text)
-	assert_eq(sut.get_value("a", "b"), Vector2(4, 6))
-	assert_eq(sut.get_value("c", "d"), Vector2(1.234, 5.678))
+	assert_eq(sut.get_value("a", "b"), Vector2(4, -6))
+	assert_eq(sut.get_value("c", "d"), Vector2(-1.234, 5.678))
 
 
 func test_parse_empty_string_is_valid() -> void:
