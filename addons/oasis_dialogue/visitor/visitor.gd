@@ -3,7 +3,7 @@ extends RefCounted
 const _AST := preload("res://addons/oasis_dialogue/model/ast.gd")
 
 
-func visit_line(lien: _AST.Line) -> void:
+func visit_line(line: _AST.Line) -> void:
 	pass
 func visit_branch(branch: _AST.Branch) -> void:
 	pass

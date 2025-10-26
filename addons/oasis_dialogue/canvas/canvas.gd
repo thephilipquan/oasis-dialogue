@@ -27,19 +27,19 @@ func register(registry: _Registry) -> void:
 	var parser := _Parser.new()
 	registry.add(_Parser.REGISTRY_KEY, parser)
 
-	var input_dialog_factory := func():
+	var input_dialog_factory := func create_input_dialog() -> Control:
 		var dialog: Control = _InputDialog.instantiate()
 		add_child(dialog)
 		return dialog
 	registry.add(INPUT_DIALOG_FACTORY_REGISTRY_KEY, input_dialog_factory)
 
-	var confirm_dialog_factory := func():
+	var confirm_dialog_factory := func create_confirm_dialog() -> Control:
 		var dialog: Control = _ConfirmDialog.instantiate()
 		add_child(dialog)
 		return dialog
 	registry.add(CONFIRM_DIALOG_FACTORY_REGISTRY_KEY, confirm_dialog_factory)
 
-	var branch_factory := func():
+	var branch_factory := func create_branch() -> _Branch:
 		var branch: _Branch = _BranchScene.instantiate()
 		var highlighter := _Highlighter.new()
 		highlighter.set_lexer(lexer)
@@ -47,7 +47,7 @@ func register(registry: _Registry) -> void:
 		return branch
 	registry.add(BRANCH_FACTORY_REGISTRY_KEY, branch_factory)
 
-	var status_label_factory := func():
+	var status_label_factory := func create_status_label() -> Label:
 		var label: Label = _StatusLabelScene.instantiate()
 		return label
 	registry.add(STATUS_LABEL_FACTORY_REGISTRY_KEY, status_label_factory)
