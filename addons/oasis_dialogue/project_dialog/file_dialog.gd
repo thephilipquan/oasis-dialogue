@@ -3,7 +3,8 @@ extends FileDialog
 
 signal selected(path: String)
 
-const EXTENSION := "oasis"
+var _default_filename := ""
+var _extension := ""
 
 
 func _ready() -> void:
@@ -20,18 +21,31 @@ func _ready() -> void:
 	initial_position = Window.WINDOW_INITIAL_POSITION_CENTER_MAIN_WINDOW_SCREEN
 	display_mode = FileDialog.DISPLAY_LIST
 
-	filters = PackedStringArray(["*.%s" % EXTENSION])
-	show()
+	if _extension:
+		filters = PackedStringArray(["*.%s" % _extension])
 
-
-func init(mode: FileMode) -> void:
-	if mode == FileMode.FILE_MODE_SAVE_FILE:
-		get_line_edit().text = "game_name.%s" % EXTENSION
+	if file_mode == FileMode.FILE_MODE_SAVE_FILE:
+		if _default_filename and _extension:
+			get_line_edit().text = "%s.%s" % [_default_filename, _extension]
+		else:
+			push_warning("In FILE_MODE_SAVE_FILE and no default_filename or extension provided")
 		confirmed.connect(_on_confirm)
 	else:
 		file_selected.connect(_emit_selected)
 		dir_selected.connect(_emit_selected)
-	file_mode = mode
+	show()
+
+
+func init_default_filename(filename: String) -> void:
+	_default_filename = filename
+
+
+func init_extension(extension: String) -> void:
+	_extension = extension
+
+
+func init_file_mode(filemode: FileMode) -> void:
+	file_mode = filemode
 
 
 func _on_confirm() -> void:

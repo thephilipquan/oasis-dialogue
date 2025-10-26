@@ -9,7 +9,7 @@ signal path_requested(path: String)
 func _ready() -> void:
 	var system_dialog_factory := func():
 		var dialog := _FileDialog.new()
-		dialog.init(FileDialog.FILE_MODE_OPEN_DIR)
+		dialog.init_file_mode(FileDialog.FILE_MODE_OPEN_DIR)
 		get_tree().root.add_child(dialog)
 		return dialog
 
