@@ -5,11 +5,15 @@ const INPUT_DIALOG_FACTORY_REGISTRY_KEY := "input_dialog_factory"
 const CONFIRM_DIALOG_FACTORY_REGISTRY_KEY := "confirm_dialog_factory"
 const BRANCH_FACTORY_REGISTRY_KEY := "branch_factory"
 const STATUS_LABEL_FACTORY_REGISTRY_KEY := "status_label_factory"
+const FILE_DIALOG_FACTORY_REGISTRY_KEY := "file_dialog_factory"
+const CSV_FILE_FACTORY_REGISTRY_KEY := "csv_file_factory"
 
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 
 const _InputDialog := preload("res://addons/oasis_dialogue/input_dialog/input_dialog.tscn")
 const _ConfirmDialog := preload("res://addons/oasis_dialogue/confirm_dialog/confirm_dialog.tscn")
+const _FileDialog := preload("res://addons/oasis_dialogue/project_dialog/file_dialog.gd")
+const _CSVFile := preload("res://addons/oasis_dialogue/io/csv_file.gd")
 
 const _Branch := preload("res://addons/oasis_dialogue/branch/branch.gd")
 const _BranchScene := preload("res://addons/oasis_dialogue/branch/branch.tscn")
@@ -51,3 +55,13 @@ func register(registry: _Registry) -> void:
 		var label: Label = _StatusLabelScene.instantiate()
 		return label
 	registry.add(STATUS_LABEL_FACTORY_REGISTRY_KEY, status_label_factory)
+
+	var file_dialog_factory := func create_file_dialog() -> _FileDialog:
+		var dialog: _FileDialog = _FileDialog.new()
+		return dialog
+	registry.add(FILE_DIALOG_FACTORY_REGISTRY_KEY, file_dialog_factory)
+
+	var csv_file_factory := func create_csv_file() -> _CSVFile:
+		var file := _CSVFile.new()
+		return file
+	registry.add(CSV_FILE_FACTORY_REGISTRY_KEY, csv_file_factory)

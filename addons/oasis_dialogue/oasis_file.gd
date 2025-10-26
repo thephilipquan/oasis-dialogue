@@ -3,6 +3,14 @@ extends RefCounted
 var _data := {}
 
 
+static func section_is_branch(section: String) -> bool:
+	return section.is_valid_int()
+
+
+static func section_to_branch_id(section: String) -> int:
+	return section.to_int()
+
+
 func load(path: String) -> Error:
 	var file := FileAccess.open(path, FileAccess.READ)
 	if not file:

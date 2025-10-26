@@ -1,11 +1,11 @@
 extends GutTest
 
-const CSV := preload("res://addons/oasis_dialogue/io/csvfile.gd")
+const CsvFile := preload("res://addons/oasis_dialogue/io/csv_file.gd")
 
 const TESTDIR := "res://"
 const TESTPATH := "test_csvfile.csv"
 
-var sut: CSV = null
+var sut: CsvFile = null
 
 
 func before_all() -> void:
@@ -13,7 +13,7 @@ func before_all() -> void:
 
 
 func before_each() -> void:
-	sut = CSV.new()
+	sut = CsvFile.new()
 
 
 func after_each() -> void:
@@ -108,6 +108,23 @@ func test_get_response_for_non_existing_column_returns_empty() -> void:
 	sut.update(stage)
 
 	assert_eq(sut.get_response("fred", 0, 1, 1), "")
+
+
+func test_multiple_branches() -> void:
+	sut.set_headers("a")
+	var stage := sut.stage("fred", 0)
+	stage.add_prompt("a")
+	stage.add_response("b")
+	sut.update(stage)
+	stage = sut.stage("fred", 1)
+	stage.add_prompt("c")
+	stage.add_response("d")
+	sut.update(stage)
+
+	assert_eq(sut.get_prompt("fred", 0, 0), "a")
+	assert_eq(sut.get_response("fred", 0, 0), "b")
+	assert_eq(sut.get_prompt("fred", 1, 0), "c")
+	assert_eq(sut.get_response("fred", 1, 0), "d")
 
 
 func test_load_restores_saved_data() -> void:

@@ -6,6 +6,7 @@ const EXTENSION := "oasis"
 
 const _AddCharacterButton := preload("res://addons/oasis_dialogue/canvas/add_character_button.gd")
 const _CharacterTree := preload("res://addons/oasis_dialogue/canvas/character_tree.gd")
+const _ExportButton := preload("res://addons/oasis_dialogue/canvas/export_button.gd")
 const _Graph := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
 const _OasisFile := preload("res://addons/oasis_dialogue/oasis_file.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
@@ -34,6 +35,8 @@ signal conditions_loaded(file: _OasisFile)
 signal saving_settings(file: ConfigFile)
 signal settings_loaded(file: ConfigFile)
 
+signal exporting(path: String, characters: Array[_OasisFile])
+
 var _directory := ""
 var _active := ""
 var _is_dirty := false
@@ -50,6 +53,9 @@ func setup(registry: _Registry) -> void:
 
 	var remove_character_button: _RemoveCharacterButton = registry.at(_RemoveCharacterButton.REGISTRY_KEY)
 	remove_character_button.character_removed.connect(remove_active_character)
+
+	var export_button: _ExportButton = registry.at(_ExportButton.REGISTRY_KEY)
+	export_button.export_requested.connect(export)
 
 	var tree: _CharacterTree = registry.at(_CharacterTree.REGISTRY_KEY)
 	tree.character_selected.connect(load_character)
@@ -172,6 +178,34 @@ func save_project() -> void:
 	var conditions := _OasisFile.new()
 	saving_conditions.emit(conditions)
 	conditions.save(_get_conditions_path())
+
+
+func export(path: String) -> void:
+	if _is_dirty:
+		save_active_character()
+
+	var characters: Array[_OasisFile] = []
+	var dir := DirAccess.open(_directory)
+	if not dir:
+		push_warning("todo: opening dir at %s failed" % _directory)
+		return
+	for filename in dir.get_files():
+		var basename := filename.get_basename()
+		if (
+			filename.get_extension() != EXTENSION
+			or basename == _ACTIONS
+			or basename == _CONDITIONS
+		):
+			continue
+
+		var filepath := _directory.path_join(filename)
+		var file := _OasisFile.new()
+		if file.load(filepath) != Error.OK:
+			push_warning("todo: couldn't open %s. exiting" % filepath)
+			return
+		characters.push_back(file)
+
+	exporting.emit(path, characters)
 
 
 func add_character(name: String) -> void:

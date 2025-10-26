@@ -8,6 +8,7 @@ const _AddCharacterButton := preload("res://addons/oasis_dialogue/canvas/add_cha
 const _BranchEdit := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
 const _Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
 const _CharacterTree := preload("res://addons/oasis_dialogue/canvas/character_tree.gd")
+const _CSVExporter := preload("res://addons/oasis_dialogue/csv_exporter.gd")
 const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 const _RemoveCharacterButton := preload("res://addons/oasis_dialogue/canvas/remove_character_button.gd")
@@ -58,6 +59,9 @@ func setup(registry: _Registry) -> void:
 	var graph: _BranchEdit = registry.at(_BranchEdit.REGISTRY_KEY)
 	graph.branch_removed.connect(remove_branch)
 
+	var csv_exporter: _CSVExporter = registry.at(_CSVExporter.REGISTRY_KEY)
+	csv_exporter.exported.connect(export_csv)
+
 	manager.character_saved.connect(save_character)
 	manager.saving_settings.connect(save_project.unbind(1))
 
@@ -100,6 +104,10 @@ func save_character(name: String) -> void:
 
 func save_project() -> void:
 	info("Saved project")
+
+
+func export_csv(path: String) -> void:
+	info("Exported CSV to %s" % path)
 
 
 func clear_labels() -> void:

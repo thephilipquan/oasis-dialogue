@@ -2,9 +2,46 @@ extends Button
 
 const REGISTRY_KEY := "export_button"
 
+const _Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
+const _FileDialog := preload("res://addons/oasis_dialogue/project_dialog/file_dialog.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
+
+signal export_requested(path: String)
+
+var _file_dialog_factory := Callable()
+
+
+func _ready() -> void:
+	button_up.connect(show_file_dialog)
 
 
 func register(registry: _Registry) -> void:
 	registry.add(REGISTRY_KEY, self)
 
+
+func setup(registry: _Registry) -> void:
+	init_file_dialog_factory(registry.at(_Canvas.FILE_DIALOG_FACTORY_REGISTRY_KEY))
+
+
+func init_file_dialog_factory(callback: Callable) -> void:
+	_file_dialog_factory = callback
+
+
+func show_file_dialog() -> void:
+	var dialog: _FileDialog = _file_dialog_factory.call()
+	dialog.init_default_filename("dialogue")
+	dialog.init_extension("csv")
+	dialog.init_file_mode(FileDialog.FILE_MODE_SAVE_FILE)
+	dialog.selected.connect(on_dialog_selected.bind(dialog))
+	dialog.canceled.connect(on_dialog_canceled.bind(dialog))
+	get_tree().root.add_child(dialog)
+
+
+func on_dialog_canceled(dialog: _FileDialog) -> void:
+	dialog.queue_free()
+	dialog.get_parent().remove_child(dialog)
+
+
+func on_dialog_selected(path: String, dialog: _FileDialog) -> void:
+	on_dialog_canceled(dialog)
+	export_requested.emit(path)
