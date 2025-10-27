@@ -1,0 +1,88 @@
+extends GutTest
+
+const AST := preload("res://addons/oasis_dialogue/model/ast.gd")
+const JsonExporter := preload("res://addons/oasis_dialogue/canvas/json_exporter.gd")
+const JsonFile := preload("res://addons/oasis_dialogue/io/json_file.gd")
+const OasisFile := preload("res://addons/oasis_dialogue/oasis_file.gd")
+const Save := preload("res://addons/oasis_dialogue/save.gd")
+
+const BASEDIR := "res://"
+var TESTDIR := BASEDIR.path_join("test_Json_exporter")
+
+var sut: JsonExporter = null
+var Json: JsonFile = null
+
+
+func before_all() -> void:
+	var dir := DirAccess.open(BASEDIR)
+	dir.make_dir(TESTDIR)
+	after_each()
+
+
+func before_each() -> void:
+	sut = add_child_autofree(JsonExporter.new())
+	sut.init_json_file_factory(
+			func():
+				Json = JsonFile.new()
+				return Json
+	)
+
+
+func after_each() -> void:
+	var dir := DirAccess.open(TESTDIR)
+	for file in dir.get_files():
+		dir.remove(file)
+
+
+func after_all() -> void:
+	var dir := DirAccess.open(BASEDIR)
+	dir.remove(TESTDIR)
+
+
+func test_export_saves_data() -> void:
+	sut.init_parse(
+			func(id: int, text: String) -> AST.AST:
+				var ast: AST.AST = null
+				if id % 2 == 0:
+					ast = AST.Branch.new(id, [
+						AST.Prompt.new(-1, [
+								AST.StringLiteral.new(text),
+						]),
+					])
+				else:
+					ast = AST.Branch.new(id, [
+						AST.Response.new(-1, [
+							AST.StringLiteral.new(text),
+						]),
+					])
+				return ast
+	)
+	var path := TESTDIR.path_join("abc.json")
+	var fred := OasisFile.new()
+	fred.set_value(
+			Save.Character.DATA,
+			Save.Character.Data.DISPLAY_NAME,
+			"Fred",
+	)
+	fred.set_value("0", Save.Character.Branch.VALUE, "a")
+	fred.set_value("1", Save.Character.Branch.VALUE, "b")
+	var tim := OasisFile.new()
+	tim.set_value(
+			Save.Character.DATA,
+			Save.Character.Data.DISPLAY_NAME,
+			"Tim",
+	)
+	tim.set_value("0", Save.Character.Branch.VALUE, "c")
+	tim.set_value("1", Save.Character.Branch.VALUE, "d")
+	var characters: Array[OasisFile] = [
+			fred,
+			tim,
+	]
+	sut.export(path, characters)
+
+	Json = JsonFile.new()
+	Json.load(path)
+
+	print(Json._data)
+	assert_ne(Json.get_value("Fred", {}).size(), 0)
+	assert_ne(Json.get_value("Tim", {}).size(), 0)
