@@ -3,7 +3,6 @@ extends Node
 const REGISTRY_KEY := "json_exporter"
 
 const _AST := preload("res://addons/oasis_dialogue/model/ast.gd")
-const _ExportButton := preload("res://addons/oasis_dialogue/canvas/export_button.gd")
 const _JsonFile := preload("res://addons/oasis_dialogue/io/json_file.gd")
 const _JsonVisitor := preload("res://addons/oasis_dialogue/visitor/json_visitor.gd")
 const _LanguageServer := preload("res://addons/oasis_dialogue/canvas/language_server.gd")
@@ -29,7 +28,6 @@ func setup(registry: _Registry) -> void:
 	var language_server: _LanguageServer = registry.at(_LanguageServer.REGISTRY_KEY)
 	init_parse(language_server.parse_branch_text)
 
-	var export_button: _ExportButton = registry.at(_ExportButton.REGISTRY_KEY)
 	init_json_file_factory(func() -> _JsonFile: return _JsonFile.new())
 
 

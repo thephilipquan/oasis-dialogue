@@ -1,4 +1,5 @@
 extends RefCounted
+@warning_ignore_start("unused_parameter")
 
 const _AST := preload("res://addons/oasis_dialogue/model/ast.gd")
 

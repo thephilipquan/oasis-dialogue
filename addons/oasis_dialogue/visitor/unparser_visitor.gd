@@ -28,14 +28,14 @@ func visit_annotation(annotation: _AST.Annotation) -> void:
 	_append_line("@%s" % annotation.name)
 
 
-func visit_prompt(prompt: _AST.Prompt) -> void:
+func visit_prompt(_prompt: _AST.Prompt) -> void:
 	if not _seen_prompt:
 		_seen_prompt = true
 		_add_header = true
 		_header = "@prompt"
 
 
-func visit_response(response: _AST.Response) -> void:
+func visit_response(_response: _AST.Response) -> void:
 	if not _seen_response:
 		_seen_response = true
 		_add_header = true

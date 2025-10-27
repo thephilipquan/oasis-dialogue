@@ -60,13 +60,13 @@ func _on_dialog_canceled(dialog: Control) -> void:
 	dialog.queue_free()
 
 
-func _on_dialog_confirmed(name: String, dialog: Control) -> void:
+func _on_dialog_confirmed(character: String, dialog: Control) -> void:
 	_on_dialog_canceled(dialog)
-	character_renamed.emit(name)
+	character_renamed.emit(character)
 
 
-func _validate(name: String) -> String:
+func _validate(character: String) -> String:
 	var message := ""
-	if not _can_rename_to.call(name):
-		message = "%s already exists." % name
+	if not _can_rename_to.call(character):
+		message = "%s already exists." % character
 	return message

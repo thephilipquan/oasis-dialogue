@@ -53,7 +53,7 @@ func _ready() -> void:
 func _on_button_up() -> void:
 	if _get_branch_count.call() > 0:
 		var dialog: _ConfirmDialog = _confirm_dialog_factory.call()
-		var character := _get_active_character.call()
+		var character: String = _get_active_character.call()
 		dialog.set_message("%s has _branches. Are you sure you want to remove %s" % [character, character])
 		dialog.set_cancel_label("cancel")
 		dialog.set_confirm_label("delete")

@@ -81,17 +81,17 @@ func mark_active_dirty() -> void:
 	edit_selected_item(text)
 
 
-func unmark_dirty(name: String) -> void:
-	var text := _dirty_text(name)
+func unmark_dirty(character: String) -> void:
+	var text := _dirty_text(character)
 	var item := find_item(text)
 	if not item:
-		push_warning("couldn't find item (%s) to undirty" % name)
+		push_warning("couldn't find item (%s) to undirty" % character)
 		return
-	item.set_text(0, name)
+	item.set_text(0, character)
 
 
 func set_items(items: Array[String]) -> void:
-	get_root().get_children().map(func(t: TreeItem): t.free())
+	get_root().get_children().map(func(t: TreeItem) -> void: t.free())
 	for item in items:
 		add_item(item)
 
@@ -108,26 +108,26 @@ func load_settings(data: ConfigFile) -> void:
 	characters.assign(data.get_value(_Save.Project.CHARACTERS, _Save.DUMMY, []))
 	set_items(characters)
 
-	var name: String = data.get_value(
+	var active_item: String = data.get_value(
 			_Save.Project.SESSION,
 			_Save.Project.Session.ACTIVE,
 			""
 	)
-	if name:
-		var item := find_item(name)
+	if active_item:
+		var item := find_item(active_item)
 		if item:
 			select_item(item)
 		else:
-			push_warning("active (%s) not found in character tree" % name)
+			push_warning("active (%s) not found in character tree" % active_item)
 
 
 func _on_item_selected() -> void:
-	var name := get_selected_item()
-	name = _clean_text(name)
-	character_selected.emit(name)
+	var character := get_selected_item()
+	character = _clean_text(character)
+	character_selected.emit(character)
 
 
-func _on_item_activated():
+func _on_item_activated() -> void:
 	character_activated.emit()
 
 

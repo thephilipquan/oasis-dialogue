@@ -7,7 +7,7 @@ const _FileDialog := preload("res://addons/oasis_dialogue/project_dialog/file_di
 signal path_requested(path: String)
 
 func _ready() -> void:
-	var system_dialog_factory := func():
+	var system_dialog_factory := func create_system_dialog() -> _FileDialog:
 		var dialog := _FileDialog.new()
 		dialog.init_file_mode(FileDialog.FILE_MODE_OPEN_DIR)
 		get_tree().root.add_child(dialog)

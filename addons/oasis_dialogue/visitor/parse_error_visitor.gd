@@ -5,7 +5,6 @@ const _SemanticError := preload("res://addons/oasis_dialogue/semantic_error.gd")
 var _on_err := Callable()
 
 var _id := -1
-var _errors: Array[_AST.Error] = []
 
 
 func _init(on_err: Callable) -> void:

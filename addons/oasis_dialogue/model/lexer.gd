@@ -34,7 +34,7 @@ func atsign_handler(m: RegExMatch) -> bool:
 	return default_handler(m, _Type.ATSIGN, "@")
 
 
-func default_handler(m: RegExMatch, type: _Type, value: String) -> bool:
+func default_handler(_m: RegExMatch, type: _Type, value: String) -> bool:
 	add_token(type, value)
 	move_position(value.length())
 	return true
@@ -133,6 +133,7 @@ class Pattern:
 	var handler := Callable()
 
 
+	@warning_ignore("shadowed_variable")
 	func _init(regex: RegEx, handler: Callable) -> void:
 		self.regex = regex
 		self.handler = handler

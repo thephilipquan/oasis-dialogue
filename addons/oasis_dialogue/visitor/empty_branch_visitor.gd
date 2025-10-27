@@ -15,11 +15,11 @@ func visit_branch(branch: _AST.Branch) -> void:
 	_id = branch.id
 
 
-func visit_prompt(prompt: _AST.Prompt) -> void:
+func visit_prompt(_prompt: _AST.Prompt) -> void:
 	_has_content = true
 
 
-func visit_response(response: _AST.Response) -> void:
+func visit_response(_response: _AST.Response) -> void:
 	_has_content = true
 
 

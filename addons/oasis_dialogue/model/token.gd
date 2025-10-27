@@ -33,25 +33,28 @@ const reserved_keywords: Dictionary[String, Type] = {
 }
 
 
-static func type_to_string(type: Type) -> String:
-	var type_string = ""
-	for t in Type.keys():
-		if type == Type[t]:
-			type_string = t
-			break
-	return type_string.to_lower()
-
-
-static func types_to_string(types: Array) -> String:
-	return " or ".join(types.map(func(t: Type): return type_to_string(t)))
-
-
 var type := Type.INIT
 var value := ""
 var line := 0
 var column := 0
 
 
+@warning_ignore("shadowed_variable")
+static func type_to_string(type: Type) -> String:
+	var type_text := ""
+
+	for key: String in Type.keys():
+		if type == Type[key]:
+			type_text = key
+			break
+	return type_text.to_lower()
+
+
+static func types_to_string(types: Array) -> String:
+	return " or ".join(types.map(func(t: Type) -> String: return type_to_string(t)))
+
+
+@warning_ignore("shadowed_variable")
 func _init(type: Type, value: String, line: int, column: int) -> void:
 	self.type = type
 	self.value = value

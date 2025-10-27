@@ -73,25 +73,24 @@ func get_response_translation_count(character: String, branch: int, response_ind
 
 
 func stage(character: String, branch: int, column := 0) -> Stage:
-	var stage := Stage.new(character, branch, column)
-	return stage
+	return Stage.new(character, branch, column)
 
 
-func update(stage: Stage) -> void:
+func update(staged: Stage) -> void:
 	var old_branch_keys := _get_partial_matches(
-			_format_branch_key(stage.character, stage.branch)
+			_format_branch_key(staged.character, staged.branch)
 	)
 	for key in old_branch_keys:
 		_data.erase(key)
 
-	var prompts := stage.get_prompts()
+	var prompts := staged.get_prompts()
 	for i in prompts.size():
-		var key := _format_prompt_key(stage.character, stage.branch, i)
+		var key := _format_prompt_key(staged.character, staged.branch, i)
 		_data[key] = prompts[i]
 
-	var responses := stage.get_responses()
+	var responses := staged.get_responses()
 	for i in responses.size():
-		var key := _format_response_key(stage.character, stage.branch, i)
+		var key := _format_response_key(staged.character, staged.branch, i)
 		_data[key] = responses[i]
 
 
@@ -195,6 +194,7 @@ class Stage:
 	var _responses: Array[String] = []
 
 
+	@warning_ignore("shadowed_variable")
 	func _init(character: String, branch: int, column_index: int) -> void:
 		self.character = character
 		self.branch = branch

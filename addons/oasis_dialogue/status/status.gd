@@ -98,12 +98,12 @@ func remove_character() -> void:
 	info("Removed %s" % _get_active_character.call())
 
 
-func add_character(name: String) -> void:
-	info("Added %s" % name)
+func add_character(character: String) -> void:
+	info("Added %s" % character)
 
 
-func save_character(name: String) -> void:
-	info("Saved %s" % name)
+func save_character(character: String) -> void:
+	info("Saved %s" % character)
 
 
 func save_project() -> void:
@@ -151,7 +151,7 @@ func clear_err(id: int) -> void:
 
 
 func clear_errs() -> void:
-	for error in _errors.values():
+	for error: _StatusLabel in _errors.values():
 		_container.remove_child(error)
 		error.queue_free()
 	_errors.clear()

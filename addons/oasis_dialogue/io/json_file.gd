@@ -24,11 +24,11 @@ func save(path: String) -> Error:
 	return Error.OK
 
 
-func set_value(key: String, value) -> void:
+func set_value(key: String, value: Variant) -> void:
 	_data[key] = value
 
 
-func get_value(key: String, default: Variant = null):
+func get_value(key: String, default: Variant = null) -> Variant:
 	return _data.get(key, default)
 
 

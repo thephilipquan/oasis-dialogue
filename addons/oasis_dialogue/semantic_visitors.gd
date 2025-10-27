@@ -5,7 +5,6 @@ const REGISTRY_KEY := "semantic_visitors"
 
 const _BranchEdit := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
 const _Global := preload("res://addons/oasis_dialogue/global.gd")
-const _Model := preload("res://addons/oasis_dialogue/model/model.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 const _SemanticError := preload("res://addons/oasis_dialogue/semantic_error.gd")
 const _Status := preload("res://addons/oasis_dialogue/status/status.gd")
@@ -30,7 +29,6 @@ func register(registry: _Registry) -> void:
 
 
 func setup(registry: _Registry) -> void:
-	var model: _Model = registry.at(_Model.REGISTRY_KEY)
 	var graph: _BranchEdit = registry.at(_BranchEdit.REGISTRY_KEY)
 	var status: _Status = registry.at(_Status.REGISTRY_KEY)
 
@@ -56,14 +54,14 @@ func setup(registry: _Registry) -> void:
 	var create_branch_visitor := _CreateBranchVisitor.new(
 		_Global.CONNECT_BRANCH_KEYWORD,
 		graph.has_branch,
-		func(id: int):
+		func(id: int) -> void:
 			graph.add_branch(id)
 			status.add_branch(id),
 	)
 	var connect_branch_visitor := _ConnectBranchVisitor.new(
 		_Global.CONNECT_BRANCH_KEYWORD,
 		graph.connect_branches,
-		func is_interactive_connect(): return graph.is_interactive_connect(),
+		graph.is_interactive_connect,
 	)
 	var clear_status_err := _FinishCallbackVisitor.new(status.clear_err)
 	var clear_branch_highlights_visitor := _FinishCallbackVisitor.new(graph.clear_branch_highlights)

@@ -20,9 +20,9 @@ func iterate(ast: _AST.AST) -> void:
 		i += 1
 
 	if _is_valid:
-		_visitors.map(func(v: _Visitor): v.finish())
+		_visitors.map(func(v: _Visitor) -> void: v.finish())
 	else:
-		_visitors.map(func(v: _Visitor): v.cancel())
+		_visitors.map(func(v: _Visitor) -> void: v.cancel())
 
 
 func stop() -> void:

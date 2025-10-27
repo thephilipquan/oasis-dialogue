@@ -13,17 +13,17 @@ const TYPE_STRING_LITERAL := "string_literal"
 const TYPE_NUMBER_LITERAL := "number_literal"
 
 
-static func from_json(json) -> AST:
+static func from_json(json: Variant) -> AST:
 	return AST.from_json(json)
 
 
 class AST:
 	extends RefCounted
 
-	func accept(visitor: _Visitor) -> void:
+	func accept(_visitor: _Visitor) -> void:
 		pass
 
-	static func from_json(json, instance: AST = null) -> AST:
+	static func from_json(json: Variant, _instance: AST = null) -> AST:
 		if not json is Dictionary:
 			return null
 
@@ -66,16 +66,17 @@ class Line:
 	var children: Array[AST] = []
 
 
+	@warning_ignore("shadowed_variable")
 	func _init(line := -1, children: Array[AST] = []) -> void:
 		self.line = line
 		self.children = children
 
 
-	static func from_json(json, instance: AST = null) -> AST:
+	static func from_json(json: Variant, instance: AST = null) -> AST:
 		if not instance or not instance is Line:
 			instance = new()
 		instance.line = _JsonUtils.safe_get_int(json, "line", -1)
-		for j in _JsonUtils.safe_get(json, "children", []):
+		for j: Dictionary in _JsonUtils.safe_get(json, "children", []):
 			var child := super.from_json(j)
 			instance.add(child)
 		return instance
@@ -91,13 +92,13 @@ class Line:
 
 	func accept(visitor: _Visitor) -> void:
 		visitor.visit_line(self)
-		children.map(func(ast: AST): ast.accept(visitor))
+		children.map(func(ast: AST) -> void: ast.accept(visitor))
 
 
 	func to_json() -> Dictionary:
 		return {
 				"line": line,
-				"children": children.map(func(c: AST): return c.to_json()),
+				"children": children.map(func(c: AST) -> Dictionary: return c.to_json()),
 		}
 
 
@@ -108,12 +109,13 @@ class Leaf:
 	var column := -1
 
 
+	@warning_ignore("shadowed_variable")
 	func _init(line := -1, column := -1) -> void:
 		self.line = line
 		self.column = column
 
 
-	static func from_json(json, instance: AST = null) -> AST:
+	static func from_json(json: Variant, instance: AST = null) -> AST:
 		if not instance or not instance is Leaf:
 			instance = new()
 		instance.line = _JsonUtils.safe_get_int(json, "line", -1)
@@ -132,12 +134,13 @@ class Branch:
 	var id := -1
 
 
+	@warning_ignore("shadowed_variable", "shadowed_variable_base_class")
 	func _init(id := -1, children: Array[AST] = []) -> void:
 		super._init(-1, children)
 		self.id = id
 
 
-	static func from_json(json, instance: AST = null) -> AST:
+	static func from_json(json: Variant, instance: AST = null) -> AST:
 		instance = new()
 		super.from_json(json, instance)
 		instance.id = _JsonUtils.safe_get_int(json, "id", -1)
@@ -165,14 +168,16 @@ class Annotation:
 
 	var name := ""
 
+	@warning_ignore("shadowed_variable", "shadowed_variable_base_class")
 	func _init(name: String, line := -1, column := -1) -> void:
 		super._init(line, column)
 		self.name = name
 
 
-	static func from_json(json, instance: AST = null) -> AST:
+	static func from_json(json: Variant, instance: AST = null) -> AST:
 		if not _JsonUtils.is_typeof(json, "name", TYPE_STRING):
 			return Recovery.new(json)
+		@warning_ignore("shadowed_variable")
 		var name: String = json["name"]
 		instance = new(name)
 		super.from_json(json, instance)
@@ -198,7 +203,7 @@ class Prompt:
 	extends Line
 
 
-	static func from_json(json, instance: AST = null) -> AST:
+	static func from_json(json: Variant, _instance: AST = null) -> AST:
 		return super.from_json(json, new())
 
 
@@ -221,7 +226,7 @@ class Response:
 	extends Line
 
 
-	static func from_json(json, instance: AST = null) -> AST:
+	static func from_json(json: Variant, _instance: AST = null) -> AST:
 		return super.from_json(json, new())
 
 
@@ -247,15 +252,17 @@ class Condition:
 	var value: NumberLiteral = null
 
 
+	@warning_ignore("shadowed_variable", "shadowed_variable_base_class")
 	func _init(name: String, value: AST = null, line := -1, column := -1) -> void:
 		super._init(line, column)
 		self.name = name
 		self.value = value
 
 
-	static func from_json(json, instance: AST = null) -> AST:
+	static func from_json(json: Variant, instance: AST = null) -> AST:
 		if not _JsonUtils.is_typeof(json, "name", TYPE_STRING):
 			return Recovery.new(json)
+		@warning_ignore("shadowed_variable")
 		var name: String = json["name"]
 		instance = new(name)
 		super.from_json(json, instance)
@@ -292,15 +299,17 @@ class Action:
 	var value: NumberLiteral = null
 
 
+	@warning_ignore("shadowed_variable", "shadowed_variable_base_class")
 	func _init(name: String, value: AST = null, line := -1, column := -1) -> void:
 		super._init(line, column)
 		self.name = name
 		self.value = value
 
 
-	static func from_json(json, instance: AST = null) -> AST:
+	static func from_json(json: Variant, instance: AST = null) -> AST:
 		if not _JsonUtils.is_typeof(json, "name", TYPE_STRING):
 			return Recovery.new(json)
+		@warning_ignore("shadowed_variable")
 		var name: String = json["name"]
 		instance = new(name)
 		super.from_json(json, instance)
@@ -326,7 +335,7 @@ class Action:
 			value.accept(visitor)
 
 
-	func equals(other) -> bool:
+	func equals(other: Variant) -> bool:
 		var cast := other as Action
 		if not cast:
 			return false
@@ -347,14 +356,16 @@ class StringLiteral:
 	var value := ""
 
 
+	@warning_ignore("shadowed_variable", "shadowed_variable_base_class")
 	func _init(value: String, line := -1, column := -1) -> void:
 		super._init(line, column)
 		self.value = value
 
 
-	static func from_json(json, instance: AST = null) -> AST:
+	static func from_json(json: Variant, instance: AST = null) -> AST:
 		if not _JsonUtils.is_typeof(json, "value", TYPE_STRING):
 			return Recovery.new(json)
+		@warning_ignore("shadowed_variable")
 		var value: String = json["value"]
 		instance = new(value)
 		super.from_json(json, instance)
@@ -389,14 +400,16 @@ class NumberLiteral:
 	var value := -1
 
 
+	@warning_ignore("shadowed_variable", "shadowed_variable_base_class")
 	func _init(value: int, line := -1, column := -1) -> void:
 		super._init(line, column)
 		self.value = value
 
 
-	static func from_json(json, instance: AST = null) -> AST:
+	static func from_json(json: Variant, instance: AST = null) -> AST:
 		if not _JsonUtils.is_int(json.get("value")):
 			return Recovery.new(json)
+		@warning_ignore("shadowed_variable")
 		var value := _JsonUtils.parse_int(json["value"])
 		instance = new(value)
 		super.from_json(json, instance)
@@ -431,6 +444,7 @@ class Error:
 	var message := ""
 
 
+	@warning_ignore("shadowed_variable", "shadowed_variable_base_class")
 	func _init(message: String, line: int, column: int) -> void:
 		super._init(line, column)
 		self.message = message
@@ -446,7 +460,7 @@ class Recovery:
 	var message := ""
 
 
-	func _init(malformed_data) -> void:
+	func _init(malformed_data: Variant) -> void:
 		line = _JsonUtils.safe_get_int(malformed_data, "line", -1)
 		message = "ERROR(%s)" % JSON.stringify(malformed_data)
 

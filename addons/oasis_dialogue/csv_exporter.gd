@@ -52,10 +52,10 @@ func export(path: String, characters: Array[_OasisFile]) -> void:
 		assert(character_name)
 
 		for key in character.get_sections():
-			if not character.section_is_branch(key):
+			if not _OasisFile.section_is_branch(key):
 				continue
 
-			var id := character.section_to_branch_id(key)
+			var id := _OasisFile.section_to_branch_id(key)
 			var value: String = character.get_value(key, _Save.Character.Branch.VALUE, "")
 			if not value:
 				push_warning("branch %d is empty. skipping" % id)

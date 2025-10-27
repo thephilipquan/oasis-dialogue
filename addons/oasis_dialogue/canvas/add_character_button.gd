@@ -55,15 +55,15 @@ func _on_dialog_canceled(dialog: Control) -> void:
 	dialog.get_parent().remove_child(dialog)
 
 
-func _on_dialog_confirmed(name: String, dialog: Control) -> void:
+func _on_dialog_confirmed(character: String, dialog: Control) -> void:
 	_on_dialog_canceled(dialog)
-	character_added.emit(name)
+	character_added.emit(character)
 
 
-func _validate(name: String) -> String:
+func _validate(character: String) -> String:
 	var message := ""
-	if name == "":
+	if character == "":
 		message = "Character cannot be a blank."
-	elif _character_exists.call(name):
-		message = "%s already exists." % name
+	elif _character_exists.call(character):
+		message = "%s already exists." % character
 	return message

@@ -67,16 +67,16 @@ func setup(registry: _Registry) -> void:
 	graph.dirtied.connect(mark_active_character_dirty)
 
 
-func can_rename_active_to(name: String) -> bool:
-	var path := _character_to_path(name)
+func can_rename_active_to(character: String) -> bool:
+	var path := _character_to_path(character)
 	var active_path := _character_to_path(_active)
 	if path == active_path:
 		return true
 
 	return (
 			not FileAccess.file_exists(path)
-			and name != "conditions"
-			and name != "actions"
+			and character != "conditions"
+			and character != "actions"
 	)
 
 
@@ -84,10 +84,10 @@ func get_active_character() -> String:
 	return _active
 
 
-func character_exists(name: String) -> bool:
-	if name == "conditions" or name == "actions":
+func character_exists(character: String) -> bool:
+	if character == "conditions" or character == "actions":
 		return true
-	var path := _character_to_path(name)
+	var path := _character_to_path(character)
 	return FileAccess.file_exists(path)
 
 
@@ -101,8 +101,8 @@ func active_is_dirty() -> bool:
 
 func quit() -> void:
 	var dir := DirAccess.open(_directory.path_join(_SETTINGS_DIR))
-	for name in _dirty_characters:
-		var temp_path := _character_to_temp_path(name)
+	for character in _dirty_characters:
+		var temp_path := _character_to_temp_path(character)
 		dir.remove(temp_path)
 
 
@@ -133,15 +133,15 @@ func open_project(path: String) -> void:
 		elif filename == _CONDITIONS:
 			conditions_loaded.emit(file)
 		else:
-			var name: String = file.get_value(
+			var character: String = file.get_value(
 					_Save.Character.DATA,
 					_Save.Character.Data.DISPLAY_NAME,
 					filename
 			)
-			characters.push_back(name)
-			var temp_path := _character_to_temp_path(name)
+			characters.push_back(character)
+			var temp_path := _character_to_temp_path(character)
 			if dir.file_exists(temp_path):
-				_dirty_characters.push_back(name)
+				_dirty_characters.push_back(character)
 
 	var settings := ConfigFile.new()
 	if dir.file_exists(_get_user_settings_path()):
@@ -159,8 +159,8 @@ func save_project() -> void:
 		save_active_character()
 	if _active:
 		save_active_character_config()
-	for name in _dirty_characters:
-		replace_save_with_temp(name)
+	for character in _dirty_characters:
+		replace_save_with_temp(character)
 
 	var settings := ConfigFile.new()
 	saving_settings.emit(settings)
@@ -208,26 +208,26 @@ func export(path: String) -> void:
 	exporting.emit(path, characters)
 
 
-func add_character(name: String) -> void:
+func add_character(character: String) -> void:
 	assert(_directory)
 
-	var path := _character_to_path(name)
+	var path := _character_to_path(character)
 	if FileAccess.file_exists(path):
 		return
 
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if not file:
-		push_warning("todo: error adding character: %s" % name)
+		push_warning("todo: error adding character: %s" % character)
 
 
-func load_character(name: String) -> void:
+func load_character(character: String) -> void:
 	assert(_directory)
-	if name == _active:
+	if character == _active:
 		return
 
-	var path := _character_to_path(name)
+	var path := _character_to_path(character)
 	if not FileAccess.file_exists(path):
-		push_warning("todo: active: %s doesn't exist" % name)
+		push_warning("todo: active: %s doesn't exist" % character)
 		return
 
 	if _is_dirty:
@@ -238,7 +238,7 @@ func load_character(name: String) -> void:
 	if _active:
 		save_active_character_config()
 
-	_active = name
+	_active = character
 	_is_dirty = _active in _dirty_characters
 
 	if _is_dirty:
@@ -248,18 +248,18 @@ func load_character(name: String) -> void:
 		else:
 			push_warning("%s marked as dirty but no temp file found." % _active)
 
-	var character := _OasisFile.new()
-	character.load(path)
-	character_loaded.emit(character)
+	var file := _OasisFile.new()
+	file.load(path)
+	character_loaded.emit(file)
 
 	var config := ConfigFile.new()
-	config.load(_character_to_config_path(name))
+	config.load(_character_to_config_path(character))
 	character_config_loaded.emit(config)
 
 
-func add_and_load_character(name: String) -> void:
-	add_character(name)
-	load_character(name)
+func add_and_load_character(character: String) -> void:
+	add_character(character)
+	load_character(character)
 
 
 func remove_active_character() -> void:
@@ -345,9 +345,9 @@ func save_active_character_config() -> void:
 	config.save(_character_to_config_path(_active))
 
 
-func replace_save_with_temp(name: String) -> void:
-	var temp_path := _character_to_temp_path(name)
-	var path := _character_to_path(name)
+func replace_save_with_temp(character: String) -> void:
+	var temp_path := _character_to_temp_path(character)
+	var path := _character_to_path(character)
 
 	var file := _OasisFile.new()
 	var status := file.load(temp_path)
@@ -360,36 +360,36 @@ func replace_save_with_temp(name: String) -> void:
 		return
 
 	DirAccess.open(_directory).remove(temp_path)
-	_erase_dirty_character(name)
-	character_saved.emit(name)
+	_erase_dirty_character(character)
+	character_saved.emit(character)
 
 
-func _format_character_filename(name: String) -> String:
-	return name.to_lower()
+func _format_character_filename(character: String) -> String:
+	return character.to_lower()
 
 
-func _character_to_file(name: String) -> String:
-	var filename := "%s.%s" % [_format_character_filename(name), EXTENSION]
+func _character_to_file(character: String) -> String:
+	var filename := "%s.%s" % [_format_character_filename(character), EXTENSION]
 	return filename
 
 
-func _character_to_path(name: String) -> String:
-	return _directory.path_join(_character_to_file(name))
+func _character_to_path(character: String) -> String:
+	return _directory.path_join(_character_to_file(character))
 
 
-func _character_to_temp_path(name: String) -> String:
+func _character_to_temp_path(character: String) -> String:
 	return (
 			_directory
 			.path_join(_SETTINGS_DIR)
-			.path_join("temp_%s" % _character_to_file(name))
+			.path_join("temp_%s" % _character_to_file(character))
 	)
 
 
-func _character_to_config_path(name: String) -> String:
+func _character_to_config_path(character: String) -> String:
 	return (
 			_directory
 			.path_join(_SETTINGS_DIR)
-			.path_join("%s.cfg" % _format_character_filename(name))
+			.path_join("%s.cfg" % _format_character_filename(character))
 	)
 
 
@@ -409,16 +409,16 @@ func _get_user_settings_path() -> String:
 	)
 
 
-func _erase_dirty_character(name: String) -> void:
-	_dirty_characters.erase(name)
+func _erase_dirty_character(character: String) -> void:
+	_dirty_characters.erase(character)
 
 
-func _save_character(name: String, path: String) -> void:
+func _save_character(character: String, path: String) -> void:
 	var file := _OasisFile.new()
 	saving_character.emit(file)
 	file.set_value(
 			_Save.Character.DATA,
 			_Save.Character.Data.DISPLAY_NAME,
-			name,
+			character,
 	)
 	file.save(path)

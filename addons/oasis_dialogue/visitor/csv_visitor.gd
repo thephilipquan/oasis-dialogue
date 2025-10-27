@@ -11,12 +11,12 @@ func set_stage(stage: _CSVFile.Stage) -> void:
 	_stage = stage
 
 
-func visit_prompt(prompt: _AST.Prompt) -> void:
+func visit_prompt(_prompt: _AST.Prompt) -> void:
 	_in_response = false
 	_in_prompt = true
 
 
-func visit_response(response: _AST.Response) -> void:
+func visit_response(_response: _AST.Response) -> void:
 	_in_prompt = false
 	_in_response = true
 

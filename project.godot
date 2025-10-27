@@ -17,6 +17,10 @@ config/features=PackedStringArray("4.5", "Forward Plus")
 run/low_processor_mode=true
 config/icon="res://icon.svg"
 
+[debug]
+
+gdscript/warnings/untyped_declaration=2
+
 [display]
 
 window/stretch/mode="canvas_items"

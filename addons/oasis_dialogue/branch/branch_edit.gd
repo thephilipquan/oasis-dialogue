@@ -115,18 +115,18 @@ func connect_branches(from_id: int, to_ids: Array[int], interactive := true) -> 
 	var to_arrange: Array[_Branch] = []
 	var from := _branches[from_id]
 	from.set_slot_enabled_right(0, to_ids.size())
-	for other in _branches.keys():
+	for other: int in _branches.keys():
 		var to := _branches[other]
 		var is_in := to_ids.has(other)
-		var is_connected := is_node_connected(from.name, 0, to.name, 0)
+		var other_is_connected := is_node_connected(from.name, 0, to.name, 0)
 
-		if is_in and not is_connected:
+		if is_in and not other_is_connected:
 			if not to.is_slot_enabled_left(0):
 				to.set_slot_enabled_left(0, true)
 				if not to.is_slot_enabled_right(0):
 					to_arrange.push_back(to)
 			connect_node(from.name, 0, to.name, 0)
-		elif not is_in and is_connected:
+		elif not is_in and other_is_connected:
 			disconnect_node(from.name, 0, to.name, 0)
 
 	if not interactive:
@@ -144,9 +144,9 @@ func remove_branch(id: int) -> void:
 	if get_connection_count(branch.name, 0):
 		var branch_connections := get_connection_list_from_node(branch.name)
 		var from_connections: Array[String] = []
-		from_connections.assign(branch_connections.map(func(d: Dictionary): return d["from_node"]))
+		from_connections.assign(branch_connections.map(func(d: Dictionary) -> String: return d["from_node"]))
 		var to_connections: Array[String] = []
-		to_connections.assign(branch_connections.map(func(d: Dictionary): return d["to_node"]))
+		to_connections.assign(branch_connections.map(func(d: Dictionary) -> String: return d["to_node"]))
 
 		for other_id in _branches:
 			var other := _branches[other_id]
@@ -168,7 +168,7 @@ func remove_branch(id: int) -> void:
 
 
 func remove_branches() -> void:
-	for branch in _branches.values():
+	for branch: _Branch in _branches.values():
 		remove_child(branch)
 		branch.queue_free()
 	_branches.clear()
@@ -192,9 +192,9 @@ func disable_unused_slots() -> void:
 
 		var branch_connections := get_connection_list_from_node(branch.name)
 		var from_connections: Array[String] = []
-		from_connections.assign(branch_connections.map(func(d: Dictionary): return d["from_node"]))
+		from_connections.assign(branch_connections.map(func(d: Dictionary) -> String: return d["from_node"]))
 		var to_connections: Array[String] = []
-		to_connections.assign(branch_connections.map(func(d: Dictionary): return d["to_node"]))
+		to_connections.assign(branch_connections.map(func(d: Dictionary) -> String: return d["to_node"]))
 
 		if not branch.name in from_connections:
 			branch.set_slot_enabled_right(0, false)
@@ -228,20 +228,20 @@ func arrange_orphans(ignore: _Branch) -> void:
 
 func arrange_branches_around_anchor(anchor: GraphNode, to_arrange: Array[_Branch]) -> void:
 	var all_nodes: Array[GraphNode] = []
-	all_nodes.assign(get_children().filter(func(n: Node): return is_instance_of(n, GraphNode)))
-	var selected_nodes := all_nodes.filter(func(n: GraphNode): return n.selected)
-	selected_nodes.map(func(n: GraphNode): n.selected = false)
+	all_nodes.assign(get_children().filter(func(n: Node) -> bool: return is_instance_of(n, GraphNode)))
+	var selected_nodes := all_nodes.filter(func(n: GraphNode) -> bool: return n.selected)
+	selected_nodes.map(func(n: GraphNode) -> void: n.selected = false)
 
 	var nodes: Array[GraphNode] = []
 	nodes.assign(to_arrange)
 	nodes.push_back(anchor)
-	var original := nodes.map(func(n: GraphNode): return n.position_offset)
+	var original := nodes.map(func(n: GraphNode) -> Vector2: return n.position_offset)
 
-	nodes.map(func(n: GraphNode): n.selected = true)
+	nodes.map(func(n: GraphNode) -> void: n.selected = true)
 	arrange_nodes()
-	nodes.map(func(n: GraphNode): n.selected = false)
+	nodes.map(func(n: GraphNode) -> void: n.selected = false)
 
-	var final := nodes.map(func(n: GraphNode): return n.position_offset)
+	var final := nodes.map(func(n: GraphNode) -> Vector2: return n.position_offset)
 	var final_anchor := anchor.position_offset
 	for i in nodes.size():
 		nodes[i].position_offset = original[i]
@@ -254,7 +254,7 @@ func arrange_branches_around_anchor(anchor: GraphNode, to_arrange: Array[_Branch
 			var offset: Vector2 = final[i] - final_anchor
 			_tween.tween_property(node, "position_offset", anchor.position_offset + offset, duration)
 
-	selected_nodes.map(func(n: GraphNode): n.selected = true)
+	selected_nodes.map(func(n: GraphNode) -> void: n.selected = true)
 
 
 func center_node_in_graph(node: GraphNode) -> void:
@@ -283,7 +283,7 @@ func load_character(file: _OasisFile) -> void:
 		var id := key.to_int()
 		add_branch(id, true)
 
-		var branch = _branches[id]
+		var branch := _branches[id]
 		branch.set_text(file.get_value(key, _Save.Character.Branch.VALUE, ""))
 		branch.position_offset = file.get_value(
 				key,
@@ -298,7 +298,6 @@ func load_character(file: _OasisFile) -> void:
 
 
 func save_character_config(config: ConfigFile) -> void:
-	const section := "graph"
 	config.set_value(
 			_Save.Character.Config.GRAPH,
 			_Save.Character.Config.Graph.ZOOM,

@@ -24,7 +24,7 @@ func append_child(ast: _AST.AST) -> void:
 	_stack[-1].add(ast)
 
 
-func append_expected_error(expected, found: _Token) -> void:
+func append_expected_error(expected: Variant, found: _Token) -> void:
 	var message := "Expected"
 	if expected is Array:
 		message += _Token.types_to_string(expected)
@@ -65,7 +65,7 @@ func peek_sequence(types: Array[_Type]) -> bool:
 	return is_match
 
 
-func peek_expected(expected) -> _Token:
+func peek_expected(expected: Variant) -> _Token:
 	var next := peek()
 	if not next:
 		var eof := _tokens[-1]
@@ -88,7 +88,7 @@ func consume(count := 1) -> _Token:
 	return next
 
 
-func consume_expected(expected_type) -> _Token:
+func consume_expected(expected_type: Variant) -> _Token:
 	var next := peek_expected(expected_type)
 	if next:
 		_position += 1
@@ -236,9 +236,9 @@ func _parse_responses() -> void:
 func _parse_line() -> void:
 	const expected: Array[_Type] = [_Type.CURLY_START, _Type.TEXT]
 
-	var seen_condition = false
-	var seen_text = false
-	var seen_action = false
+	var seen_condition := false
+	var seen_text := false
+	var seen_action := false
 	while not at_eof() and peek_type() != _Type.EOL:
 		var next := peek_expected(expected)
 

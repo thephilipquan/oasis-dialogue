@@ -38,16 +38,16 @@ func _on_confirm_button_up() -> void:
 	_confirm()
 
 
-func _on_line_edit_text_submitted(new_text: String) -> void:
+func _on_line_edit_text_submitted(_new_text: String) -> void:
 	_confirm()
 
 
 func _confirm() -> void:
-	var name := _line_edit.text
-	var status := _validate.call(name)
+	var character := _line_edit.text
+	var status: String = _validate.call(character)
 	if status:
 		return
-	confirmed.emit(name)
+	confirmed.emit(character)
 
 
 func _on_line_edit_text_changed(new_text: String) -> void:
@@ -57,7 +57,7 @@ func _on_line_edit_text_changed(new_text: String) -> void:
 	_line_edit.text = new_text
 	_line_edit.caret_column = before
 
-	var status := _validate.call(new_text)
+	var status: String = _validate.call(new_text)
 	_update_status(status)
 
 

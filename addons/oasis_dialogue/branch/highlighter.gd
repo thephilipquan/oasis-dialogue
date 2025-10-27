@@ -14,6 +14,7 @@ const _IDENTIFIER := Color.DARK_ORANGE
 var lexer: Lexer = null
 
 
+@warning_ignore("shadowed_variable")
 func set_lexer(lexer: Lexer) -> void:
 	self.lexer = lexer
 

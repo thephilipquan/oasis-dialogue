@@ -1,6 +1,6 @@
 extends RefCounted
 
-var _data := {}
+var _data: Dictionary[String, Dictionary] = {}
 
 
 static func section_is_branch(section: String) -> bool:
@@ -48,14 +48,14 @@ func has_section_key(section: String, key: String) -> bool:
 	return key in inner
 
 
-func set_value(section: String, key: String, value) -> void:
+func set_value(section: String, key: String, value: Variant) -> void:
 	if not has_section(section):
 		_data[section] = {}
 	var inner: Dictionary = _data[section]
 	inner[key] = value
 
 
-func get_value(section: String, key: String, default = null):
+func get_value(section: String, key: String, default: Variant = null) -> Variant:
 	# if not has_section(section):
 		# push_warning("%s does not exist" % section)
 		# return
@@ -104,7 +104,7 @@ func parse(text: String) -> Error:
 				# Empty value.
 				if value_start >= i - 1:
 					return Error.ERR_FILE_CORRUPT
-				var value = _parse_value("\n".join(lines.slice(value_start, i - 1)))
+				var value: Variant = _parse_value("\n".join(lines.slice(value_start, i - 1)))
 				inner[key] = value
 				value_start = -1
 			section = tag
@@ -135,7 +135,7 @@ func parse(text: String) -> Error:
 	return Error.OK
 
 
-func _parse_value(value: String):
+func _parse_value(value: String) -> Variant:
 	if value.contains("\n"):
 		return value
 	if value.to_lower() == "true":
@@ -155,10 +155,10 @@ func _parse_value(value: String):
 
 func encode_to_text() -> String:
 	var lines: Array[String] = []
-	for section in _data:
-		var inner: Dictionary = _data[section]
+	for section: String in _data:
+		var inner := _data[section]
 		lines.append("[[%s]]" % section)
-		for key in inner:
+		for key: String in inner:
 			lines.append("[%s]" % key)
 			lines.append("%s" % _encode_value(inner[key]))
 		lines.append("")
@@ -167,7 +167,7 @@ func encode_to_text() -> String:
 	return "\n".join(lines)
 
 
-func _encode_value(value):
+func _encode_value(value: Variant) -> Variant:
 	if value is Vector2:
 		return "Vector2%s" % value
 	return value
