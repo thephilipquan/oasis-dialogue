@@ -1,5 +1,5 @@
 @tool
-extends Button
+extends TextureButton
 
 const REGISTRY_KEY := "add_character_button"
 

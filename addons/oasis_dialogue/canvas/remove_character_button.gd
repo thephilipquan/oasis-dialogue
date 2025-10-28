@@ -1,5 +1,5 @@
 @tool
-extends Button
+extends TextureButton
 
 const REGISTRY_KEY := "remove_character_button"
 
@@ -47,6 +47,7 @@ func init_confirm_dialog_factory(callback: Callable) -> void:
 
 
 func _ready() -> void:
+
 	button_up.connect(_on_button_up)
 
 

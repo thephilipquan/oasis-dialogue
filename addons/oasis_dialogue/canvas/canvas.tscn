@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://4plc4vhymybs"]
+[gd_scene load_steps=26 format=3 uid="uid://4plc4vhymybs"]
 
 [ext_resource type="Script" uid="uid://bkn5mac6gdvq3" path="res://addons/oasis_dialogue/canvas/canvas.gd" id="1_pyvqf"]
 [ext_resource type="Theme" uid="uid://b17l0ux5wllk5" path="res://addons/oasis_dialogue/canvas/canvas_theme.tres" id="1_ta1sa"]
@@ -19,6 +19,12 @@
 [ext_resource type="Script" uid="uid://bphp844em6apf" path="res://addons/oasis_dialogue/canvas/save_project_button.gd" id="12_h1x05"]
 [ext_resource type="Script" uid="uid://col6d6dlfwg4s" path="res://addons/oasis_dialogue/canvas/export_button.gd" id="13_hd21m"]
 [ext_resource type="Script" uid="uid://0ttgl6a5kmao" path="res://addons/oasis_dialogue/canvas/split_container.gd" id="16_1wr22"]
+[ext_resource type="Texture2D" uid="uid://cquqinlns0onb" path="res://addons/oasis_dialogue/assets/remove_default_32.png" id="16_ba7lg"]
+[ext_resource type="Texture2D" uid="uid://bnj3xmgeov1er" path="res://addons/oasis_dialogue/assets/remove_selected_32.png" id="17_1ink7"]
+[ext_resource type="Texture2D" uid="uid://birwflcc0pbgg" path="res://addons/oasis_dialogue/assets/remove_hovered_32.png" id="18_crrap"]
+[ext_resource type="Texture2D" uid="uid://cj7x44xdhbs57" path="res://addons/oasis_dialogue/assets/add_default_32.png" id="20_ba7lg"]
+[ext_resource type="Texture2D" uid="uid://bgm7dio6cmvg0" path="res://addons/oasis_dialogue/assets/add_selected_32.png" id="21_1ink7"]
+[ext_resource type="Texture2D" uid="uid://dyr74y2x2lyab" path="res://addons/oasis_dialogue/assets/add_hovered_32.png" id="22_crrap"]
 
 [node name="Canvas" type="Control" groups=["registerable"]]
 layout_mode = 3
@@ -68,17 +74,6 @@ layout_mode = 2
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HeaderMarginContainer"]
 layout_mode = 2
 
-[node name="AddCharacter" type="Button" parent="VBoxContainer/HeaderMarginContainer/HBoxContainer" groups=["registerable"]]
-layout_mode = 2
-text = "add character"
-script = ExtResource("3_4e1bp")
-
-[node name="RemoveCharacter" type="Button" parent="VBoxContainer/HeaderMarginContainer/HBoxContainer" groups=["registerable"]]
-visible = false
-layout_mode = 2
-text = "remove character"
-script = ExtResource("4_6xxxj")
-
 [node name="AddBranch" type="Button" parent="VBoxContainer/HeaderMarginContainer/HBoxContainer" groups=["registerable"]]
 visible = false
 layout_mode = 2
@@ -108,6 +103,42 @@ hide_folding = true
 hide_root = true
 scroll_horizontal_enabled = false
 script = ExtResource("6_gyuj5")
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/SplitContainer/CharacterTree"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -72.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 3
+theme_override_constants/margin_bottom = 16
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/SplitContainer/CharacterTree/MarginContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="RemoveCharacter" type="TextureButton" parent="VBoxContainer/SplitContainer/CharacterTree/MarginContainer/HBoxContainer" groups=["registerable"]]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 2
+size_flags_vertical = 4
+tooltip_text = "Remove character"
+texture_normal = ExtResource("16_ba7lg")
+texture_pressed = ExtResource("17_1ink7")
+texture_hover = ExtResource("18_crrap")
+script = ExtResource("4_6xxxj")
+
+[node name="AddCharacter" type="TextureButton" parent="VBoxContainer/SplitContainer/CharacterTree/MarginContainer/HBoxContainer" groups=["registerable"]]
+layout_mode = 2
+size_flags_vertical = 4
+tooltip_text = "Add character"
+texture_normal = ExtResource("20_ba7lg")
+texture_pressed = ExtResource("21_1ink7")
+texture_hover = ExtResource("22_crrap")
+script = ExtResource("3_4e1bp")
 
 [node name="BranchEdit" type="GraphEdit" parent="VBoxContainer/SplitContainer" groups=["registerable"]]
 layout_mode = 2
