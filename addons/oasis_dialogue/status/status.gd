@@ -25,6 +25,7 @@ var _get_active_character := Callable()
 var _status_label_factory := Callable()
 var _active_is_dirty := Callable()
 
+var _current_character := ""
 var _errors: Dictionary[int, _StatusLabel] = {}
 
 @onready
@@ -66,6 +67,7 @@ func setup(registry: _Registry) -> void:
 	var json_exporter: _JSONExporter = registry.at(_JSONExporter.REGISTRY_KEY)
 	json_exporter.exported.connect(export_json)
 
+	manager.character_loaded.connect(update_current_character.unbind(1))
 	manager.character_saved.connect(save_character)
 	manager.saving_settings.connect(save_project.unbind(1))
 
@@ -82,6 +84,10 @@ func init_active_is_dirty(callback: Callable) -> void:
 	_active_is_dirty = callback
 
 
+func update_current_character() -> void:
+	_current_character = _get_active_character.call()
+
+
 func add_branch(id: int) -> void:
 	info("Added branch %d" % id)
 
@@ -91,11 +97,12 @@ func remove_branch(id: int) -> void:
 
 
 func rename_character(to: String) -> void:
-	info("Renamed %s to %s" % [_get_active_character.call() , to] )
+	info("Renamed %s to %s" % [_current_character, to] )
 
 
 func remove_character() -> void:
-	info("Removed %s" % _get_active_character.call())
+	info("Removed %s" % _current_character)
+	_current_character = ""
 
 
 func add_character(character: String) -> void:
