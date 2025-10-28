@@ -49,7 +49,7 @@ func register(registry: _Registry) -> void:
 
 func setup(registry: _Registry) -> void:
 	var add_character_button: _AddCharacterButton = registry.at(_AddCharacterButton.REGISTRY_KEY)
-	add_character_button.character_added.connect(add_and_load_character)
+	add_character_button.character_added.connect(add_character)
 
 	var remove_character_button: _RemoveCharacterButton = registry.at(_RemoveCharacterButton.REGISTRY_KEY)
 	remove_character_button.character_removed.connect(remove_active_character)
@@ -255,11 +255,6 @@ func load_character(character: String) -> void:
 	var config := ConfigFile.new()
 	config.load(_character_to_config_path(character))
 	character_config_loaded.emit(config)
-
-
-func add_and_load_character(character: String) -> void:
-	add_character(character)
-	load_character(character)
 
 
 func remove_active_character() -> void:

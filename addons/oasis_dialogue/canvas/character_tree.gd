@@ -29,7 +29,7 @@ func setup(registry: _Registry) -> void:
 	rename_character_handler.character_renamed.connect(edit_selected_item)
 
 	var add_character: _AddCharacter = registry.at(_AddCharacter.REGISTRY_KEY)
-	add_character.character_added.connect(add_item)
+	add_character.character_added.connect(add_and_select_item)
 
 	var remove_character: _RemoveCharacter = registry.at(_RemoveCharacter.REGISTRY_KEY)
 	remove_character.character_removed.connect(remove_selected_item)
@@ -48,14 +48,20 @@ func _ready() -> void:
 	item_activated.connect(_on_item_activated)
 
 
-func add_item(text: String) -> void:
+func add_item(text: String) -> TreeItem:
 	var item := create_item()
 	item.set_text(0, text)
 	changed.emit()
+	return item
 
 
 func select_item(item: TreeItem) -> void:
 	item.select(0)
+
+
+func add_and_select_item(text: String) -> void:
+	var item := add_item(text)
+	select_item(item)
 
 
 func remove_selected_item() -> void:

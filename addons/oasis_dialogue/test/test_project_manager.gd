@@ -74,13 +74,15 @@ func test_can_rename_active_to_existing_file_returns_false() -> void:
 
 func test_get_active_character_returns_loaded_character() -> void:
 	sut.open_project(TESTDIR)
-	sut.add_and_load_character("Fred")
+	sut.add_character("Fred")
+	sut.load_character("Fred")
 	assert_eq(sut.get_active_character(), "Fred")
 
 
 func test_dirty_api() -> void:
 	sut.open_project(TESTDIR)
-	sut.add_and_load_character("fred")
+	sut.add_character("fred")
+	sut.load_character("fred")
 	sut.mark_active_character_dirty()
 
 	assert_true(sut.active_is_dirty())
@@ -136,14 +138,16 @@ func test_open_project_restores_actions() -> void:
 
 func test_unexpected_quit_restores_unsaved_changes() -> void:
 	sut.open_project(TESTDIR)
-	sut.add_and_load_character("fred")
+	sut.add_character("fred")
+	sut.load_character("fred")
 	sut.mark_active_character_dirty()
 	sut.saving_character.connect(
 			func(data: OasisFile):
 				data.set_value("a", "b", "c"),
 			CONNECT_ONE_SHOT,
 	)
-	sut.add_and_load_character("tom")
+	sut.add_character("tom")
+	sut.load_character("tom")
 
 	sut = add_child_autofree(ProjectManager.new())
 	sut.open_project(TESTDIR)
@@ -156,14 +160,16 @@ func test_unexpected_quit_restores_unsaved_changes() -> void:
 
 func test_quit_removes_unsaved_changes() -> void:
 	sut.open_project(TESTDIR)
-	sut.add_and_load_character("fred")
+	sut.add_character("fred")
+	sut.load_character("fred")
 	sut.mark_active_character_dirty()
 	sut.saving_character.connect(
 			func(data: OasisFile):
 				data.set_value("a", "b", "c"),
 			CONNECT_ONE_SHOT,
 	)
-	sut.add_and_load_character("tom")
+	sut.add_character("tom")
+	sut.load_character("tom")
 	sut.quit()
 
 	sut = add_child_autofree(ProjectManager.new())
@@ -186,7 +192,8 @@ func test_load_character_emits_character_loaded() -> void:
 
 func test_save_character_emits_saving_character() -> void:
 	sut.open_project(TESTDIR)
-	sut.add_and_load_character("fred")
+	sut.add_character("fred")
+	sut.load_character("fred")
 
 	watch_signals(sut)
 	sut.save_active_character()
@@ -195,7 +202,8 @@ func test_save_character_emits_saving_character() -> void:
 
 func test_save_character_emits_character_saved() -> void:
 	sut.open_project(TESTDIR)
-	sut.add_and_load_character("fred")
+	sut.add_character("fred")
+	sut.load_character("fred")
 
 	watch_signals(sut)
 	sut.save_active_character()
@@ -204,7 +212,8 @@ func test_save_character_emits_character_saved() -> void:
 
 func test_save_character_config_emits_saving_character_config() -> void:
 	sut.open_project(TESTDIR)
-	sut.add_and_load_character("fred")
+	sut.add_character("fred")
+	sut.load_character("fred")
 
 	watch_signals(sut)
 	sut.save_active_character_config()
@@ -213,7 +222,8 @@ func test_save_character_config_emits_saving_character_config() -> void:
 
 func test_load_character_restores_saved_character_data() -> void:
 	sut.open_project(TESTDIR)
-	sut.add_and_load_character("fred")
+	sut.add_character("fred")
+	sut.load_character("fred")
 	sut.mark_active_character_dirty()
 	sut.saving_character.connect(
 			func(data: OasisFile):
@@ -233,7 +243,8 @@ func test_load_character_restores_saved_character_data() -> void:
 
 func test_load_character_restores_saved_character_config() -> void:
 	sut.open_project(TESTDIR)
-	sut.add_and_load_character("fred")
+	sut.add_character("fred")
+	sut.load_character("fred")
 	sut.saving_character_config.connect(
 			func(data: ConfigFile):
 				data.set_value("a", "b", "hello world")
@@ -272,24 +283,28 @@ func test_switching_characters_restores_unsaved_changes() -> void:
 
 func test_switching_character_does_not_emit_character_saved() -> void:
 	sut.open_project(TESTDIR)
-	sut.add_and_load_character("fred")
+	sut.add_character("fred")
+	sut.load_character("fred")
 	sut.mark_active_character_dirty()
 	watch_signals(sut)
-	sut.add_and_load_character("tom")
+	sut.add_character("tom")
+	sut.load_character("tom")
 
 	assert_signal_not_emitted(sut.character_saved)
 
 
 func test_switching_characters_restores_config() -> void:
 	sut.open_project(TESTDIR)
-	sut.add_and_load_character("fred")
+	sut.add_character("fred")
+	sut.load_character("fred")
 	sut.mark_active_character_dirty()
 	sut.saving_character_config.connect(
 			func(config: ConfigFile):
 				config.set_value("a", "b", "c"),
 			CONNECT_ONE_SHOT,
 	)
-	sut.add_and_load_character("tom")
+	sut.add_character("tom")
+	sut.load_character("tom")
 	sut.character_config_loaded.connect(
 			func(config: ConfigFile):
 				assert_eq(config.get_value("a", "b", ""), "c")
@@ -299,14 +314,16 @@ func test_switching_characters_restores_config() -> void:
 
 func test_save_project_saves_unsaved_changes() -> void:
 	sut.open_project(TESTDIR)
-	sut.add_and_load_character("fred")
+	sut.add_character("fred")
+	sut.load_character("fred")
 	sut.mark_active_character_dirty()
 	sut.saving_character.connect(
 			func(data: OasisFile):
 				data.set_value("a", "b", "c"),
 			CONNECT_ONE_SHOT,
 	)
-	sut.add_and_load_character("tom")
+	sut.add_character("tom")
+	sut.load_character("tom")
 	sut.mark_active_character_dirty()
 	sut.saving_character.connect(
 			func(data: OasisFile):
@@ -334,9 +351,11 @@ func test_save_project_saves_unsaved_changes() -> void:
 
 func test_save_project_emits_character_saved_for_each_dirty_file() -> void:
 	sut.open_project(TESTDIR)
-	sut.add_and_load_character("fred")
+	sut.add_character("fred")
+	sut.load_character("fred")
 	sut.mark_active_character_dirty()
-	sut.add_and_load_character("tom")
+	sut.add_character("tom")
+	sut.load_character("tom")
 	sut.mark_active_character_dirty()
 	watch_signals(sut)
 
@@ -347,7 +366,8 @@ func test_save_project_emits_character_saved_for_each_dirty_file() -> void:
 
 func test_remove_active_character() -> void:
 	sut.open_project(TESTDIR)
-	sut.add_and_load_character("fred")
+	sut.add_character("fred")
+	sut.load_character("fred")
 	sut.remove_active_character()
 
 	assert_false(sut.character_exists("fred"))
@@ -355,14 +375,16 @@ func test_remove_active_character() -> void:
 
 func test_remove_active_character_removes_unsaved_changes() -> void:
 	sut.open_project(TESTDIR)
-	sut.add_and_load_character("fred")
+	sut.add_character("fred")
+	sut.load_character("fred")
 	sut.mark_active_character_dirty()
 	sut.saving_character.connect(
 			func(data: OasisFile):
 				data.set_value("a", "b", "c"),
 			CONNECT_ONE_SHOT,
 	)
-	sut.add_and_load_character("tom")
+	sut.add_character("tom")
+	sut.load_character("tom")
 	disconnect_all(sut.saving_character)
 	sut.load_character("fred")
 	sut.remove_active_character()
@@ -371,18 +393,21 @@ func test_remove_active_character_removes_unsaved_changes() -> void:
 			func(data: OasisFile):
 				assert_false(data.has_section_key("a", "b")),
 	)
-	sut.add_and_load_character("fred")
+	sut.add_character("fred")
+	sut.load_character("fred")
 
 
 func test_remove_active_character_removes_character_config() -> void:
 	sut.open_project(TESTDIR)
-	sut.add_and_load_character("fred")
+	sut.add_character("fred")
+	sut.load_character("fred")
 	sut.saving_character_config.connect(
 			func(data: ConfigFile):
 				data.set_value("a", "b", "c"),
 			CONNECT_ONE_SHOT,
 	)
-	sut.add_and_load_character("tom")
+	sut.add_character("tom")
+	sut.load_character("tom")
 	disconnect_all(sut.saving_character_config)
 	sut.load_character("fred")
 	sut.remove_active_character()
@@ -391,12 +416,14 @@ func test_remove_active_character_removes_character_config() -> void:
 			func(data: ConfigFile):
 				assert_false(data.has_section_key("a", "b"))
 	)
-	sut.add_and_load_character("fred")
+	sut.add_character("fred")
+	sut.load_character("fred")
 
 
 func test_rename_active_character_removes_previous_name_data() -> void:
 	sut.open_project(TESTDIR)
-	sut.add_and_load_character("fred")
+	sut.add_character("fred")
+	sut.load_character("fred")
 	sut.mark_active_character_dirty()
 	sut.saving_character.connect(
 			func(file: OasisFile):
@@ -408,7 +435,8 @@ func test_rename_active_character_removes_previous_name_data() -> void:
 				file.set_value("c", "d", "e"),
 			CONNECT_ONE_SHOT,
 	)
-	sut.add_and_load_character("tom")
+	sut.add_character("tom")
+	sut.load_character("tom")
 	sut.load_character("fred")
 
 	sut.rename_active_character("bob")
@@ -420,4 +448,6 @@ func test_rename_active_character_removes_previous_name_data() -> void:
 			func(file: ConfigFile):
 				assert_false(file.has_section_key("c", "d"), "fred config file was never removed"),
 	)
-	sut.add_and_load_character("fred")
+	sut.add_character("fred")
+	sut.load_character("fred")
+
