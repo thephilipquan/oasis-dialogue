@@ -4,11 +4,13 @@ const REGISTRY_KEY := "export_button"
 
 const _Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
 const _FileDialog := preload("res://addons/oasis_dialogue/project_dialog/file_dialog.gd")
+const _UserManager := preload("res://addons/oasis_dialogue/main/user_manager.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 
 signal export_requested(path: String)
 
 var _file_dialog_factory := Callable()
+var _get_last_export_path := Callable()
 
 
 func _ready() -> void:
@@ -22,9 +24,16 @@ func register(registry: _Registry) -> void:
 func setup(registry: _Registry) -> void:
 	init_file_dialog_factory(registry.at(_Canvas.FILE_DIALOG_FACTORY_REGISTRY_KEY))
 
+	var user_manager: _UserManager = registry.at(_UserManager.REGISTRY_KEY)
+	init_get_last_export_path(user_manager.get_last_export_path)
+
 
 func init_file_dialog_factory(callback: Callable) -> void:
 	_file_dialog_factory = callback
+
+
+func init_get_last_export_path(callback: Callable) -> void:
+	_get_last_export_path = callback
 
 
 func show_file_dialog() -> void:
@@ -35,6 +44,8 @@ func show_file_dialog() -> void:
 	dialog.selected.connect(on_dialog_selected.bind(dialog))
 	dialog.canceled.connect(on_dialog_canceled.bind(dialog))
 	get_tree().root.add_child(dialog)
+	# Have to set after adding to tree.
+	dialog.current_path = ProjectSettings.globalize_path(_get_last_export_path.call())
 
 
 func on_dialog_canceled(dialog: _FileDialog) -> void:

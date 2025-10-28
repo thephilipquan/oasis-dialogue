@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://t8shr44ts4y"]
+[gd_scene load_steps=4 format=3 uid="uid://t8shr44ts4y"]
 
 [ext_resource type="Script" uid="uid://lyfhru1ff3v1" path="res://addons/oasis_dialogue/main/main.gd" id="1_ybe0g"]
+[ext_resource type="Script" uid="uid://e3r7wpxjfh04" path="res://addons/oasis_dialogue/main/user_manager.gd" id="2_wsoep"]
+[ext_resource type="Script" uid="uid://by0bg7r4mubdh" path="res://addons/oasis_dialogue/registry.gd" id="3_3da33"]
 
 [node name="OasisDialogue" type="Control"]
 layout_mode = 3
@@ -10,3 +12,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ybe0g")
+
+[node name="Registry" type="Node" parent="."]
+script = ExtResource("3_3da33")
+
+[node name="UserManager" type="Node" parent="." groups=["registerable"]]
+script = ExtResource("2_wsoep")

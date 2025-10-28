@@ -14,14 +14,22 @@ var _manager: _ProjectManager = null
 var _project_dialog: _ProjectDialog = null
 var _project: _Project = null
 
+@onready
+var _registry := $Registry as _Registry
+
+
 func _ready() -> void:
 	_open_project_dialog()
 
 
 func _open_project_dialog() -> void:
 	_project_dialog = _ProjectDialogScene.instantiate()
+	_project_dialog.add_to_group(_Registry.GROUP)
 	add_child(_project_dialog)
 	_project_dialog.path_requested.connect(_on_project_path_requested)
+
+	_registry.trigger()
+	_project_dialog.display()
 
 
 func _on_project_path_requested(path: String) -> void:
@@ -29,15 +37,12 @@ func _on_project_path_requested(path: String) -> void:
 	remove_child(_project_dialog)
 
 	_manager = _ProjectManager.new()
-	_manager.add_to_group("registerable")
+	_manager.add_to_group(_Registry.GROUP)
 	add_child(_manager)
 
 	_project = _ProjectScene.instantiate()
 	add_child(_project)
 
-	var registry := _Registry.new()
-	add_child(registry)
-	registry.queue_free()
-	remove_child(registry)
+	_registry.trigger()
 
 	_manager.open_project(path)
