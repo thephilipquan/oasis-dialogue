@@ -18,10 +18,6 @@ func _ready() -> void:
 	_open_project_dialog()
 
 
-func _exit_tree() -> void:
-	_manager.save_project()
-
-
 func _open_project_dialog() -> void:
 	_project_dialog = _ProjectDialogScene.instantiate()
 	add_child(_project_dialog)
