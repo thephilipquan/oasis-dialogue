@@ -35,6 +35,7 @@ signal conditions_loaded(file: _OasisFile)
 signal saving_settings(file: ConfigFile)
 signal settings_loaded(file: ConfigFile)
 
+signal project_loaded
 signal exporting(path: String, characters: Array[_OasisFile])
 
 var _directory := ""
@@ -150,6 +151,7 @@ func open_project(path: String) -> void:
 		file.close()
 	settings.set_value(_Save.Project.CHARACTERS, _Save.DUMMY, characters)
 	settings_loaded.emit(settings)
+	project_loaded.emit()
 
 
 func save_project() -> void:
