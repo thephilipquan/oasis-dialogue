@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://e3r7wpxjfh04" path="res://addons/oasis_dialogue/main/user_manager.gd" id="2_wsoep"]
 [ext_resource type="Script" uid="uid://by0bg7r4mubdh" path="res://addons/oasis_dialogue/registry.gd" id="3_3da33"]
 
-[node name="OasisDialogue" type="Control"]
+[node name="Main" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
