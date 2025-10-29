@@ -12,6 +12,9 @@ var _timer: Timer = $Timer
 
 
 func _ready() -> void:
+	if is_part_of_edited_scene():
+		return
+
 	var tween := get_tree().create_tween()
 	tween.parallel().tween_property(self, "modulate", Color.WHITE, _fade_in_duration)
 

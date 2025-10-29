@@ -15,6 +15,9 @@ var _max_offset := -1
 
 
 func _ready() -> void:
+	if is_part_of_edited_scene():
+		return
+
 	dragged.connect(_on_dragged)
 
 

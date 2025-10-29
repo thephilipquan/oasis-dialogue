@@ -17,6 +17,9 @@ var _is_erred := false
 
 
 func _ready() -> void:
+	if is_part_of_edited_scene():
+		return
+
 	var hbox := get_titlebar_hbox()
 	hbox.add_spacer(false)
 

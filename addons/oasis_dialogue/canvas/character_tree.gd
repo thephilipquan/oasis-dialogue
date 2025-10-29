@@ -43,6 +43,9 @@ func setup(registry: _Registry) -> void:
 
 
 func _ready() -> void:
+	if is_part_of_edited_scene():
+		return
+
 	add_item("root")
 	item_selected.connect(_on_item_selected)
 	item_activated.connect(_on_item_activated)

@@ -25,6 +25,9 @@ const _Lexer := preload("res://addons/oasis_dialogue/model/lexer.gd")
 const _Parser := preload("res://addons/oasis_dialogue/model/parser.gd")
 
 func _ready() -> void:
+	if is_part_of_edited_scene():
+		return
+
 	var add_branch: TextureButton = $AddBranch
 	var graph: GraphEdit = $VBoxContainer/SplitContainer/BranchEdit
 	add_branch.reparent(graph.get_menu_hbox())

@@ -13,6 +13,9 @@ var _line_edit: LineEdit = $CenterContainer/VBoxContainer/LineEdit
 
 
 func _ready() -> void:
+	if is_part_of_edited_scene():
+		return
+
 	_line_edit.grab_focus()
 
 

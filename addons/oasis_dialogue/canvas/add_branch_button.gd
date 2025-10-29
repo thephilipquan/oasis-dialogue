@@ -34,6 +34,9 @@ func init_get_branch_ids(callback: Callable) -> void:
 
 
 func _ready() -> void:
+	if is_part_of_edited_scene():
+		return
+
 	button_up.connect(_on_button_up)
 
 

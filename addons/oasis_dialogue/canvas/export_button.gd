@@ -14,6 +14,9 @@ var _get_last_export_path := Callable()
 
 
 func _ready() -> void:
+	if is_part_of_edited_scene():
+		return
+
 	button_up.connect(show_file_dialog)
 
 

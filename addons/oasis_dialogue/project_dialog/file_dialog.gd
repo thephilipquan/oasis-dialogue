@@ -8,6 +8,9 @@ var _extension := ""
 
 
 func _ready() -> void:
+	if is_part_of_edited_scene():
+		return
+
 	access = FileDialog.ACCESS_FILESYSTEM
 
 	hidden_files_toggle_enabled = false

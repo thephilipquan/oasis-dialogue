@@ -19,6 +19,9 @@ var _registry := $Registry as _Registry
 
 
 func _ready() -> void:
+	if is_part_of_edited_scene():
+		return
+
 	_open_project_dialog()
 
 

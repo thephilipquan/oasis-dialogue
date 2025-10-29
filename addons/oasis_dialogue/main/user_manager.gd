@@ -17,6 +17,9 @@ var _dirty := false
 
 
 func _ready() -> void:
+	if is_part_of_edited_scene():
+		return
+
 	var dir := DirAccess.open(_USER)
 	if not dir.dir_exists(_DIR):
 		dir.make_dir(_DIR)
