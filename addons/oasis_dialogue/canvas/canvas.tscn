@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://4plc4vhymybs"]
+[gd_scene load_steps=32 format=3 uid="uid://4plc4vhymybs"]
 
 [ext_resource type="Script" uid="uid://bkn5mac6gdvq3" path="res://addons/oasis_dialogue/canvas/canvas.gd" id="1_pyvqf"]
 [ext_resource type="Theme" uid="uid://b17l0ux5wllk5" path="res://addons/oasis_dialogue/canvas/canvas_theme.tres" id="1_ta1sa"]
@@ -21,6 +21,7 @@
 [ext_resource type="Texture2D" uid="uid://dlevgagyhy7aj" path="res://addons/oasis_dialogue/assets/add_selected_16.png" id="12_vow0r"]
 [ext_resource type="Script" uid="uid://col6d6dlfwg4s" path="res://addons/oasis_dialogue/canvas/export_button.gd" id="13_hd21m"]
 [ext_resource type="Texture2D" uid="uid://badhsjdmlotct" path="res://addons/oasis_dialogue/assets/add_hovered_16.png" id="13_oj43n"]
+[ext_resource type="Script" uid="uid://c5bwvouvr2eh" path="res://addons/oasis_dialogue/canvas/call_to_action_handler.gd" id="15_vow0r"]
 [ext_resource type="Script" uid="uid://0ttgl6a5kmao" path="res://addons/oasis_dialogue/canvas/split_container.gd" id="16_1wr22"]
 [ext_resource type="Texture2D" uid="uid://cquqinlns0onb" path="res://addons/oasis_dialogue/assets/remove_default_32.png" id="16_ba7lg"]
 [ext_resource type="Texture2D" uid="uid://bnj3xmgeov1er" path="res://addons/oasis_dialogue/assets/remove_selected_32.png" id="17_1ink7"]
@@ -28,6 +29,8 @@
 [ext_resource type="Texture2D" uid="uid://cj7x44xdhbs57" path="res://addons/oasis_dialogue/assets/add_default_32.png" id="20_ba7lg"]
 [ext_resource type="Texture2D" uid="uid://bgm7dio6cmvg0" path="res://addons/oasis_dialogue/assets/add_selected_32.png" id="21_1ink7"]
 [ext_resource type="Texture2D" uid="uid://dyr74y2x2lyab" path="res://addons/oasis_dialogue/assets/add_hovered_32.png" id="22_crrap"]
+[ext_resource type="Script" uid="uid://0m8wwixwa4ub" path="res://addons/oasis_dialogue/canvas/character_call_to_action.gd" id="30_oj43n"]
+[ext_resource type="Script" uid="uid://bx4iwyxoii8mp" path="res://addons/oasis_dialogue/canvas/branch_call_to_action.gd" id="31_y5ltl"]
 
 [node name="Canvas" type="Control" groups=["registerable"]]
 layout_mode = 3
@@ -75,6 +78,9 @@ script = ExtResource("9_xkohu")
 
 [node name="JSONExporter" type="Node" parent="." groups=["registerable"]]
 script = ExtResource("10_g4vuv")
+
+[node name="CallToActionHandler" type="Node" parent="." groups=["registerable"]]
+script = ExtResource("15_vow0r")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 1
@@ -162,3 +168,44 @@ script = ExtResource("7_54gq2")
 
 [node name="Status" parent="VBoxContainer/SplitContainer/BranchEdit" groups=["registerable"] instance=ExtResource("8_54gq2")]
 layout_mode = 1
+
+[node name="CharacterCallToAction" type="CenterContainer" parent="VBoxContainer/SplitContainer/BranchEdit" groups=["registerable"]]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("30_oj43n")
+
+[node name="Label" type="Label" parent="VBoxContainer/SplitContainer/BranchEdit/CharacterCallToAction"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.4, 0.4, 1)
+theme_override_font_sizes/font_size = 64
+text = "add a 
+character"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BranchCallToAction" type="CenterContainer" parent="VBoxContainer/SplitContainer/BranchEdit" groups=["registerable"]]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("31_y5ltl")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/SplitContainer/BranchEdit/BranchCallToAction"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/SplitContainer/BranchEdit/BranchCallToAction/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.4, 0.4, 1)
+theme_override_font_sizes/font_size = 64
+text = "add a 
+branch"
+horizontal_alignment = 1
+vertical_alignment = 1
