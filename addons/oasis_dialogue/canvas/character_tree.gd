@@ -72,6 +72,10 @@ func remove_selected_item() -> void:
 	changed.emit()
 
 
+func get_item_count() -> int:
+	return get_root().get_child_count()
+
+
 func get_selected_item() -> String:
 	var text := ""
 	var selected := get_selected()
