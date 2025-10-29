@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://4plc4vhymybs"]
+[gd_scene load_steps=29 format=3 uid="uid://4plc4vhymybs"]
 
 [ext_resource type="Script" uid="uid://bkn5mac6gdvq3" path="res://addons/oasis_dialogue/canvas/canvas.gd" id="1_pyvqf"]
 [ext_resource type="Theme" uid="uid://b17l0ux5wllk5" path="res://addons/oasis_dialogue/canvas/canvas_theme.tres" id="1_ta1sa"]
@@ -16,8 +16,11 @@
 [ext_resource type="Script" uid="uid://bmsfi1lplad1r" path="res://addons/oasis_dialogue/unbrancher_visitors.gd" id="8_unkvg"]
 [ext_resource type="Script" uid="uid://dece57l7ihxc2" path="res://addons/oasis_dialogue/csv_exporter.gd" id="9_xkohu"]
 [ext_resource type="Script" uid="uid://chio7d8hrpwj8" path="res://addons/oasis_dialogue/canvas/json_exporter.gd" id="10_g4vuv"]
+[ext_resource type="Texture2D" uid="uid://dqhrdft4f7mx7" path="res://addons/oasis_dialogue/assets/add_default_16.png" id="11_ye1hp"]
 [ext_resource type="Script" uid="uid://bphp844em6apf" path="res://addons/oasis_dialogue/canvas/save_project_button.gd" id="12_h1x05"]
+[ext_resource type="Texture2D" uid="uid://dlevgagyhy7aj" path="res://addons/oasis_dialogue/assets/add_selected_16.png" id="12_vow0r"]
 [ext_resource type="Script" uid="uid://col6d6dlfwg4s" path="res://addons/oasis_dialogue/canvas/export_button.gd" id="13_hd21m"]
+[ext_resource type="Texture2D" uid="uid://badhsjdmlotct" path="res://addons/oasis_dialogue/assets/add_hovered_16.png" id="13_oj43n"]
 [ext_resource type="Script" uid="uid://0ttgl6a5kmao" path="res://addons/oasis_dialogue/canvas/split_container.gd" id="16_1wr22"]
 [ext_resource type="Texture2D" uid="uid://cquqinlns0onb" path="res://addons/oasis_dialogue/assets/remove_default_32.png" id="16_ba7lg"]
 [ext_resource type="Texture2D" uid="uid://bnj3xmgeov1er" path="res://addons/oasis_dialogue/assets/remove_selected_32.png" id="17_1ink7"]
@@ -35,6 +38,19 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_ta1sa")
 script = ExtResource("1_pyvqf")
+
+[node name="AddBranch" type="TextureButton" parent="." groups=["registerable"]]
+visible = false
+layout_mode = 0
+offset_left = 16.0
+offset_top = 8.0
+offset_right = 32.0
+offset_bottom = 39.0
+tooltip_text = "Add branch"
+texture_normal = ExtResource("11_ye1hp")
+texture_pressed = ExtResource("12_vow0r")
+texture_hover = ExtResource("13_oj43n")
+script = ExtResource("4_wvnn7")
 
 [node name="Model" type="Node" parent="." groups=["registerable"]]
 script = ExtResource("3_ytw7q")
@@ -73,12 +89,6 @@ layout_mode = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/HeaderMarginContainer"]
 layout_mode = 2
-
-[node name="AddBranch" type="Button" parent="VBoxContainer/HeaderMarginContainer/HBoxContainer" groups=["registerable"]]
-visible = false
-layout_mode = 2
-text = "add branch"
-script = ExtResource("4_wvnn7")
 
 [node name="SaveProject" type="Button" parent="VBoxContainer/HeaderMarginContainer/HBoxContainer" groups=["registerable"]]
 layout_mode = 2
