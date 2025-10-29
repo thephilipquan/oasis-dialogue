@@ -108,6 +108,18 @@ func find_item(value: String) -> TreeItem:
 	return null
 
 
+func get_longest_item() -> String:
+	var longest := ""
+	var n := 0
+	for item in get_root().get_children():
+		var text := item.get_text(0)
+		var m := text.length()
+		if m > n:
+			n = m
+			longest = text
+	return longest
+
+
 func load_settings(data: ConfigFile) -> void:
 	var characters: Array[String] = []
 	characters.assign(data.get_value(_Save.Project.CHARACTERS, _Save.DUMMY, []))
