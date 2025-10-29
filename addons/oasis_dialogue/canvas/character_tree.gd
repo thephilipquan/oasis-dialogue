@@ -13,6 +13,7 @@ const _Save := preload("res://addons/oasis_dialogue/save.gd")
 
 signal character_activated()
 signal character_selected(name: String)
+signal changed
 
 const _DIRTY_SYMBOL := " *"
 
@@ -50,6 +51,7 @@ func _ready() -> void:
 func add_item(text: String) -> void:
 	var item := create_item()
 	item.set_text(0, text)
+	changed.emit()
 
 
 func select_item(item: TreeItem) -> void:
@@ -58,6 +60,7 @@ func select_item(item: TreeItem) -> void:
 
 func remove_selected_item() -> void:
 	get_selected().free()
+	changed.emit()
 
 
 func get_selected_item() -> String:
@@ -71,6 +74,7 @@ func get_selected_item() -> String:
 func edit_selected_item(to: String) -> void:
 	var item := get_selected()
 	item.set_text(0, to)
+	changed.emit()
 
 
 func mark_active_dirty() -> void:
@@ -88,6 +92,7 @@ func unmark_dirty(character: String) -> void:
 		push_warning("couldn't find item (%s) to undirty" % character)
 		return
 	item.set_text(0, character)
+	changed.emit()
 
 
 func set_items(items: Array[String]) -> void:
@@ -119,6 +124,7 @@ func load_settings(data: ConfigFile) -> void:
 			select_item(item)
 		else:
 			push_warning("active (%s) not found in character tree" % active_item)
+	changed.emit()
 
 
 func _on_item_selected() -> void:
