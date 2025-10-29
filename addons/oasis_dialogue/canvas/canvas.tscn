@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://4plc4vhymybs"]
+[gd_scene load_steps=20 format=3 uid="uid://4plc4vhymybs"]
 
 [ext_resource type="Script" uid="uid://bkn5mac6gdvq3" path="res://addons/oasis_dialogue/canvas/canvas.gd" id="1_pyvqf"]
 [ext_resource type="Theme" uid="uid://b17l0ux5wllk5" path="res://addons/oasis_dialogue/canvas/canvas_theme.tres" id="1_ta1sa"]
@@ -18,6 +18,7 @@
 [ext_resource type="Script" uid="uid://chio7d8hrpwj8" path="res://addons/oasis_dialogue/canvas/json_exporter.gd" id="10_g4vuv"]
 [ext_resource type="Script" uid="uid://bphp844em6apf" path="res://addons/oasis_dialogue/canvas/save_project_button.gd" id="12_h1x05"]
 [ext_resource type="Script" uid="uid://col6d6dlfwg4s" path="res://addons/oasis_dialogue/canvas/export_button.gd" id="13_hd21m"]
+[ext_resource type="Script" uid="uid://0ttgl6a5kmao" path="res://addons/oasis_dialogue/canvas/split_container.gd" id="16_1wr22"]
 
 [node name="Canvas" type="Control" groups=["registerable"]]
 layout_mode = 3
@@ -94,9 +95,11 @@ layout_mode = 2
 text = "export"
 script = ExtResource("13_hd21m")
 
-[node name="SplitContainer" type="SplitContainer" parent="VBoxContainer"]
+[node name="SplitContainer" type="SplitContainer" parent="VBoxContainer" groups=["registerable"]]
 layout_mode = 2
 size_flags_vertical = 3
+script = ExtResource("16_1wr22")
+_duration = 0.5
 
 [node name="CharacterTree" type="Tree" parent="VBoxContainer/SplitContainer" groups=["registerable"]]
 custom_minimum_size = Vector2(160, 0)

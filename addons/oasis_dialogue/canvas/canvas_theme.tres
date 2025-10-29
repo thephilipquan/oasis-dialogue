@@ -7,5 +7,6 @@ MarginContainer/constants/margin_bottom = 8
 MarginContainer/constants/margin_left = 16
 MarginContainer/constants/margin_right = 16
 MarginContainer/constants/margin_top = 8
+SplitContainer/constants/separation = 8
 Tree/constants/inner_item_margin_left = 16
 Tree/constants/v_separation = 8
