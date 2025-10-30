@@ -1,9 +1,10 @@
-extends Button
+extends Node
 
-const REGISTRY_KEY := "export_button"
+const REGISTRY_KEY := "export_handler"
 
 const _Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
 const _FileDialog := preload("res://addons/oasis_dialogue/project_dialog/file_dialog.gd")
+const _ProjectMenu := preload("res://addons/oasis_dialogue/menu_bar/project.gd")
 const _UserManager := preload("res://addons/oasis_dialogue/main/user_manager.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 
@@ -11,13 +12,6 @@ signal export_requested(path: String)
 
 var _file_dialog_factory := Callable()
 var _get_last_export_path := Callable()
-
-
-func _ready() -> void:
-	if is_part_of_edited_scene():
-		return
-
-	button_up.connect(show_file_dialog)
 
 
 func register(registry: _Registry) -> void:
@@ -29,6 +23,9 @@ func setup(registry: _Registry) -> void:
 
 	var user_manager: _UserManager = registry.at(_UserManager.REGISTRY_KEY)
 	init_get_last_export_path(user_manager.get_last_export_path)
+
+	var project_menu: _ProjectMenu = registry.at(_ProjectMenu.REGISTRY_KEY)
+	project_menu.export_requested.connect(show_file_dialog)
 
 
 func init_file_dialog_factory(callback: Callable) -> void:

@@ -2,7 +2,7 @@ extends Node
 
 const REGISTRY_KEY := "user_manager"
 
-const _ExportButton := preload("res://addons/oasis_dialogue/canvas/export_button.gd")
+const _ExportHandler := preload("res://addons/oasis_dialogue/canvas/export_handler.gd")
 const _ProjectDialog := preload("res://addons/oasis_dialogue/project_dialog/project_dialog.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 
@@ -41,9 +41,9 @@ func register(registry: _Registry) -> void:
 
 
 func setup(registry: _Registry) -> void:
-	if registry.has(_ExportButton.REGISTRY_KEY):
-		var export_button: _ExportButton = registry.at(_ExportButton.REGISTRY_KEY)
-		export_button.export_requested.connect(cache_export_path)
+	if registry.has(_ExportHandler.REGISTRY_KEY):
+		var export_handler: _ExportHandler = registry.at(_ExportHandler.REGISTRY_KEY)
+		export_handler.export_requested.connect(cache_export_path)
 
 	if registry.has(_ProjectDialog.REGISTRY_KEY):
 		var project_dialog: _ProjectDialog = registry.at(_ProjectDialog.REGISTRY_KEY)
