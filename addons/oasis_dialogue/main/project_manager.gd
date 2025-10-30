@@ -305,8 +305,7 @@ func rename_active_character(to_name: String) -> void:
 
 	var old_active := _active
 	_active = to_name
-	save_active_character()
-	save_active_character_config()
+	save_active_character_and_config()
 
 	var old_active_path := _character_to_path(old_active)
 	if dir.file_exists(old_active_path):
@@ -345,6 +344,11 @@ func save_active_character_config() -> void:
 	var config := ConfigFile.new()
 	saving_character_config.emit(config)
 	config.save(_character_to_config_path(_active))
+
+
+func save_active_character_and_config() -> void:
+	save_active_character()
+	save_active_character_config()
 
 
 func replace_save_with_temp(character: String) -> void:
