@@ -84,7 +84,7 @@ func test_item_activated_emits_character_activated() -> void:
 	# Mock user double clicking.
 	sut._on_item_activated()
 
-	assert_signal_emitted(sut.character_activated)
+	assert_signal_emitted(sut.item_rename_requested)
 
 
 func test_load_settings_sets_items() -> void:

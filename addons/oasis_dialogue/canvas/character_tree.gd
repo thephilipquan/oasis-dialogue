@@ -11,7 +11,8 @@ const _RemoveCharacter := preload("res://addons/oasis_dialogue/canvas/remove_cha
 const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
 const _Save := preload("res://addons/oasis_dialogue/save.gd")
 
-signal character_activated()
+signal item_rename_requested
+# [signal item_selected] is already defined in base so "character".
 signal character_selected(name: String)
 signal changed
 
@@ -39,7 +40,7 @@ func setup(registry: _Registry) -> void:
 	manager.character_saved.connect(unmark_dirty)
 
 	var graph: _Graph = registry.at(_Graph.REGISTRY_KEY)
-	graph.dirtied.connect(mark_active_dirty)
+	graph.dirtied.connect(mark_selected_item_dirty)
 
 
 func _ready() -> void:
@@ -90,7 +91,7 @@ func edit_selected_item(to: String) -> void:
 	changed.emit()
 
 
-func mark_active_dirty() -> void:
+func mark_selected_item_dirty() -> void:
 	var text := get_selected_item()
 	if _is_dirty(text):
 		return
@@ -159,7 +160,7 @@ func _on_item_selected() -> void:
 
 
 func _on_item_activated() -> void:
-	character_activated.emit()
+	item_rename_requested.emit()
 
 
 func _dirty_text(text: String) -> String:

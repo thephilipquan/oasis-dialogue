@@ -30,7 +30,7 @@ func setup(registry: _Registry) -> void:
 	init_can_rename_to(manager.can_rename_active_to)
 
 	var tree: _CharacterTree = registry.at(_CharacterTree.REGISTRY_KEY)
-	tree.character_activated.connect(rename)
+	tree.item_rename_requested.connect(rename)
 
 
 func init_get_active_character(callback: Callable) -> void:
