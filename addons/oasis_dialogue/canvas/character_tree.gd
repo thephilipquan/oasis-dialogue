@@ -6,7 +6,7 @@ const REGISTRY_KEY := "character_tree"
 const _Graph := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 const _RenameCharacterHandler := preload("res://addons/oasis_dialogue/canvas/rename_character_handler.gd")
-const _AddCharacter := preload("res://addons/oasis_dialogue/canvas/add_character_button.gd")
+const _AddCharacterHandler := preload("res://addons/oasis_dialogue/canvas/add_character_handler.gd")
 const _RemoveCharacter := preload("res://addons/oasis_dialogue/canvas/remove_character_button.gd")
 const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
 const _Save := preload("res://addons/oasis_dialogue/save.gd")
@@ -29,7 +29,7 @@ func setup(registry: _Registry) -> void:
 	)
 	rename_character_handler.character_renamed.connect(edit_selected_item)
 
-	var add_character: _AddCharacter = registry.at(_AddCharacter.REGISTRY_KEY)
+	var add_character: _AddCharacterHandler = registry.at(_AddCharacterHandler.REGISTRY_KEY)
 	add_character.character_added.connect(add_and_select_item)
 
 	var remove_character: _RemoveCharacter = registry.at(_RemoveCharacter.REGISTRY_KEY)

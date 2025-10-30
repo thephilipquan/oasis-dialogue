@@ -4,7 +4,7 @@ extends Node
 const REGISTRY_KEY := "project_manager"
 const EXTENSION := "oasis"
 
-const _AddCharacterButton := preload("res://addons/oasis_dialogue/canvas/add_character_button.gd")
+const _AddCharacterHandler := preload("res://addons/oasis_dialogue/canvas/add_character_handler.gd")
 const _CharacterTree := preload("res://addons/oasis_dialogue/canvas/character_tree.gd")
 const _ExportHandler := preload("res://addons/oasis_dialogue/canvas/export_handler.gd")
 const _Graph := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
@@ -51,8 +51,8 @@ func register(registry: _Registry) -> void:
 
 
 func setup(registry: _Registry) -> void:
-	var add_character_button: _AddCharacterButton = registry.at(_AddCharacterButton.REGISTRY_KEY)
-	add_character_button.character_added.connect(add_character)
+	var add_character: _AddCharacterHandler = registry.at(_AddCharacterHandler.REGISTRY_KEY)
+	add_character.character_added.connect(add_character)
 
 	var remove_character_button: _RemoveCharacterButton = registry.at(_RemoveCharacterButton.REGISTRY_KEY)
 	remove_character_button.character_removed.connect(remove_active_character)
