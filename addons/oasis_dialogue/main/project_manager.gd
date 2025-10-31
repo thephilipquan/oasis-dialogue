@@ -6,6 +6,7 @@ const EXTENSION := "oasis"
 
 const _AddCharacterHandler := preload("res://addons/oasis_dialogue/canvas/add_character_handler.gd")
 const _CharacterTree := preload("res://addons/oasis_dialogue/canvas/character_tree.gd")
+const _CharacterMenu := preload("res://addons/oasis_dialogue/menu_bar/character.gd")
 const _ExportHandler := preload("res://addons/oasis_dialogue/canvas/export_handler.gd")
 const _Graph := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
 const _OasisFile := preload("res://addons/oasis_dialogue/oasis_file.gd")
@@ -71,6 +72,9 @@ func setup(registry: _Registry) -> void:
 
 	var project_menu: _ProjectMenu = registry.at(_ProjectMenu.REGISTRY_KEY)
 	project_menu.save_requested.connect(save_project)
+
+	var character_menu: _CharacterMenu = registry.at(_CharacterMenu.REGISTRY_KEY)
+	character_menu.save_requested.connect(save_active_character_and_config)
 
 
 func can_rename_active_to(character: String) -> bool:

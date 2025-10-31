@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=3 uid="uid://4plc4vhymybs"]
+[gd_scene load_steps=35 format=3 uid="uid://4plc4vhymybs"]
 
 [ext_resource type="Script" uid="uid://bkn5mac6gdvq3" path="res://addons/oasis_dialogue/canvas/canvas.gd" id="1_pyvqf"]
 [ext_resource type="Theme" uid="uid://b17l0ux5wllk5" path="res://addons/oasis_dialogue/canvas/canvas_theme.tres" id="1_ta1sa"]
@@ -26,6 +26,7 @@
 [ext_resource type="Script" uid="uid://bquh5t51cxg87" path="res://addons/oasis_dialogue/menu_bar/project.gd" id="16_8jbp4"]
 [ext_resource type="Texture2D" uid="uid://cquqinlns0onb" path="res://addons/oasis_dialogue/assets/remove_default_32.png" id="16_ba7lg"]
 [ext_resource type="Texture2D" uid="uid://bnj3xmgeov1er" path="res://addons/oasis_dialogue/assets/remove_selected_32.png" id="17_1ink7"]
+[ext_resource type="Script" uid="uid://cermt8sjkig0a" path="res://addons/oasis_dialogue/menu_bar/character.gd" id="18_8jbp4"]
 [ext_resource type="Texture2D" uid="uid://birwflcc0pbgg" path="res://addons/oasis_dialogue/assets/remove_hovered_32.png" id="18_crrap"]
 [ext_resource type="Texture2D" uid="uid://cj7x44xdhbs57" path="res://addons/oasis_dialogue/assets/add_default_32.png" id="20_ba7lg"]
 [ext_resource type="Texture2D" uid="uid://bgm7dio6cmvg0" path="res://addons/oasis_dialogue/assets/add_selected_32.png" id="21_1ink7"]
@@ -114,19 +115,11 @@ title = "Project"
 size = Vector2i(200, 100)
 script = ExtResource("16_8jbp4")
 
-[node name="Character" type="PopupMenu" parent="VBoxContainer/HBoxContainer/MenuBar"]
+[node name="Character" type="PopupMenu" parent="VBoxContainer/HBoxContainer/MenuBar" groups=["registerable"]]
 oversampling_override = 1.0
 title = "Character"
 size = Vector2i(164, 116)
-item_count = 4
-item_0/text = "Save"
-item_0/id = 1
-item_1/text = "Rename"
-item_1/id = 0
-item_2/id = 3
-item_2/separator = true
-item_3/text = "Delete"
-item_3/id = 2
+script = ExtResource("18_8jbp4")
 
 [node name="SplitContainer" type="SplitContainer" parent="VBoxContainer" groups=["registerable"]]
 layout_mode = 2
