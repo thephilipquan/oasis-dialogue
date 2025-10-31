@@ -173,6 +173,12 @@ func save_project() -> void:
 	for character in _dirty_characters:
 		replace_save_with_temp(character)
 
+	save_settings()
+	save_actions()
+	save_conditions()
+
+
+func save_settings() -> void:
 	var settings := ConfigFile.new()
 	saving_settings.emit(settings)
 	settings.set_value(
@@ -182,10 +188,14 @@ func save_project() -> void:
 	)
 	settings.save(_get_user_settings_path())
 
+
+func save_actions() -> void:
 	var actions := _OasisFile.new()
 	saving_actions.emit(actions)
 	actions.save(_get_actions_path())
 
+
+func save_conditions() -> void:
 	var conditions := _OasisFile.new()
 	saving_conditions.emit(conditions)
 	conditions.save(_get_conditions_path())
