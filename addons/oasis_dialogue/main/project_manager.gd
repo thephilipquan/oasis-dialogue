@@ -114,6 +114,7 @@ func active_is_dirty() -> bool:
 
 
 func quit() -> void:
+	save_settings()
 	var dir := DirAccess.open(_directory.path_join(_SETTINGS_DIR))
 	for character in _dirty_characters:
 		var temp_path := _character_to_temp_path(character)
