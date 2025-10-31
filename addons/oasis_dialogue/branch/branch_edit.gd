@@ -9,7 +9,7 @@ const _Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
 const _OasisFile := preload("res://addons/oasis_dialogue/oasis_file.gd")
 const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
-const _RemoveCharacter := preload("res://addons/oasis_dialogue/canvas/remove_character_button.gd")
+const _RemoveCharacterHandler := preload("res://addons/oasis_dialogue/canvas/remove_character_handler.gd")
 const _Save := preload("res://addons/oasis_dialogue/save.gd")
 
 ## Emitted when the user changes anything so the file needs to be saved.
@@ -40,7 +40,7 @@ func setup(registry: _Registry) -> void:
 	var add_branch_button: _AddBranch = registry.at(_AddBranch.REGISTRY_KEY)
 	add_branch_button.branch_added.connect(add_branch)
 
-	var remove_character: _RemoveCharacter = registry.at(_RemoveCharacter.REGISTRY_KEY)
+	var remove_character: _RemoveCharacterHandler = registry.at(_RemoveCharacterHandler.REGISTRY_KEY)
 	remove_character.character_removed.connect(remove_branches)
 
 	var manager: _ProjectManager = registry.at(_ProjectManager.REGISTRY_KEY)

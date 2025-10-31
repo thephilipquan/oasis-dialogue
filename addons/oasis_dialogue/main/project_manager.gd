@@ -11,7 +11,7 @@ const _Graph := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
 const _OasisFile := preload("res://addons/oasis_dialogue/oasis_file.gd")
 const _ProjectMenu := preload("res://addons/oasis_dialogue/menu_bar/project.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
-const _RemoveCharacterButton := preload("res://addons/oasis_dialogue/canvas/remove_character_button.gd")
+const _RemoveCharacterHandler := preload("res://addons/oasis_dialogue/canvas/remove_character_handler.gd")
 const _RenameCharacterHandler := preload("res://addons/oasis_dialogue/canvas/rename_character_handler.gd")
 const _Save := preload("res://addons/oasis_dialogue/save.gd")
 
@@ -51,11 +51,11 @@ func register(registry: _Registry) -> void:
 
 
 func setup(registry: _Registry) -> void:
-	var add_character: _AddCharacterHandler = registry.at(_AddCharacterHandler.REGISTRY_KEY)
-	add_character.character_added.connect(add_character)
+	var add_character_handler: _AddCharacterHandler = registry.at(_AddCharacterHandler.REGISTRY_KEY)
+	add_character_handler.character_added.connect(add_character)
 
-	var remove_character_button: _RemoveCharacterButton = registry.at(_RemoveCharacterButton.REGISTRY_KEY)
-	remove_character_button.character_removed.connect(remove_active_character)
+	var remove_character_handler: _RemoveCharacterHandler = registry.at(_RemoveCharacterHandler.REGISTRY_KEY)
+	remove_character_handler.character_removed.connect(remove_active_character)
 
 	var export_handler: _ExportHandler = registry.at(_ExportHandler.REGISTRY_KEY)
 	export_handler.export_requested.connect(export)

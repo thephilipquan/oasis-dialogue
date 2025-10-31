@@ -6,7 +6,7 @@ const REGISTRY_KEY := "add_branch_button"
 const _Graph := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
 const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
-const _RemoveCharacterButton := preload("res://addons/oasis_dialogue/canvas/remove_character_button.gd")
+const _RemoveCharacterHandler := preload("res://addons/oasis_dialogue/canvas/remove_character_handler.gd")
 const _Sequence := preload("res://addons/oasis_dialogue/utils/sequence_utils.gd")
 
 signal branch_added(id: int)
@@ -25,7 +25,7 @@ func setup(registry: _Registry) -> void:
 	var manager: _ProjectManager = registry.at(_ProjectManager.REGISTRY_KEY)
 	manager.character_loaded.connect(show.unbind(1))
 
-	var remove_character: _RemoveCharacterButton = registry.at(_RemoveCharacterButton.REGISTRY_KEY)
+	var remove_character: _RemoveCharacterHandler = registry.at(_RemoveCharacterHandler.REGISTRY_KEY)
 	remove_character.character_removed.connect(hide)
 
 

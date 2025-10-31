@@ -1,11 +1,11 @@
-[gd_scene load_steps=33 format=3 uid="uid://4plc4vhymybs"]
+[gd_scene load_steps=34 format=3 uid="uid://4plc4vhymybs"]
 
 [ext_resource type="Script" uid="uid://bkn5mac6gdvq3" path="res://addons/oasis_dialogue/canvas/canvas.gd" id="1_pyvqf"]
 [ext_resource type="Theme" uid="uid://b17l0ux5wllk5" path="res://addons/oasis_dialogue/canvas/canvas_theme.tres" id="1_ta1sa"]
 [ext_resource type="Script" uid="uid://bkmgq6oqeg575" path="res://addons/oasis_dialogue/canvas/add_character_button.gd" id="3_4e1bp"]
 [ext_resource type="Script" uid="uid://b2vsiv15rt33f" path="res://addons/oasis_dialogue/model/model.gd" id="3_ytw7q"]
 [ext_resource type="Script" uid="uid://e5g8rlgh7tl7" path="res://addons/oasis_dialogue/canvas/language_server.gd" id="4_0dkm1"]
-[ext_resource type="Script" uid="uid://collm4lemrw6i" path="res://addons/oasis_dialogue/canvas/remove_character_button.gd" id="4_6xxxj"]
+[ext_resource type="Script" uid="uid://collm4lemrw6i" path="res://addons/oasis_dialogue/canvas/remove_character_handler.gd" id="4_6xxxj"]
 [ext_resource type="Script" uid="uid://cwosx2xibo8sq" path="res://addons/oasis_dialogue/canvas/add_branch_button.gd" id="4_wvnn7"]
 [ext_resource type="Script" uid="uid://dcu534fs10qbb" path="res://addons/oasis_dialogue/semantic_visitors.gd" id="5_65wvt"]
 [ext_resource type="Script" uid="uid://dug54oaf67dch" path="res://addons/oasis_dialogue/canvas/character_tree.gd" id="6_gyuj5"]
@@ -30,6 +30,7 @@
 [ext_resource type="Texture2D" uid="uid://cj7x44xdhbs57" path="res://addons/oasis_dialogue/assets/add_default_32.png" id="20_ba7lg"]
 [ext_resource type="Texture2D" uid="uid://bgm7dio6cmvg0" path="res://addons/oasis_dialogue/assets/add_selected_32.png" id="21_1ink7"]
 [ext_resource type="Texture2D" uid="uid://dyr74y2x2lyab" path="res://addons/oasis_dialogue/assets/add_hovered_32.png" id="22_crrap"]
+[ext_resource type="Script" uid="uid://dp50oi44nwmpt" path="res://addons/oasis_dialogue/canvas/remove_character_button.gd" id="26_ycj4d"]
 [ext_resource type="Script" uid="uid://0m8wwixwa4ub" path="res://addons/oasis_dialogue/canvas/character_call_to_action.gd" id="30_oj43n"]
 [ext_resource type="Script" uid="uid://bx4iwyxoii8mp" path="res://addons/oasis_dialogue/canvas/branch_call_to_action.gd" id="31_y5ltl"]
 
@@ -67,6 +68,9 @@ script = ExtResource("5_65wvt")
 
 [node name="AddCharacterHandler" type="Node" parent="." groups=["registerable"]]
 script = ExtResource("10_6s5dc")
+
+[node name="RemoveCharacterHandler" type="Node" parent="." groups=["registerable"]]
+script = ExtResource("4_6xxxj")
 
 [node name="RenameCharacterHandler" type="Node" parent="." groups=["registerable"]]
 script = ExtResource("7_n0a6n")
@@ -163,7 +167,7 @@ tooltip_text = "Remove character"
 texture_normal = ExtResource("16_ba7lg")
 texture_pressed = ExtResource("17_1ink7")
 texture_hover = ExtResource("18_crrap")
-script = ExtResource("4_6xxxj")
+script = ExtResource("26_ycj4d")
 
 [node name="AddCharacter" type="TextureButton" parent="VBoxContainer/SplitContainer/CharacterTree/MarginContainer/HBoxContainer" groups=["registerable"]]
 layout_mode = 2

@@ -1,9 +1,10 @@
 @tool
 extends Node
 
-const REGISTRY_KEY := "remove_character_handler"
+const REGISTRY_KEY := "rename_character_handler"
 
 const _Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
+const _CharacterMenu := preload("res://addons/oasis_dialogue/menu_bar/character.gd")
 const _CharacterTree := preload("res://addons/oasis_dialogue/canvas/character_tree.gd")
 const _InputDialog := preload("res://addons/oasis_dialogue/input_dialog/input_dialog.gd")
 const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
@@ -31,6 +32,9 @@ func setup(registry: _Registry) -> void:
 
 	var tree: _CharacterTree = registry.at(_CharacterTree.REGISTRY_KEY)
 	tree.item_rename_requested.connect(rename)
+
+	var character_menu: _CharacterMenu = registry.at(_CharacterMenu.REGISTRY_KEY)
+	character_menu.rename_requested.connect(rename)
 
 
 func init_get_active_character(callback: Callable) -> void:

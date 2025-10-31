@@ -4,7 +4,7 @@ extends Control
 const REGISTRY_KEY := "status"
 
 const _AddBranchButton := preload("res://addons/oasis_dialogue/canvas/add_branch_button.gd")
-const _AddCharacterButton := preload("res://addons/oasis_dialogue/canvas/add_character_button.gd")
+const _AddCharacterHandler := preload("res://addons/oasis_dialogue/canvas/add_character_handler.gd")
 const _BranchEdit := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
 const _Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
 const _CharacterTree := preload("res://addons/oasis_dialogue/canvas/character_tree.gd")
@@ -12,7 +12,7 @@ const _CSVExporter := preload("res://addons/oasis_dialogue/csv_exporter.gd")
 const _JSONExporter := preload("res://addons/oasis_dialogue/canvas/json_exporter.gd")
 const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
-const _RemoveCharacterButton := preload("res://addons/oasis_dialogue/canvas/remove_character_button.gd")
+const _RemoveCharacterHandler := preload("res://addons/oasis_dialogue/canvas/remove_character_handler.gd")
 const _RenameCharacterHandler := preload("res://addons/oasis_dialogue/canvas/rename_character_handler.gd")
 const _StatusLabel := preload("res://addons/oasis_dialogue/status/status_label.gd")
 
@@ -49,11 +49,11 @@ func setup(registry: _Registry) -> void:
 	var add_branch_button: _AddBranchButton = registry.at(_AddBranchButton.REGISTRY_KEY)
 	add_branch_button.branch_added.connect(add_branch)
 
-	var add_character_button: _AddCharacterButton = registry.at(_AddCharacterButton.REGISTRY_KEY)
+	var add_character_button: _AddCharacterHandler = registry.at(_AddCharacterHandler.REGISTRY_KEY)
 	add_character_button.character_added.connect(add_character)
 
-	var remove_character_button: _RemoveCharacterButton = registry.at(_RemoveCharacterButton.REGISTRY_KEY)
-	remove_character_button.character_removed.connect(remove_character)
+	var remove_character_handler: _RemoveCharacterHandler = registry.at(_RemoveCharacterHandler.REGISTRY_KEY)
+	remove_character_handler.character_removed.connect(remove_character)
 
 	var tree: _CharacterTree = registry.at(_CharacterTree.REGISTRY_KEY)
 	tree.character_selected.connect(clear_errs.unbind(1))

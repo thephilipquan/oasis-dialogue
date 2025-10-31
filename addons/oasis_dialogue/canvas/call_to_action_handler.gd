@@ -9,7 +9,7 @@ const _AddCharacter := preload("res://addons/oasis_dialogue/canvas/add_character
 const _AddCharacterHandler := preload("res://addons/oasis_dialogue/canvas/add_character_handler.gd")
 const _CharacterCallToAction := preload("res://addons/oasis_dialogue/canvas/character_call_to_action.gd")
 const _Graph := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
-const _RemoveCharacter := preload("res://addons/oasis_dialogue/canvas/remove_character_button.gd")
+const _RemoveCharacterHandler := preload("res://addons/oasis_dialogue/canvas/remove_character_handler.gd")
 const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
 const _CharacterTree := preload("res://addons/oasis_dialogue/canvas/character_tree.gd")
 
@@ -45,8 +45,8 @@ func setup(registry: _Registry) -> void:
 
 	var project_manager: _ProjectManager = registry.at(_ProjectManager.REGISTRY_KEY)
 	project_manager.project_loaded.connect(update_add_character_event, CONNECT_DEFERRED)
-	var remove_character_button: _RemoveCharacter = registry.at(_RemoveCharacter.REGISTRY_KEY)
-	remove_character_button.character_removed.connect(update_add_character_event, CONNECT_DEFERRED)
+	var remove_character_handler: _RemoveCharacterHandler = registry.at(_RemoveCharacterHandler.REGISTRY_KEY)
+	remove_character_handler.character_removed.connect(update_add_character_event, CONNECT_DEFERRED)
 	add_character_handler.character_added.connect(hide_event.bind(event).unbind(1))
 
 	var add_branch_button: _AddBranch = registry.at(_AddBranch.REGISTRY_KEY)
@@ -61,7 +61,7 @@ func setup(registry: _Registry) -> void:
 	project_manager.character_loaded.connect(update_create_branch_event.unbind(1), CONNECT_DEFERRED)
 	graph.branch_removed.connect(update_create_branch_event.unbind(1), CONNECT_DEFERRED)
 	add_branch_button.branch_added.connect(hide_event.bind(event).unbind(1))
-	remove_character_button.character_removed.connect(hide_event.bind(event))
+	remove_character_handler.character_removed.connect(hide_event.bind(event))
 
 
 func init_get_character_count(callback: Callable) -> void:
