@@ -1,3 +1,4 @@
+@tool
 extends Node
 
 const REGISTRY_KEY := "call_to_action_handler"

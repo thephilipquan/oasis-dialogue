@@ -1,3 +1,4 @@
+@tool
 extends TextureButton
 
 const REGISTRY_KEY := "remove_character_button"

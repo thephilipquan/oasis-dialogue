@@ -1,3 +1,4 @@
+@tool
 extends SplitContainer
 
 const REGISTRY_KEY := "split_container"

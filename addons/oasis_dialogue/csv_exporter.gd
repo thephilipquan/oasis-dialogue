@@ -1,3 +1,4 @@
+@tool
 extends Node
 
 const REGISTRY_KEY := "csv_exporter"
