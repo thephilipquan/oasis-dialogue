@@ -25,7 +25,7 @@ func append_child(ast: _AST.AST) -> void:
 
 
 func append_expected_error(expected: Variant, found: _Token) -> void:
-	var message := "Expected"
+	var message := "Expected "
 	if expected is Array:
 		message += _Token.types_to_string(expected)
 	elif expected is _Type:
