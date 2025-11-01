@@ -177,7 +177,7 @@ func _parse_annotations() -> void:
 					token.column,
 			))
 		else:
-			consume_to(_Type.EOL)
+			consume_until(_Type.EOL)
 		if at_eof():
 			return
 		peek_expected(_Type.EOL)

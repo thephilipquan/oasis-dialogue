@@ -257,16 +257,6 @@ func test_consume_at_end_does_not_increment_position() -> void:
 	assert_eq(after, before)
 
 
-func test_consume_to_consumes_first_match_and_increments() -> void:
-	var source := "@@@b c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	sut.consume_to(Type.ATSIGN)
-
-	assert_eq(sut._position, 1)
-
-
 func test_consume_to_consumes_first_match() -> void:
 	var source := "@@@b c"
 	var tokens := lexer.tokenize(source)
@@ -275,6 +265,16 @@ func test_consume_to_consumes_first_match() -> void:
 	sut.consume_to(Type.IDENTIFIER)
 
 	assert_eq(sut._position, 4)
+
+
+func test_consume_to_when_current_is_matched_consumes() -> void:
+	var source := "@@@b c"
+	var tokens := lexer.tokenize(source)
+	sut._tokens = tokens
+
+	sut.consume_to(Type.ATSIGN)
+
+	assert_eq(sut._position, 1)
 
 
 func test_consume_to_stops_at_eof_if_no_match() -> void:
@@ -364,6 +364,16 @@ func test_annotation_unknown_identifier_appends_error() -> void:
 	var tokens := lexer.tokenize(source)
 	var branch := sut.parse(tokens)
 
+	assert_eq(branch.children.size(), 1)
+	assert_is(branch.children[0], AST.Error)
+
+
+func test_annotation_error_consumes_whole_line() -> void:
+	var source := "@a\n@rng"
+	var tokens := lexer.tokenize(source)
+	var branch := sut.parse(tokens)
+
+	assert_eq(branch.children.size(), 2)
 	assert_is(branch.children[0], AST.Error)
 
 
@@ -372,6 +382,7 @@ func test_annotation_next_is_not_eol_appends_error() -> void:
 	var tokens := lexer.tokenize(source)
 	var branch := sut.parse(tokens)
 
+	assert_eq(branch.children.size(), 2)
 	assert_is(branch.children[1], AST.Error)
 
 
