@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3 uid="uid://4plc4vhymybs"]
+[gd_scene load_steps=36 format=3 uid="uid://4plc4vhymybs"]
 
 [ext_resource type="Script" uid="uid://bkn5mac6gdvq3" path="res://addons/oasis_dialogue/canvas/canvas.gd" id="1_pyvqf"]
 [ext_resource type="Theme" uid="uid://b17l0ux5wllk5" path="res://addons/oasis_dialogue/canvas/canvas_theme.tres" id="1_ta1sa"]
@@ -30,6 +30,7 @@
 [ext_resource type="Texture2D" uid="uid://birwflcc0pbgg" path="res://addons/oasis_dialogue/assets/remove_hovered_32.png" id="18_crrap"]
 [ext_resource type="Texture2D" uid="uid://cj7x44xdhbs57" path="res://addons/oasis_dialogue/assets/add_default_32.png" id="20_ba7lg"]
 [ext_resource type="Texture2D" uid="uid://bgm7dio6cmvg0" path="res://addons/oasis_dialogue/assets/add_selected_32.png" id="21_1ink7"]
+[ext_resource type="Script" uid="uid://bqqvdvreohkk2" path="res://addons/oasis_dialogue/menu_bar/help.gd" id="21_q6oy7"]
 [ext_resource type="Texture2D" uid="uid://dyr74y2x2lyab" path="res://addons/oasis_dialogue/assets/add_hovered_32.png" id="22_crrap"]
 [ext_resource type="Script" uid="uid://dp50oi44nwmpt" path="res://addons/oasis_dialogue/canvas/remove_character_button.gd" id="26_ycj4d"]
 [ext_resource type="Script" path="res://addons/oasis_dialogue/canvas/character_call_to_action.gd" id="30_oj43n"]
@@ -120,6 +121,12 @@ oversampling_override = 1.0
 title = "Character"
 size = Vector2i(164, 116)
 script = ExtResource("18_8jbp4")
+
+[node name="Help" type="PopupMenu" parent="VBoxContainer/HBoxContainer/MenuBar" groups=["oasis_registerable"]]
+oversampling_override = 1.0
+title = "Help"
+size = Vector2i(164, 116)
+script = ExtResource("21_q6oy7")
 
 [node name="SplitContainer" type="SplitContainer" parent="VBoxContainer" groups=["oasis_registerable"]]
 layout_mode = 2
