@@ -1,3 +1,17 @@
+## A node responsible for both loading Oasis json files and performing runtime
+## condition validation and action execution for oasis dialogue.
+##
+## An OasisManager can manage one to many [OasisCharacter]s depending on the
+## [member json_path] specified.
+## [br][br]
+## Any [OasisTraverserController]s to be registered [b]must be added as a
+## child[/b] of this manager.
+##
+## [br][br]
+## View the
+## [url=https://github.com/thephilipquan/oasis-dialogue/blob/feat-docs/example/example_dialogue_manager.gd]
+## example[/url] on GitHub.
+@abstract
 class_name OasisManager
 extends Node
 
@@ -5,17 +19,30 @@ const _Global := preload("res://addons/oasis_dialogue/global.gd")
 const _JsonFile := preload("res://addons/oasis_dialogue/io/json_file.gd")
 const _JsonValidator := preload("res://addons/oasis_dialogue/model/oasis_json_validator.gd")
 
-## The path to the directory of json_files or a single json_file.
+## The path to the directory of json files or a single json_file.
 ## [br][br]
-## [b]single file example[/b]
-## [br]
-## [code]res://dialogue.json[/code]
-## [br]
-## [code]res://dialogue/frank.json[/code]
-## [br][br]
-## [b]directory example[/b]
-## [br]
-## [code]res://dialogue[/code]
+## The path can be any pathing supported by [method FileAccess.open].
+##
+## If registered as an autoload, you should set this within
+## [method Node._ready].
+##
+## [codeblock]
+## # Path to a file containing all characters.
+## res://dialogue.json
+##
+## # Path to a single character's file. This is exported via the directory
+## # export option from the dialogue editor.
+## res://dialogue/frank.json
+##
+## # Path to a directory with all character's json files.
+## res://dialogue
+## [/codeblock]
+##
+## [i]Concerning the directory export[/i] - Setting the path to a specific
+## character's file vs the directory is a matter of operational preference.
+##
+## For most games, exporting all characters to a single file is the best option
+## for ease of use.
 @export
 var json_path := "res://"
 
@@ -28,8 +55,8 @@ func _notification(what: int) -> void:
 		_controllers.merge(_get_child_controllers(), true)
 
 
-## Return an [OasisTraverer] with all reachable branches for the given [param character] starting
-## from branch [param from] at the file specified via [member _json_path].
+## Return an [OasisTraverser] with all reachable branches for the given [param character] starting
+## from branch [param from] at the file specified via [member json_path].
 func get_reachable_branches(character: String, from: int) -> OasisTraverser:
 	character = character.to_lower()
 	if not json_path:
@@ -182,14 +209,56 @@ func _filter_controllers(annotations: Array[String]) -> Dictionary[String, Oasis
 			)
 	return controllers
 
+## Returns the translation for the key.
+##
+## For most cases, this involves simply calling [method Object.tr].
+## [codeblock]
+## func translate(key: String) -> String:
+## 	return tr(key)
+## [/codeblock]
+@abstract
+func translate(key: String) -> String
 
-func _translate(key: String) -> String:
-	return ""
+## Returns true if all conditions evalutate to true at runtime.
+## [codeblock]
+## # Example implementation.
+## func validate_conditions(traverser: OasisTraverser, conditions: Array[OasisKeyValue]) -> bool:
+## 	var result := true
+## 	for c in conditions:
+## 		if c.key = "has_gold":
+## 			# Player is a class member set by any means.
+## 			result = player.gold >= c.value
+## 		elif c.key = "weapon_is_broken":
+## 			result = player.weapon.durability == 0
+## 		if not result:
+## 			break
+## 	return result
+##
+## # If no conditions...
+## func validate_conditions(_traverser: OasisTraverser, _conditions: Array[OasisKeyValue]) -> bool:
+## 	# Simply return true.
+## 	return true
+## [/codeblock]
+@abstract
+func validate_conditions(traverser: OasisTraverser, conditions: Array[OasisKeyValue]) -> bool
 
-
-func _validate_conditions(traverser: OasisTraverser, conditions: Array[OasisKeyValue]) -> bool:
-	return true
-
-
-func _handle_actions(traverser: OasisTraverser, conditions: Array[OasisKeyValue]) -> void:
-	pass
+## Called when a prompt is displayed or a response is chosen at runtime.
+## [br][br]
+## You [b]must[/b] implement the action the writer designated as the
+## [code]branch[/code] action.
+##
+## [codeblock]
+## # Example implementation.
+## func handle_actions(traverser: OasisTraverser, actions: Array[OasisKeyValue]) -> void:
+## 	for a in actions:
+## 		if a.key = "heal":
+##			# Player is a class member set by any means.
+## 			player.health += a.value
+## 		elif a.key = "give_magic_sword":
+## 			player.give_item(ItemFactory.create(Items.MAGIC_SWORD))
+## 		# The designated 'branch' action.
+## 		elif a = "branch":
+## 			traverser.branch(a.value)
+## [/codeblock]
+@abstract
+func handle_actions(traverser: OasisTraverser, actions: Array[OasisKeyValue]) -> void

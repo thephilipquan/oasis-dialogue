@@ -1,3 +1,18 @@
+## Used to traverse OasisDialogue during runtime.
+##
+## When used to traverse, the using class should connect to all signals and call
+## [method next] to interact.
+## View the
+## [url=https://github.com/thephilipquan/oasis-dialogue/blob/feat-docs/example/example.gd#L60]
+## example
+## [/url]
+## on GitHub.
+##
+## [br][br]
+##
+## When implementing an [OasisTraverserController], the using class should
+## use the exposed getters and [method set_prompt_index] to implement custom
+## logic.
 class_name OasisTraverser
 extends RefCounted
 
@@ -6,10 +21,11 @@ extends RefCounted
 signal prompt(item: String)
 
 ## Emitted when the user has interacted via [method next] and the next
-## interaction is to display the list of responses the player can choose.
+## interaction is to display the last prompt along with the list of responses
+## the player can choose.
 ## [br][br]
-## When this is emitted, the traverser is expecting the user to call [method
-## next] with the chosen response index.
+## When this is emitted, the traverser is expecting the next call to
+## [method next] with the chosen response index.
 signal responses(items: Array[String])
 
 ## Emitted when the traverser has no more prompts and responses to display.
@@ -34,46 +50,90 @@ func _init(branches: Dictionary[int, OasisBranch], root: int) -> void:
 	_current = _branches[root]
 
 
+## Sets controllers registered for all branches that are possible to traverse.
+##
+## Must be called when initialized. Used by [OasisManager].
 func init_controllers(controllers: Dictionary[String, OasisTraverserController]) -> void:
 	_controllers = controllers
 
 
+## Sets the callback to use to translate keys.
+##
+## Must be called when initialized. Used by [OasisManager].
 func init_translation(callback: Callable) -> void:
 	_translate = callback
 
 
+## Sets the callback to use to validate conditions.
+##
+## Must be called when initialized. Used by [OasisManager].
 func init_condition_handler(callback: Callable) -> void:
 	_condition_handler = callback
 
 
+## Sets the callback to use to validate conditions.
+##
+## Must be called when initialized. Used by [OasisManager].
 func init_action_handler(callback: Callable) -> void:
 	_action_handler = callback
 
 
+## Returns the callback used to validate conditions.
+##
+## The callback's signature is equal to
+## [method OasisManager.validate_conditions].
 func get_condition_handler() -> Callable:
 	return Callable(_condition_handler)
 
 
+## Returns the callback used to execute actions.
+##
+## The callback's signature is equal to [method OasisManager.handle_actions].
 func get_action_handler() -> Callable:
 	return Callable(_action_handler)
 
 
+## Returns the current branch.
 func get_current() -> OasisBranch:
 	return _current
 
 
+## Returns the current prompt index.
 func get_prompt_index() -> int:
 	return _p
 
 
+## Returns the amount of prompts for the current branch.
+##
+## [br][br]
+##
+## Alias for calling [code]get_current().prompts.size()[/code].
 func get_prompts_size() -> int:
 	return _current.prompts.size()
 
 
+## Set the prompt_index for this branch.
+##
+## [br][br]
+##
+## If the prompt index is set to the current branch's prompts.size() or higher,
+## the traverser will determine there [b]is not[/b] another prompt left to
+## display, and will continue to show the responses, if they exist.
+##
+## This should be called when implementing [method
+## OasisTraverserController.has_prompt] and [method
+## OasisTraverserController.increment_prompt_index].
 func set_prompt_index(index: int) -> void:
 	_p = clampi(index, 0, _current.prompts.size())
 
 
+## Tells the traverser to move on to branch [param id].
+##
+## [br][br]
+##
+## This should be called when implementing [method OasisManager.handle_actions]
+## when encountering the action notated by the writer. Usually this is the
+## action [code]branch[/code] itself, but can be whatever the writer chooses in the end.
 func branch(id: int) -> void:
 	_current = _branches[id]
 	_current_event(&"exit_branch")
@@ -83,6 +143,13 @@ func branch(id: int) -> void:
 	_current_event(&"enter_branch")
 
 
+## Tells the traverser to emit the next event, [signal prompt],
+## [signal responses], or [signal finished].
+##
+## [br][br]
+##
+## Ignores [param response_index] until [signal responses] is emitted, then
+## the [b]very next call[/b] chooses the chosen response's actions.
 func next(response_index := 0) -> void:
 	var prompted := false
 	if _responses.size() != 0:

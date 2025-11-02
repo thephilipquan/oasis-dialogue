@@ -23,12 +23,12 @@ func clear_seen() -> void:
 	seen.clear()
 
 
-func _translate(key: String) -> String:
-	var translated :=  tr(key)
+func translate(key: String) -> String:
+	var translated := tr(key)
 	return translated
 
 
-func _validate_conditions(traverser: OasisTraverser, conditions: Array[OasisKeyValue]) -> bool:
+func validate_conditions(traverser: OasisTraverser, conditions: Array[OasisKeyValue]) -> bool:
 	var is_valid := true
 	for condition in conditions:
 		match condition.key:
@@ -49,7 +49,7 @@ func _validate_conditions(traverser: OasisTraverser, conditions: Array[OasisKeyV
 	return is_valid
 
 
-func _handle_actions(traverser: OasisTraverser, actions: Array[OasisKeyValue]) -> void:
+func handle_actions(traverser: OasisTraverser, actions: Array[OasisKeyValue]) -> void:
 	for action in actions:
 		match action.key:
 			"branch":

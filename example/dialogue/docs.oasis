@@ -1,0 +1,100 @@
+[[0]]
+[value]
+@prompt
+Hey there! Hows it going?
+I have some things for sale if you want to take a look?
+@response
+Sure!
+Maybe next time?
+[position_offset]
+Vector2(1100.0, -520.0)
+
+[[1]]
+[value]
+@prompt
+What can I do for you?
+{ has_most_magical_sword } Wait... Is that what I think it is?
+@response
+Just the usual.
+{ has_most_magical_sword } Yep! And I aint selling it!
+[position_offset]
+Vector2(1100.0, -200.0)
+
+[[2]]
+[value]
+@prompt
+Hey there! Hows it going?
+I have some things for sale if you want to take a look?
+@response
+Sure!
+Maybe next time?
+{ has_gold 500 } Got anything special?
+[position_offset]
+Vector2(1100.0, 120.0)
+
+[[3]]
+[value]
+@prompt
+{ npc_is_friendly player_has_gold 1000 } Fine.. But you have to give me something in return.
+[position_offset]
+Vector2(1100.0, 460.0)
+
+[[4]]
+[value]
+@prompt
+Oh you don't look so well. { heal }
+There you go. How do you feel now?
+@response
+What'd you do?
+Oh my goodness thank you so much { pay 50 }
+[position_offset]
+Vector2(1100.0, 680.0)
+
+[[5]]
+[value]
+@prompt
+Just because you're my favorite grandson. { heal feed_to_full buff_ms }
+[position_offset]
+Vector2(1120.0, 960.0)
+
+[[6]]
+[value]
+@prompt
+You think this will be easy? { damage }
+[position_offset]
+Vector2(1860.0, 960.0)
+
+[[7]]
+[value]
+@prompt
+What do you want.
+@response
+Spill it. Tell me what you know. { branch 8 }
+[position_offset]
+Vector2(1100.0, 1200.0)
+
+[[8]]
+[value]
+@rng
+@count_visit
+@prompt
+Nope.
+Nu uh.
+Not gonna tell you.
+@response
+{ seen_count_lt 3 } Please. { branch 8 }
+{ seen 3 } I'll give you some candy? { branch 9 }
+[position_offset]
+Vector2(1560.0, 1140.0)
+
+[[9]]
+[value]
+@response
+Fine... But I get to choose.
+Something something....
+[position_offset]
+Vector2(2040.0, 1200.0)
+
+[[data]]
+[display_name]
+Docs

@@ -15,15 +15,15 @@ _responses_parent = NodePath("ResponseContainer/Responses")
 [node name="ExampleDialogueManager" type="Node" parent="." node_paths=PackedStringArray("track_controller")]
 script = ExtResource("2_pjyox")
 track_controller = NodePath("TrackController")
-_json_path = "res://example/dialogue.json"
+json_path = "res://example/dialogue.json"
 
 [node name="TrackController" type="Node" parent="ExampleDialogueManager"]
 script = ExtResource("3_scst5")
 
-[node name="OasisCharacter" type="Node" parent="." node_paths=PackedStringArray("_manager")]
+[node name="OasisCharacter" type="Node" parent="." node_paths=PackedStringArray("manager")]
 script = ExtResource("3_8clr1")
-_manager = NodePath("../ExampleDialogueManager")
-_character = "Joey"
+manager = NodePath("../ExampleDialogueManager")
+character = "Joey"
 metadata/_custom_type_script = "uid://b8fo0vqrq63n2"
 
 [node name="PromptContainer" type="CenterContainer" parent="."]

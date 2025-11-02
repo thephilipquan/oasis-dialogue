@@ -1,20 +1,33 @@
+## The entry point for starting a dialogue with a character.
+##
+## Call [method start] to begin dialogue. There must be a corresponding
+## [OasisManager] in the scene to handle the [member character]. All
+## [b]properties[/b] must be initialized.
+##
+## [br][br]
+##
+## See also [OasisManager] and [OasisTraverser].
 class_name OasisCharacter
 extends Node
 
 const _NodeUtils := preload("res://addons/oasis_dialogue/utils/node_utils.gd")
 
-# where do they get the manager? search from root if null. If autoload, its ez fast. It not, then
-# itll take a while. To optimize, they set it directly if not autoload.
 ## The manager for this character.
 ## [br][br]
-## If your manager is local to this scene, set this directly to save on
-## performance. If this variable isn't set, it will look for a manager starting
-## from the root of the whole project. If the manager is registered as an
-## autoload, then you can ignore setting this.
+## If this variable isn't set, it will look for a manager starting from the
+## root node of the project.
+## Therefore, setting this directly is recommended when working with multiple
+## managers.
 @export
 var manager: OasisManager = null
+## The name of the character that must match a character found in
+## [member OasisManager.json_path].
 @export
 var character: String = ""
+## The starting branch id of the dialogue. Usually this is [code]0[/code] at
+## the very start of the game.
+## [br][br]
+## You should set this member when loading saved data.
 @export
 var root := 0
 
