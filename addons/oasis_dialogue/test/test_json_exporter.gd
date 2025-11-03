@@ -83,6 +83,5 @@ func test_export_saves_data() -> void:
 	Json = JsonFile.new()
 	Json.load(path)
 
-	print(Json._data)
 	assert_ne(Json.get_value("Fred", {}).size(), 0)
 	assert_ne(Json.get_value("Tim", {}).size(), 0)
