@@ -1,5 +1,13 @@
 extends "res://addons/oasis_dialogue/visitor/visitor.gd"
 
+const BRANCH_PROMPTS := "prompts"
+const BRANCH_RESPONSES := "responses"
+const LINE_CONDITIONS := "conditions"
+const LINE_ACTIONS := "actions"
+const LINE_TEXT := "text"
+const KEY_VALUE_LEFT := "name"
+const KEY_VALUE_RIGHT := "value"
+
 var _character: Dictionary[int, Variant] = {}
 
 var _current: Dictionary[String, Variant] = {}
@@ -33,7 +41,7 @@ func visit_prompt(_prompt: _AST.Prompt) -> void:
 	_pop_to_root()
 	_in_conditions = false
 	_in_actions = false
-	var prompts: Array = _lazy_get("prompts", [])
+	var prompts: Array = _lazy_get(BRANCH_PROMPTS, [])
 	prompts.push_back(_push_new())
 
 
@@ -41,7 +49,7 @@ func visit_response(_response: _AST.Response) -> void:
 	_pop_to_root()
 	_in_conditions = false
 	_in_actions = false
-	var responses: Array = _lazy_get("responses", [])
+	var responses: Array = _lazy_get(BRANCH_RESPONSES, [])
 	responses.push_back(_push_new())
 
 
@@ -50,9 +58,9 @@ func visit_condition(condition: _AST.Condition) -> void:
 		_pop()
 		_in_actions = false
 	_in_conditions = true
-	var conditions: Array = _lazy_get("conditions", [])
+	var conditions: Array = _lazy_get(LINE_CONDITIONS, [])
 	_push_new()
-	_current.name = condition.name
+	_current[KEY_VALUE_LEFT] = condition.name
 	conditions.push_back(_current)
 
 
@@ -61,20 +69,20 @@ func visit_action(action: _AST.Action) -> void:
 		_pop()
 		_in_conditions = false
 	_in_actions = true
-	var actions: Array = _lazy_get("actions", [])
+	var actions: Array = _lazy_get(LINE_ACTIONS, [])
 	_push_new()
-	_current.name = action.name
+	_current[KEY_VALUE_LEFT] = action.name
 	actions.push_back(_current)
 
 
 func visit_stringliteral(value: _AST.StringLiteral) -> void:
 	if _in_actions or _in_conditions:
 		_pop()
-	_current.text = value.value
+	_current[LINE_TEXT] = value.value
 
 
 func visit_numberliteral(value: _AST.NumberLiteral) -> void:
-	_current.value = value.value
+	_current[KEY_VALUE_RIGHT] = value.value
 
 
 func cancel() -> void:
