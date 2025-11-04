@@ -42,8 +42,9 @@ func init_json_file_factory(callback: Callable) -> void:
 
 
 func export(config: _ExportConfig, files: Array[_OasisFile]) -> void:
-	var json: _JsonFile = _json_file_factory.call()
+	var json_file: _JsonFile = _json_file_factory.call()
 	var characters: Dictionary[String, Dictionary] = {}
+
 	for file in files:
 		var character_name: String = file.get_value(
 			_Save.Character.DATA,
@@ -66,6 +67,13 @@ func export(config: _ExportConfig, files: Array[_OasisFile]) -> void:
 			var ast: _AST.AST = _parse.call(id, value)
 			ast.accept(json_visitor)
 			json_visitor.finish()
-		characters[character_name] = character
-	json.save(config.path, characters)
+
+		if config.is_directory_export():
+			json_file.save(config.path.path_join(character_name), character)
+		else:
+			characters[character_name] = character
+
+	if config.is_single_file_export():
+		json_file.save(config.path, characters)
+
 	exported.emit(config.path)
