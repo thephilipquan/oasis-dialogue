@@ -1,7 +1,6 @@
 extends RefCounted
 
-
-var _data := {}
+var _loaded_data := {}
 
 
 func load(path: String) -> Error:
@@ -11,25 +10,23 @@ func load(path: String) -> Error:
 		return FileAccess.get_open_error()
 	var contents := file.get_as_text()
 	file.close()
-	_data = JSON.parse_string(contents)
+	_loaded_data = JSON.parse_string(contents)
 	return Error.OK
 
 
-func save(path: String) -> Error:
+func get_loaded_data() -> Dictionary:
+	var data := _loaded_data
+	_loaded_data = {}
+	return data
+
+
+func save(path: String, data: Dictionary) -> Error:
 	path = _format_path(path)
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if not file:
 		return FileAccess.get_open_error()
-	file.store_string(JSON.stringify(_data, "\t"))
+	file.store_string(JSON.stringify(data, "\t"))
 	return Error.OK
-
-
-func set_value(key: String, value: Variant) -> void:
-	_data[key] = value
-
-
-func get_value(key: String, default: Variant = null) -> Variant:
-	return _data.get(key, default)
 
 
 func _format_path(path: String) -> String:
