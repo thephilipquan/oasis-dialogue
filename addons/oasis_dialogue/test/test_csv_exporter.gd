@@ -3,6 +3,7 @@ extends GutTest
 const AST := preload("res://addons/oasis_dialogue/model/ast.gd")
 const CsvExporter := preload("res://addons/oasis_dialogue/csv_exporter.gd")
 const CsvFile := preload("res://addons/oasis_dialogue/io/csv_file.gd")
+const ExportConfig := preload("res://addons/oasis_dialogue/model/export_config.gd")
 const OasisFile := preload("res://addons/oasis_dialogue/oasis_file.gd")
 const Save := preload("res://addons/oasis_dialogue/save.gd")
 
@@ -67,7 +68,9 @@ func test_csv_writes_all_characters() -> void:
 			fred,
 			joe,
 	]
-	sut.export(path, characters)
+	var config := ExportConfig.new()
+	config.path = path
+	sut.export(characters, config)
 
 	csv = CsvFile.new()
 	csv.load(path)

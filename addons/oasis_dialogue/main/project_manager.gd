@@ -8,6 +8,7 @@ const _AddCharacterHandler := preload("res://addons/oasis_dialogue/canvas/add_ch
 const _CharacterTree := preload("res://addons/oasis_dialogue/canvas/character_tree.gd")
 const _CharacterMenu := preload("res://addons/oasis_dialogue/menu_bar/character.gd")
 const _ExportHandler := preload("res://addons/oasis_dialogue/canvas/export_handler.gd")
+const _ExportConfig := preload("res://addons/oasis_dialogue/model/export_config.gd")
 const _Graph := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
 const _OasisFile := preload("res://addons/oasis_dialogue/oasis_file.gd")
 const _ProjectMenu := preload("res://addons/oasis_dialogue/menu_bar/project.gd")
@@ -39,7 +40,7 @@ signal saving_settings(file: ConfigFile)
 signal settings_loaded(file: ConfigFile)
 
 signal project_loaded
-signal exporting(path: String, characters: Array[_OasisFile])
+signal exporting(config: _ExportConfig, characters: Array[_OasisFile])
 
 var _directory := ""
 var _active := ""
@@ -206,7 +207,7 @@ func save_conditions() -> void:
 	conditions.save(_get_conditions_path())
 
 
-func export(path: String) -> void:
+func export(config: _ExportConfig) -> void:
 	if _is_dirty:
 		save_active_character()
 
@@ -231,7 +232,7 @@ func export(path: String) -> void:
 			return
 		characters.push_back(file)
 
-	exporting.emit(path, characters)
+	exporting.emit(config, characters)
 
 
 func add_character(character: String) -> void:

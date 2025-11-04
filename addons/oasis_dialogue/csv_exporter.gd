@@ -7,6 +7,7 @@ const _AST := preload("res://addons/oasis_dialogue/model/ast.gd")
 const _Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
 const _CsvFile := preload("res://addons/oasis_dialogue/io/csv_file.gd")
 const _CsvVisitor := preload("res://addons/oasis_dialogue/visitor/csv_visitor.gd")
+const _ExportConfig := preload("res://addons/oasis_dialogue/model/export_config.gd")
 const _LanguageServer := preload("res://addons/oasis_dialogue/canvas/language_server.gd")
 const _OasisFile := preload("res://addons/oasis_dialogue/oasis_file.gd")
 const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
@@ -41,7 +42,7 @@ func init_parse(callback: Callable) -> void:
 	_parse = callback
 
 
-func export(path: String, characters: Array[_OasisFile]) -> void:
+func export(config: _ExportConfig, characters: Array[_OasisFile]) -> void:
 	var csv: _CsvFile = _csv_file_factory.call()
 	var csv_visitor := _CsvVisitor.new()
 	for character in characters:
@@ -69,7 +70,7 @@ func export(path: String, characters: Array[_OasisFile]) -> void:
 			csv.update(stage)
 			csv_visitor.finish()
 
-	if csv.save(path) != Error.OK:
-		push_warning("something went wrong with saving %s" % path)
+	if csv.save(config.path) != Error.OK:
+		push_warning("something went wrong with saving %s" % config.path)
 		return
-	exported.emit(path)
+	exported.emit(config.path)

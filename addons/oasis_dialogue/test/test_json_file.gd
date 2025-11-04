@@ -28,20 +28,17 @@ func after_each() -> void:
 		dir.remove(TESTDIR.path_join(file))
 
 
-func test_get_returns_set_value() -> void:
-	sut.set_value("a", "b")
-	assert_eq(sut.get_value("a"), "b")
-
-
 func test_load_returns_saved_data() -> void:
 	var path := TESTDIR.path_join("abc.json")
 
-	sut.set_value("a", "b")
-	sut.set_value("c", "d")
-	sut.save(path)
+	var data := {}
+	data.a = "b"
+	data.c = "d"
+	sut.save(path, data)
 
 	before_each()
 	sut.load(path)
+	data = sut.get_loaded_data()
 
-	assert_eq(sut.get_value("a"), "b")
-	assert_eq(sut.get_value("c"), "d")
+	assert_eq(data.a, "b")
+	assert_eq(data.c, "d")

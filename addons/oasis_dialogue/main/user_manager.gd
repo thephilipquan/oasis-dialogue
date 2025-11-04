@@ -3,6 +3,7 @@ extends Node
 
 const REGISTRY_KEY := "user_manager"
 
+const _ExportConfig := preload("res://addons/oasis_dialogue/model/export_config.gd")
 const _ExportHandler := preload("res://addons/oasis_dialogue/canvas/export_handler.gd")
 const _ProjectDialog := preload("res://addons/oasis_dialogue/project_dialog/project_dialog.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
@@ -63,10 +64,10 @@ func save() -> void:
 	cache.save(_cache_path)
 
 
-func cache_export_path(path: String) -> void:
-	if path == _last_export_path:
+func cache_export_path(config: _ExportConfig) -> void:
+	if config.path == _last_export_path:
 		return
-	_last_export_path = path
+	_last_export_path = config.path
 	_dirty = true
 
 

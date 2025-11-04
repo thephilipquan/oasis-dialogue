@@ -1,6 +1,7 @@
 extends GutTest
 
 const AST := preload("res://addons/oasis_dialogue/model/ast.gd")
+const ExportConfig := preload("res://addons/oasis_dialogue/model/export_config.gd")
 const JsonExporter := preload("res://addons/oasis_dialogue/canvas/json_exporter.gd")
 const JsonFile := preload("res://addons/oasis_dialogue/io/json_file.gd")
 const OasisFile := preload("res://addons/oasis_dialogue/oasis_file.gd")
@@ -57,7 +58,7 @@ func test_export_saves_data() -> void:
 					])
 				return ast
 	)
-	var path := TESTDIR.path_join("abc.json")
+
 	var fred := OasisFile.new()
 	fred.set_value(
 			Save.Character.DATA,
@@ -78,10 +79,15 @@ func test_export_saves_data() -> void:
 			fred,
 			tim,
 	]
-	sut.export(path, characters)
 
-	Json = JsonFile.new()
-	Json.load(path)
+	var path := TESTDIR.path_join("abc.json")
+	var config := ExportConfig.new()
+	config.path = path
+	sut.export(config, characters)
 
-	assert_ne(Json.get_value("Fred", {}).size(), 0)
-	assert_ne(Json.get_value("Tim", {}).size(), 0)
+	var json := JsonFile.new()
+	json.load(path)
+	var data := json.get_loaded_data()
+
+	assert_ne(data.get("Fred", {}).size(), 0)
+	assert_ne(data.get("Tim", {}).size(), 0)

@@ -4,12 +4,13 @@ extends Node
 const REGISTRY_KEY := "export_handler"
 
 const _Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
+const _ExportConfig := preload("res://addons/oasis_dialogue/model/export_config.gd")
 const _FileDialog := preload("res://addons/oasis_dialogue/project_dialog/file_dialog.gd")
 const _ProjectMenu := preload("res://addons/oasis_dialogue/menu_bar/project.gd")
 const _UserManager := preload("res://addons/oasis_dialogue/main/user_manager.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 
-signal export_requested(path: String)
+signal export_requested(config: _ExportConfig)
 
 var _file_dialog_factory := Callable()
 var _get_last_export_path := Callable()
@@ -56,4 +57,6 @@ func on_dialog_canceled(dialog: _FileDialog) -> void:
 
 func on_dialog_selected(path: String, dialog: _FileDialog) -> void:
 	on_dialog_canceled(dialog)
-	export_requested.emit(path)
+	var config := _ExportConfig.new()
+	config.path = path
+	export_requested.emit(config)

@@ -4,6 +4,7 @@ extends Node
 const REGISTRY_KEY := "json_exporter"
 
 const _AST := preload("res://addons/oasis_dialogue/model/ast.gd")
+const _ExportConfig := preload("res://addons/oasis_dialogue/model/export_config.gd")
 const _JsonFile := preload("res://addons/oasis_dialogue/io/json_file.gd")
 const _JsonVisitor := preload("res://addons/oasis_dialogue/visitor/json_visitor.gd")
 const _LanguageServer := preload("res://addons/oasis_dialogue/canvas/language_server.gd")
@@ -40,8 +41,9 @@ func init_json_file_factory(callback: Callable) -> void:
 	_json_file_factory = callback
 
 
-func export(path: String, files: Array[_OasisFile]) -> void:
+func export(config: _ExportConfig, files: Array[_OasisFile]) -> void:
 	var json: _JsonFile = _json_file_factory.call()
+	var characters: Dictionary[String, Dictionary] = {}
 	for file in files:
 		var character_name: String = file.get_value(
 			_Save.Character.DATA,
@@ -64,6 +66,6 @@ func export(path: String, files: Array[_OasisFile]) -> void:
 			var ast: _AST.AST = _parse.call(id, value)
 			ast.accept(json_visitor)
 			json_visitor.finish()
-		json.set_value(character_name, character)
-	json.save(path)
-	exported.emit(path)
+		characters[character_name] = character
+	json.save(config.path, characters)
+	exported.emit(config.path)
