@@ -52,6 +52,7 @@ func export(config: _ExportConfig, files: Array[_OasisFile]) -> void:
 			"",
 		)
 		assert(character_name)
+		character_name = character_name.to_lower()
 
 		var character: Dictionary[int, Variant] = {}
 		var json_visitor := _JsonVisitor.new(character)
