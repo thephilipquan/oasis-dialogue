@@ -92,6 +92,7 @@ func cancel() -> void:
 
 func finish() -> void:
 	_pop_to_root()
+	_add_default()
 	_character[_id] = _stack[0]
 	cancel()
 
@@ -117,3 +118,10 @@ func _lazy_get(key: String, default: Variant = null) -> Variant:
 	if not key in _current:
 		_current[key] = default
 	return _current[key]
+
+
+func _add_default() -> void:
+	var annotations: Array = _lazy_get(BRANCH_ANNOTATIONS, [])
+	if annotations.find("seq") == -1 and annotations.find("rng") == -1:
+		annotations.push_back("seq")
+
