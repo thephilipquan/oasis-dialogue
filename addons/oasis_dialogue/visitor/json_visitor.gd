@@ -1,5 +1,6 @@
 extends "res://addons/oasis_dialogue/visitor/visitor.gd"
 
+const BRANCH_ANNOTATIONS := "annotations"
 const BRANCH_PROMPTS := "prompts"
 const BRANCH_RESPONSES := "responses"
 const LINE_CONDITIONS := "conditions"
@@ -28,13 +29,8 @@ func visit_branch(branch: _AST.Branch) -> void:
 
 
 func visit_annotation(annotation: _AST.Annotation) -> void:
-	match annotation.name:
-		"rng", "seq":
-			_current.type = annotation.name
-		"unique":
-			_current.unique = true
-		_:
-			push_warning("unhandled annotation (%s)" % annotation.name)
+	var annotations: Array = _lazy_get(BRANCH_RESPONSES, [])
+	annotations.push_back(annotation.name)
 
 
 func visit_prompt(_prompt: _AST.Prompt) -> void:
