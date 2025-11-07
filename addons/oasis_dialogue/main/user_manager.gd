@@ -6,6 +6,7 @@ const REGISTRY_KEY := "user_manager"
 const _ExportConfig := preload("res://addons/oasis_dialogue/model/export_config.gd")
 const _ExportHandler := preload("res://addons/oasis_dialogue/canvas/export_handler.gd")
 const _ProjectDialog := preload("res://addons/oasis_dialogue/project_dialog/project_dialog.gd")
+const _ProjectMenu := preload("res://addons/oasis_dialogue/menu_bar/project.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 
 const _USER := "user://"
@@ -43,13 +44,18 @@ func register(registry: _Registry) -> void:
 
 
 func setup(registry: _Registry) -> void:
-	if registry.has(_ExportHandler.REGISTRY_KEY):
-		var export_handler: _ExportHandler = registry.at(_ExportHandler.REGISTRY_KEY)
-		export_handler.export_requested.connect(cache_export_path)
-
+	# In project select.
 	if registry.has(_ProjectDialog.REGISTRY_KEY):
 		var project_dialog: _ProjectDialog = registry.at(_ProjectDialog.REGISTRY_KEY)
 		project_dialog.path_requested.connect(cache_open_path)
+
+	# In project.
+	if registry.has(_ExportHandler.REGISTRY_KEY):
+		var export_handler: _ExportHandler = registry.at(_ExportHandler.REGISTRY_KEY)
+		export_handler.export_requested.connect(cache_export_path)
+	if registry.has(_ProjectMenu.REGISTRY_KEY):
+		var project_menu: _ProjectMenu = registry.at(_ProjectMenu.REGISTRY_KEY)
+		project_menu.save_requested.connect(save)
 
 
 func init_cache(cache: ConfigFile) -> void:
