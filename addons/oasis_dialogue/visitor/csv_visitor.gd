@@ -23,10 +23,12 @@ func visit_response(_response: _AST.Response) -> void:
 
 func visit_stringliteral(value: _AST.StringLiteral) -> void:
 	assert(_in_prompt or _in_response, "This should be impossible to be false")
+	var entry := value.value.replace('"', '""')
+	entry = '"%s"' % entry
 	if _in_prompt:
-		_stage.add_prompt(value.value)
+		_stage.add_prompt(entry)
 	elif _in_response:
-		_stage.add_response(value.value)
+		_stage.add_response(entry)
 
 
 func cancel() -> void:
