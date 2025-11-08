@@ -75,7 +75,8 @@ func save(path: String) -> Error:
 ## Parses and appends the text as formatted as a [b].oasis[/b] file.
 ## [br][br]
 func parse(text: String) -> Error:
-	if not text.strip_edges().length():
+	text = text.strip_edges()
+	if not text.length():
 		return Error.OK
 
 	var lines := text.split("\n")

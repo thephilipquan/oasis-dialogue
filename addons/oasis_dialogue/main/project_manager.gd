@@ -254,7 +254,7 @@ func load_character(character: String) -> void:
 
 	var path := _character_to_path(character)
 	if not FileAccess.file_exists(path):
-		push_warning("todo: active: %s doesn't exist" % character)
+		push_warning("todo: active: %s doesn't exist" % path)
 		return
 
 	if _is_dirty:

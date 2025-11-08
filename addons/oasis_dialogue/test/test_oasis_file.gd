@@ -150,7 +150,22 @@ func test_missing_key_at_eof_returns_error() -> void:
 
 func test_load_recovers_saved_data() -> void:
 	sut.set_value("a", "b", "c")
+	sut.set_value("d", "e", "f")
 	sut.save("test.oasis")
+
+	sut = OasisFile.new()
+	sut.load("test.oasis")
+	assert_eq(sut.get_value("a", "b"), "c")
+	assert_eq(sut.get_value("d", "e"), "f")
+
+
+func test_load_recovers_saved_data_with_extra_lines_at_end() -> void:
+	sut.set_value("a", "b", "c")
+	sut.save("test.oasis")
+
+	var file := FileAccess.open("test.oasis", FileAccess.READ_WRITE)
+	file.store_string(file.get_as_text() + "\n\n\n")
+	file.close()
 
 	sut = OasisFile.new()
 	sut.load("test.oasis")
