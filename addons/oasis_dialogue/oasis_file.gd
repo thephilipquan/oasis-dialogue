@@ -56,12 +56,7 @@ func set_value(section: String, key: String, value: Variant) -> void:
 
 
 func get_value(section: String, key: String, default: Variant = null) -> Variant:
-	# if not has_section(section):
-		# push_warning("%s does not exist" % section)
-		# return
 	return _data.get(section, {}).get(key, default)
-	# var inner: Dictionary = _data[section]
-	# return key in inner
 
 
 func save(path: String) -> Error:
