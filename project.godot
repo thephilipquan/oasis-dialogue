@@ -35,6 +35,10 @@ enabled=PackedStringArray("res://addons/gut/plugin.cfg", "res://addons/oasis_dia
 
 registerable="A node to be registered in a registry to be accessed by other nodes."
 
+[gui]
+
+theme/default_font_multichannel_signed_distance_field=true
+
 [input]
 
 delete_node={
