@@ -35,6 +35,6 @@ func display() -> void:
 		dialog.current_dir = _get_last_open_path.call()
 		return dialog
 
-	var open_button: _FileDialogButton = $VBoxContainer/OpenProject
+	var open_button: _FileDialogButton = $CenterContainer/VBoxContainer/OpenProject
 	open_button.init(system_dialog_factory)
 	open_button.path_selected.connect(path_requested.emit)
