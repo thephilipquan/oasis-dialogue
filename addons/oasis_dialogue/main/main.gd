@@ -15,7 +15,7 @@ var _project_dialog: _ProjectDialog = null
 var _project: _Project = null
 
 @onready
-var _registry := $Registry as _Registry
+var _registry: _Registry = $Registry
 
 
 func _ready() -> void:
