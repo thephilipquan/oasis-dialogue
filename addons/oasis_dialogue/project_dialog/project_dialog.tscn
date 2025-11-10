@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://cni2eob4aumxb" path="res://addons/oasis_dialogue/project_dialog/open_project.gd" id="3_5loph"]
 [ext_resource type="Script" uid="uid://bw35wxt6cana1" path="res://addons/oasis_dialogue/project_dialog/version.gd" id="4_5loph"]
 
-[node name="ProjectDialog" type="Control" groups=["registerable"]]
+[node name="ProjectDialog" type="Control" groups=["oasis_registerable"]]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -33,7 +33,7 @@ text = "Oasis Dialogue"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="OpenProject" type="Button" parent="CenterContainer/VBoxContainer" groups=["registerable"]]
+[node name="OpenProject" type="Button" parent="CenterContainer/VBoxContainer" groups=["oasis_registerable"]]
 custom_minimum_size = Vector2(256, 0)
 layout_mode = 2
 size_flags_horizontal = 4

@@ -1,7 +1,7 @@
 @tool
 extends Node
 
-const GROUP := "registerable"
+const GROUP := "oasis_registerable"
 
 var _map := {}
 

@@ -35,7 +35,7 @@
 [ext_resource type="Script" uid="uid://0m8wwixwa4ub" path="res://addons/oasis_dialogue/canvas/character_call_to_action.gd" id="30_oj43n"]
 [ext_resource type="Script" uid="uid://bx4iwyxoii8mp" path="res://addons/oasis_dialogue/canvas/branch_call_to_action.gd" id="31_y5ltl"]
 
-[node name="Canvas" type="Control" groups=["registerable"]]
+[node name="Canvas" type="Control" groups=["oasis_registerable"]]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -45,7 +45,7 @@ grow_vertical = 2
 theme = ExtResource("1_ta1sa")
 script = ExtResource("1_pyvqf")
 
-[node name="AddBranch" type="TextureButton" parent="." groups=["registerable"]]
+[node name="AddBranch" type="TextureButton" parent="." groups=["oasis_registerable"]]
 visible = false
 layout_mode = 0
 offset_left = 16.0
@@ -58,40 +58,40 @@ texture_pressed = ExtResource("12_vow0r")
 texture_hover = ExtResource("13_oj43n")
 script = ExtResource("4_wvnn7")
 
-[node name="Model" type="Node" parent="." groups=["registerable"]]
+[node name="Model" type="Node" parent="." groups=["oasis_registerable"]]
 script = ExtResource("3_ytw7q")
 
-[node name="LanguageServer" type="Node" parent="." groups=["registerable"]]
+[node name="LanguageServer" type="Node" parent="." groups=["oasis_registerable"]]
 script = ExtResource("4_0dkm1")
 
-[node name="SenanticVisitors" type="Node" parent="." groups=["registerable"]]
+[node name="SenanticVisitors" type="Node" parent="." groups=["oasis_registerable"]]
 script = ExtResource("5_65wvt")
 
-[node name="AddCharacterHandler" type="Node" parent="." groups=["registerable"]]
+[node name="AddCharacterHandler" type="Node" parent="." groups=["oasis_registerable"]]
 script = ExtResource("10_6s5dc")
 
-[node name="RemoveCharacterHandler" type="Node" parent="." groups=["registerable"]]
+[node name="RemoveCharacterHandler" type="Node" parent="." groups=["oasis_registerable"]]
 script = ExtResource("4_6xxxj")
 
-[node name="RenameCharacterHandler" type="Node" parent="." groups=["registerable"]]
+[node name="RenameCharacterHandler" type="Node" parent="." groups=["oasis_registerable"]]
 script = ExtResource("7_n0a6n")
 
-[node name="UnbrancherVisitors" type="Node" parent="." groups=["registerable"]]
+[node name="UnbrancherVisitors" type="Node" parent="." groups=["oasis_registerable"]]
 script = ExtResource("8_unkvg")
 
-[node name="BranchPrettier" type="Node" parent="." groups=["registerable"]]
+[node name="BranchPrettier" type="Node" parent="." groups=["oasis_registerable"]]
 script = ExtResource("8_h1x05")
 
-[node name="ExportHandler" type="Node" parent="." groups=["registerable"]]
+[node name="ExportHandler" type="Node" parent="." groups=["oasis_registerable"]]
 script = ExtResource("13_hd21m")
 
-[node name="CSVExporter" type="Node" parent="." groups=["registerable"]]
+[node name="CSVExporter" type="Node" parent="." groups=["oasis_registerable"]]
 script = ExtResource("9_xkohu")
 
-[node name="JSONExporter" type="Node" parent="." groups=["registerable"]]
+[node name="JSONExporter" type="Node" parent="." groups=["oasis_registerable"]]
 script = ExtResource("10_g4vuv")
 
-[node name="CallToActionHandler" type="Node" parent="." groups=["registerable"]]
+[node name="CallToActionHandler" type="Node" parent="." groups=["oasis_registerable"]]
 script = ExtResource("15_vow0r")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
@@ -109,25 +109,25 @@ layout_mode = 2
 layout_mode = 2
 flat = true
 
-[node name="Project" type="PopupMenu" parent="VBoxContainer/HBoxContainer/MenuBar" groups=["registerable"]]
+[node name="Project" type="PopupMenu" parent="VBoxContainer/HBoxContainer/MenuBar" groups=["oasis_registerable"]]
 oversampling_override = 1.0
 title = "Project"
 size = Vector2i(200, 100)
 script = ExtResource("16_8jbp4")
 
-[node name="Character" type="PopupMenu" parent="VBoxContainer/HBoxContainer/MenuBar" groups=["registerable"]]
+[node name="Character" type="PopupMenu" parent="VBoxContainer/HBoxContainer/MenuBar" groups=["oasis_registerable"]]
 oversampling_override = 1.0
 title = "Character"
 size = Vector2i(164, 116)
 script = ExtResource("18_8jbp4")
 
-[node name="SplitContainer" type="SplitContainer" parent="VBoxContainer" groups=["registerable"]]
+[node name="SplitContainer" type="SplitContainer" parent="VBoxContainer" groups=["oasis_registerable"]]
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("16_1wr22")
 _duration = 0.5
 
-[node name="CharacterTree" type="Tree" parent="VBoxContainer/SplitContainer" groups=["registerable"]]
+[node name="CharacterTree" type="Tree" parent="VBoxContainer/SplitContainer" groups=["oasis_registerable"]]
 custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
 hide_folding = true
@@ -151,7 +151,7 @@ theme_override_constants/margin_bottom = 16
 layout_mode = 2
 alignment = 1
 
-[node name="RemoveCharacter" type="TextureButton" parent="VBoxContainer/SplitContainer/CharacterTree/MarginContainer/HBoxContainer" groups=["registerable"]]
+[node name="RemoveCharacter" type="TextureButton" parent="VBoxContainer/SplitContainer/CharacterTree/MarginContainer/HBoxContainer" groups=["oasis_registerable"]]
 visible = false
 layout_mode = 2
 size_flags_horizontal = 2
@@ -162,7 +162,7 @@ texture_pressed = ExtResource("17_1ink7")
 texture_hover = ExtResource("18_crrap")
 script = ExtResource("26_ycj4d")
 
-[node name="AddCharacter" type="TextureButton" parent="VBoxContainer/SplitContainer/CharacterTree/MarginContainer/HBoxContainer" groups=["registerable"]]
+[node name="AddCharacter" type="TextureButton" parent="VBoxContainer/SplitContainer/CharacterTree/MarginContainer/HBoxContainer" groups=["oasis_registerable"]]
 layout_mode = 2
 size_flags_vertical = 4
 tooltip_text = "Add character"
@@ -171,7 +171,7 @@ texture_pressed = ExtResource("21_1ink7")
 texture_hover = ExtResource("22_crrap")
 script = ExtResource("3_4e1bp")
 
-[node name="BranchEdit" type="GraphEdit" parent="VBoxContainer/SplitContainer" groups=["registerable"]]
+[node name="BranchEdit" type="GraphEdit" parent="VBoxContainer/SplitContainer" groups=["oasis_registerable"]]
 layout_mode = 2
 size_flags_horizontal = 3
 grid_pattern = 1
@@ -181,10 +181,10 @@ show_zoom_buttons = false
 show_grid_buttons = false
 script = ExtResource("7_54gq2")
 
-[node name="Status" parent="VBoxContainer/SplitContainer/BranchEdit" groups=["registerable"] instance=ExtResource("8_54gq2")]
+[node name="Status" parent="VBoxContainer/SplitContainer/BranchEdit" groups=["oasis_registerable"] instance=ExtResource("8_54gq2")]
 layout_mode = 1
 
-[node name="CharacterCallToAction" type="CenterContainer" parent="VBoxContainer/SplitContainer/BranchEdit" groups=["registerable"]]
+[node name="CharacterCallToAction" type="CenterContainer" parent="VBoxContainer/SplitContainer/BranchEdit" groups=["oasis_registerable"]]
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -203,7 +203,7 @@ character"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="BranchCallToAction" type="CenterContainer" parent="VBoxContainer/SplitContainer/BranchEdit" groups=["registerable"]]
+[node name="BranchCallToAction" type="CenterContainer" parent="VBoxContainer/SplitContainer/BranchEdit" groups=["oasis_registerable"]]
 visible = false
 layout_mode = 1
 anchors_preset = 15

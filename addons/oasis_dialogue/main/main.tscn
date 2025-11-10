@@ -16,5 +16,5 @@ script = ExtResource("1_ybe0g")
 [node name="Registry" type="Node" parent="."]
 script = ExtResource("3_3da33")
 
-[node name="UserManager" type="Node" parent="." groups=["registerable"]]
+[node name="UserManager" type="Node" parent="." groups=["oasis_registerable"]]
 script = ExtResource("2_wsoep")

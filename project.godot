@@ -33,7 +33,7 @@ enabled=PackedStringArray("res://addons/gut/plugin.cfg", "res://addons/oasis_dia
 
 [global_group]
 
-registerable="A node to be registered in a registry to be accessed by other nodes."
+oasis_registerable="A node to be registered in a registry to be accessed by other nodes."
 
 [gui]
 
