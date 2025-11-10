@@ -1,15 +1,19 @@
 @tool
 extends Node
 
-const GROUP := "oasis_registerable"
+const GROUP := &"oasis_registerable"
+
+const _NodeUtils := preload("res://addons/oasis_dialogue/utils/node_utils.gd")
 
 var _map := {}
 
 
 func trigger() -> void:
 	_map.clear()
-	get_tree().call_group(GROUP, "register", self)
-	get_tree().call_group(GROUP, "setup", self)
+
+	# This is necessary if the user has a group with the same name.
+	_NodeUtils.call_group_under_parent(get_parent(), GROUP, &"register", self)
+	_NodeUtils.call_group_under_parent(get_parent(), GROUP, &"setup", self)
 
 
 func has(key: String) -> bool:
