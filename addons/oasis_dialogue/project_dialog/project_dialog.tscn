@@ -1,11 +1,11 @@
 [gd_scene load_steps=5 format=3 uid="uid://bykbja3qso7mr"]
 
 [ext_resource type="Theme" uid="uid://cpd6nr0bs2te6" path="res://addons/oasis_dialogue/project_dialog/project_theme.tres" id="1_ijrkd"]
-[ext_resource type="Script" uid="uid://oqp5vhdobxuj" path="res://addons/oasis_dialogue/project_dialog/file_dialog_button.gd" id="2_4vucw"]
 [ext_resource type="Script" uid="uid://brftljvrgv7p5" path="res://addons/oasis_dialogue/project_dialog/project_dialog.gd" id="2_sgvh3"]
+[ext_resource type="Script" uid="uid://cni2eob4aumxb" path="res://addons/oasis_dialogue/project_dialog/open_project.gd" id="3_5loph"]
 [ext_resource type="Script" uid="uid://bw35wxt6cana1" path="res://addons/oasis_dialogue/project_dialog/version.gd" id="4_5loph"]
 
-[node name="ProjectDialog" type="Control"]
+[node name="ProjectDialog" type="Control" groups=["registerable"]]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -33,12 +33,12 @@ text = "Oasis Dialogue"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="OpenProject" type="Button" parent="CenterContainer/VBoxContainer"]
+[node name="OpenProject" type="Button" parent="CenterContainer/VBoxContainer" groups=["registerable"]]
 custom_minimum_size = Vector2(256, 0)
 layout_mode = 2
 size_flags_horizontal = 4
 text = "open"
-script = ExtResource("2_4vucw")
+script = ExtResource("3_5loph")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 1

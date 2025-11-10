@@ -32,7 +32,6 @@ func _open_project_dialog() -> void:
 	_project_dialog.path_requested.connect(_on_project_path_requested)
 
 	_registry.trigger()
-	_project_dialog.display()
 
 
 func _on_project_path_requested(path: String) -> void:
