@@ -68,6 +68,7 @@ func save() -> void:
 	cache.set_value("export", "last_export_path", _last_export_path)
 	cache.set_value("open", "last_open_path", _last_open_path)
 	cache.save(_cache_path)
+	_dirty = false
 
 
 func cache_export_path(config: _ExportConfig) -> void:
