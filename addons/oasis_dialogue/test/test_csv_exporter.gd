@@ -1,7 +1,7 @@
 extends GutTest
 
 const AST := preload("res://addons/oasis_dialogue/model/ast.gd")
-const CsvExporter := preload("res://addons/oasis_dialogue/csv_exporter.gd")
+const CsvExporter := preload("res://addons/oasis_dialogue/canvas/csv_exporter.gd")
 const CsvFile := preload("res://addons/oasis_dialogue/io/csv_file.gd")
 const ExportConfig := preload("res://addons/oasis_dialogue/model/export_config.gd")
 const OasisFile := preload("res://addons/oasis_dialogue/io/oasis_file.gd")
