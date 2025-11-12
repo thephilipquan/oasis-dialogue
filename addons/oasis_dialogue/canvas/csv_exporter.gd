@@ -45,6 +45,7 @@ func init_parse(callback: Callable) -> void:
 func export(config: _ExportConfig, characters: Array[_OasisFile]) -> void:
 	var csv: _CsvFile = _csv_file_factory.call()
 	csv.saved.connect(exported.emit)
+	csv.set_headers("keys", "en")
 
 	var csv_visitor := _CsvVisitor.new()
 
