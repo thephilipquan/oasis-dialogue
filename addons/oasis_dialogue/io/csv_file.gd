@@ -111,7 +111,7 @@ func save(path: String) -> Error:
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if not file:
 		return FileAccess.get_open_error()
-	var contents := encode_to_string()
+	var contents := _encode_to_string()
 	file.store_string(contents)
 	file.close()
 	saved.emit(path)
@@ -125,22 +125,25 @@ func load(path: String) -> Error:
 		return FileAccess.get_open_error()
 	var contents := file.get_as_text()
 	file.close()
-	parse(contents)
+	_parse(contents)
 	return Error.OK
 
 
-func encode_to_string() -> String:
+func _encode_to_string() -> String:
 	var text: Array[String] = []
 	text.push_back(",".join(_headers))
 	for key in _data:
 		text.push_back("%s,%s" % [key, _data[key]])
+	text.push_back("")
 	return "\n".join(text)
 
 
-func parse(text: String) -> void:
+func _parse(text: String) -> void:
 	var lines := text.split("\n")
 	_headers.assign(lines[0].split(","))
 	for i in range(1, lines.size()):
+		if not lines[i]:
+			continue
 		var split := lines[i].split(",")
 		var key := split[0]
 		var value := split.slice(1)
