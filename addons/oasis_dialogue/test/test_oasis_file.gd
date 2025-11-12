@@ -1,6 +1,6 @@
 extends GutTest
 
-const OasisFile := preload("res://addons/oasis_dialogue/oasis_file.gd")
+const OasisFile := preload("res://addons/oasis_dialogue/io/oasis_file.gd")
 
 const BASE := "res://"
 var TESTDIR := BASE.path_join("test_oasis_file")

@@ -4,7 +4,7 @@ const Branch := preload("res://addons/oasis_dialogue/branch/branch.gd")
 const BranchScene := preload("res://addons/oasis_dialogue/branch/branch.tscn")
 const BranchEdit := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
 const Model := preload("res://addons/oasis_dialogue/model/model.gd")
-const OasisFile := preload("res://addons/oasis_dialogue/oasis_file.gd")
+const OasisFile := preload("res://addons/oasis_dialogue/io/oasis_file.gd")
 
 var sut: BranchEdit = null
 var branch_factory := Callable()

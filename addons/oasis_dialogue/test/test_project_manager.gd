@@ -2,7 +2,7 @@ extends GutTest
 
 const Global := preload("res://addons/oasis_dialogue/global.gd")
 const Save := preload("res://addons/oasis_dialogue/save.gd")
-const OasisFile := preload("res://addons/oasis_dialogue/oasis_file.gd")
+const OasisFile := preload("res://addons/oasis_dialogue/io/oasis_file.gd")
 const ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
 
 const BASEDIR := "res://"

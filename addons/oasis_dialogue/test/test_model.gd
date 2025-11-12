@@ -1,7 +1,7 @@
 extends GutTest
 
 const Model := preload("res://addons/oasis_dialogue/model/model.gd")
-const OasisFile := preload("res://addons/oasis_dialogue/oasis_file.gd")
+const OasisFile := preload("res://addons/oasis_dialogue/io/oasis_file.gd")
 
 var sut: Model = null
 

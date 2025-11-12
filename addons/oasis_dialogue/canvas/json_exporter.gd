@@ -10,7 +10,7 @@ const _JsonFile := preload("res://addons/oasis_dialogue/io/json_file.gd")
 const _JsonVisitor := preload("res://addons/oasis_dialogue/visitor/json_visitor.gd")
 const _LanguageServer := preload("res://addons/oasis_dialogue/canvas/language_server.gd")
 const _Save := preload("res://addons/oasis_dialogue/save.gd")
-const _OasisFile := preload("res://addons/oasis_dialogue/oasis_file.gd")
+const _OasisFile := preload("res://addons/oasis_dialogue/io/oasis_file.gd")
 const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 

@@ -5,7 +5,7 @@ const ExportConfig := preload("res://addons/oasis_dialogue/model/export_config.g
 const JsonExporter := preload("res://addons/oasis_dialogue/canvas/json_exporter.gd")
 const JsonFile := preload("res://addons/oasis_dialogue/io/json_file.gd")
 const Save := preload("res://addons/oasis_dialogue/save.gd")
-const OasisFile := preload("res://addons/oasis_dialogue/oasis_file.gd")
+const OasisFile := preload("res://addons/oasis_dialogue/io/oasis_file.gd")
 
 const BASEDIR := "res://"
 var TESTDIR := BASEDIR.path_join("test_oasis_manager")
