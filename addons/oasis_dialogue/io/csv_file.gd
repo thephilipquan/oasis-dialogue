@@ -1,5 +1,9 @@
 extends RefCounted
 
+const _StringUtils := preload("res://addons/oasis_dialogue/utils/string_utils.gd")
+
+signal saved(path: String)
+
 var _headers: Array[String] = []
 var _data: Dictionary[String, String] = {}
 
@@ -103,15 +107,19 @@ func update(staged: Stage) -> void:
 
 
 func save(path: String) -> Error:
+	path = _format_path(path)
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if not file:
 		return FileAccess.get_open_error()
 	var contents := encode_to_string()
 	file.store_string(contents)
+	file.close()
+	saved.emit(path)
 	return Error.OK
 
 
 func load(path: String) -> Error:
+	path = _format_path(path)
 	var file := FileAccess.open(path, FileAccess.READ)
 	if not file:
 		return FileAccess.get_open_error()
@@ -181,6 +189,10 @@ func _get_value_column_count(key: String) -> int:
 	var value: String = _data.get(key, "")
 	var count := value.count(",") + 1
 	return count
+
+
+func _format_path(path: String) -> String:
+	return _StringUtils.replace_extension(path, "csv")
 
 
 class Stage:

@@ -41,7 +41,6 @@ func init_get_last_export_path(callback: Callable) -> void:
 func show_file_dialog() -> void:
 	var dialog: _FileDialog = _file_dialog_factory.call()
 	dialog.init_default_filename("dialogue")
-	dialog.init_extension("csv")
 	dialog.init_file_mode(FileDialog.FILE_MODE_SAVE_FILE)
 	dialog.selected.connect(on_dialog_selected.bind(dialog))
 	dialog.canceled.connect(on_dialog_canceled.bind(dialog))

@@ -44,7 +44,10 @@ func init_parse(callback: Callable) -> void:
 
 func export(config: _ExportConfig, characters: Array[_OasisFile]) -> void:
 	var csv: _CsvFile = _csv_file_factory.call()
+	csv.saved.connect(exported.emit)
+
 	var csv_visitor := _CsvVisitor.new()
+
 	for character in characters:
 		var character_name: String = character.get_value(
 				_Save.Character.DATA,
@@ -73,4 +76,3 @@ func export(config: _ExportConfig, characters: Array[_OasisFile]) -> void:
 	if csv.save(config.path) != Error.OK:
 		push_warning("something went wrong with saving %s" % config.path)
 		return
-	exported.emit(config.path)

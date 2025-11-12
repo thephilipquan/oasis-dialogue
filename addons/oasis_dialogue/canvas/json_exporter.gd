@@ -9,10 +9,10 @@ const _ExportConfig := preload("res://addons/oasis_dialogue/model/export_config.
 const _JsonFile := preload("res://addons/oasis_dialogue/io/json_file.gd")
 const _JsonVisitor := preload("res://addons/oasis_dialogue/visitor/json_visitor.gd")
 const _LanguageServer := preload("res://addons/oasis_dialogue/canvas/language_server.gd")
-const _Save := preload("res://addons/oasis_dialogue/save.gd")
 const _OasisFile := preload("res://addons/oasis_dialogue/io/oasis_file.gd")
 const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
+const _Save := preload("res://addons/oasis_dialogue/save.gd")
 
 signal exported(path: String)
 
@@ -44,6 +44,8 @@ func init_json_file_factory(callback: Callable) -> void:
 
 func export(config: _ExportConfig, files: Array[_OasisFile]) -> void:
 	var json_file: _JsonFile = _json_file_factory.call()
+	json_file.saved.connect(exported.emit)
+
 	var characters: Dictionary[String, Dictionary] = {}
 
 	for file in files:
@@ -75,12 +77,10 @@ func export(config: _ExportConfig, files: Array[_OasisFile]) -> void:
 			ast.accept(json_visitor)
 			json_visitor.finish()
 
-		if config.is_directory_export():
+		if config.is_directory_export:
 			json_file.save(config.path.path_join(character_name), character)
 		else:
 			characters[character_name] = character
 
-	if config.is_single_file_export():
+	if not config.is_directory_export:
 		json_file.save(config.path, characters)
-
-	exported.emit(config.path)

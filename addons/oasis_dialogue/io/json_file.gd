@@ -1,5 +1,9 @@
 extends RefCounted
 
+const _StringUtils := preload("res://addons/oasis_dialogue/utils/string_utils.gd")
+
+signal saved(path: String)
+
 var _loaded_data := {}
 
 
@@ -26,11 +30,10 @@ func save(path: String, data: Dictionary) -> Error:
 	if not file:
 		return FileAccess.get_open_error()
 	file.store_string(JSON.stringify(data, "\t"))
+	file.close()
+	saved.emit(path)
 	return Error.OK
 
 
 func _format_path(path: String) -> String:
-	var result := path
-	if result.get_extension() != "json":
-		result += ".json"
-	return result
+	return _StringUtils.replace_extension(path, "json")
