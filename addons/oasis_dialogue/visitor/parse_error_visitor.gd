@@ -1,6 +1,6 @@
 extends "res://addons/oasis_dialogue/visitor/visitor.gd"
 
-const _SemanticError := preload("res://addons/oasis_dialogue/semantic_error.gd")
+const _SemanticError := preload("res://addons/oasis_dialogue/model/semantic_error.gd")
 
 var _on_err := Callable()
 

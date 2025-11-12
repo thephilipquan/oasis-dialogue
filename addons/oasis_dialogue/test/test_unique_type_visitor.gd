@@ -2,7 +2,7 @@ extends GutTest
 
 const AST := preload("res://addons/oasis_dialogue/model/ast.gd")
 const UniqueType := preload("res://addons/oasis_dialogue/visitor/unique_type_visitor.gd")
-const SemanticError := preload("res://addons/oasis_dialogue/semantic_error.gd")
+const SemanticError := preload("res://addons/oasis_dialogue/model/semantic_error.gd")
 
 
 func test_only_one_type_does_not_call_on_err() -> void:

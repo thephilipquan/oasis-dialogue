@@ -2,7 +2,7 @@ extends GutTest
 
 const AST := preload("res://addons/oasis_dialogue/model/ast.gd")
 const ConditionExists := preload("res://addons/oasis_dialogue/visitor/condition_exists_visitor.gd")
-const SemanticError := preload("res://addons/oasis_dialogue/semantic_error.gd")
+const SemanticError := preload("res://addons/oasis_dialogue/model/semantic_error.gd")
 
 
 func test_visit_existing_condition_does_nothing() -> void:
