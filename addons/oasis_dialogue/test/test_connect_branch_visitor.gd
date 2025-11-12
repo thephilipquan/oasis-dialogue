@@ -2,7 +2,6 @@ extends GutTest
 
 const AST := preload("res://addons/oasis_dialogue/model/ast.gd")
 const ConnectBranch := preload("res://addons/oasis_dialogue/visitor/connect_branch_visitor.gd")
-const Global := preload("res://addons/oasis_dialogue/global.gd")
 
 
 func test_valid_connections_emits_non_empty_list() -> void:
