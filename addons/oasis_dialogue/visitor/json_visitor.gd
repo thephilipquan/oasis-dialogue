@@ -5,22 +5,37 @@ const BRANCH_PROMPTS := "prompts"
 const BRANCH_RESPONSES := "responses"
 const LINE_CONDITIONS := "conditions"
 const LINE_ACTIONS := "actions"
-const LINE_TEXT := "text"
+const LINE_KEY := "key"
 const KEY_VALUE_LEFT := "name"
 const KEY_VALUE_RIGHT := "value"
 
-var _character: Dictionary[int, Variant] = {}
+var _out: Dictionary[int, Variant] = {}
+var _character_name := ""
+var _create_prompt_key := Callable()
+var _create_response_key := Callable()
 
 var _current: Dictionary[String, Variant] = {}
 var _stack: Array[Dictionary] = []
 
 var _id := -1
+var _in_prompt := false
+var _in_response := true
 var _in_conditions := false
 var _in_actions := false
+var _prompt_index = -1
+var _response_index = -1
 
 
-func _init(character: Dictionary) -> void:
-	_character = character
+func _init(
+	out: Dictionary,
+	character_name: String,
+	create_prompt_key: Callable,
+	create_response_key: Callable,
+) -> void:
+	_out = out
+	_character_name = character_name
+	_create_prompt_key = create_prompt_key
+	_create_response_key = create_response_key
 
 
 func visit_branch(branch: _AST.Branch) -> void:
@@ -39,6 +54,8 @@ func visit_prompt(_prompt: _AST.Prompt) -> void:
 	_in_actions = false
 	var prompts: Array = _lazy_get(BRANCH_PROMPTS, [])
 	prompts.push_back(_push_new())
+	_in_prompt = true
+	_prompt_index += 1
 
 
 func visit_response(_response: _AST.Response) -> void:
@@ -47,6 +64,9 @@ func visit_response(_response: _AST.Response) -> void:
 	_in_actions = false
 	var responses: Array = _lazy_get(BRANCH_RESPONSES, [])
 	responses.push_back(_push_new())
+	_in_prompt = false
+	_in_response = true
+	_response_index += 1
 
 
 func visit_condition(condition: _AST.Condition) -> void:
@@ -74,7 +94,18 @@ func visit_action(action: _AST.Action) -> void:
 func visit_stringliteral(value: _AST.StringLiteral) -> void:
 	if _in_actions or _in_conditions:
 		_pop()
-	_current[LINE_TEXT] = value.value
+
+	assert(_in_prompt or _in_response)
+	var create_key := Callable()
+	var index := -1
+	if _in_prompt:
+		create_key = _create_prompt_key
+		index = _prompt_index
+	else:
+		create_key = _create_response_key
+		index = _response_index
+
+	_current[LINE_KEY] = create_key.call(_character_name, _id, index)
 
 
 func visit_numberliteral(value: _AST.NumberLiteral) -> void:
@@ -85,15 +116,19 @@ func cancel() -> void:
 	_current = {}
 	_stack = []
 	_id = -1
+	_in_prompt = false
+	_in_response = true
 	_in_conditions = false
 	_in_actions = false
+	_prompt_index = -1
+	_response_index = -1
 
 
 
 func finish() -> void:
 	_pop_to_root()
 	_add_default()
-	_character[_id] = _stack[0]
+	_out[_id] = _stack[0]
 	cancel()
 
 
@@ -124,4 +159,3 @@ func _add_default() -> void:
 	var annotations: Array = _lazy_get(BRANCH_ANNOTATIONS, [])
 	if annotations.find("seq") == -1 and annotations.find("rng") == -1:
 		annotations.push_back("seq")
-

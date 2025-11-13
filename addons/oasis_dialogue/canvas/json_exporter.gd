@@ -4,6 +4,7 @@ extends Node
 const REGISTRY_KEY := "json_exporter"
 
 const _AST := preload("res://addons/oasis_dialogue/model/ast.gd")
+const _CsvFile := preload("res://addons/oasis_dialogue/io/csv_file.gd")
 const _ExportConfig := preload("res://addons/oasis_dialogue/model/export_config.gd")
 const _JsonFile := preload("res://addons/oasis_dialogue/io/json_file.gd")
 const _JsonVisitor := preload("res://addons/oasis_dialogue/visitor/json_visitor.gd")
@@ -55,7 +56,12 @@ func export(config: _ExportConfig, files: Array[_OasisFile]) -> void:
 		character_name = character_name.to_lower()
 
 		var character: Dictionary[int, Variant] = {}
-		var json_visitor := _JsonVisitor.new(character)
+		var json_visitor := _JsonVisitor.new(
+				character,
+				character_name,
+				_CsvFile.create_prompt_key,
+				_CsvFile.create_response_key,
+		)
 		for key in file.get_sections():
 			if not _OasisFile.section_is_branch(key):
 				continue
