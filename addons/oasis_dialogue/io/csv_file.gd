@@ -1,8 +1,16 @@
 extends RefCounted
 
-
 var _headers: Array[String] = []
 var _data: Dictionary[String, String] = {}
+
+
+static func create_prompt_key(character: String, branch: int, index: int) -> String:
+	return "%s_%dp%d" % [character.to_lower(), branch, index]
+
+
+static func create_response_key(character: String, branch: int, index: int) -> String:
+	return "%s_%dr%d" % [character.to_lower(), branch, index]
+
 
 func set_headers(...headers: Array) -> void:
 	_headers.clear()
@@ -45,12 +53,12 @@ func get_prompt(character: String, branch: int, prompt_index: int, column_index 
 	assert(branch > -1)
 	assert(prompt_index > -1)
 	assert(column_index > -1)
-	var key := _format_prompt_key(character, branch, prompt_index)
+	var key := create_prompt_key(character, branch, prompt_index)
 	return _get_value_slice(key, column_index)
 
 
 func get_prompt_translation_count(character: String, branch: int, prompt_index: int) -> int:
-	var key := _format_prompt_key(character, branch, prompt_index)
+	var key := create_prompt_key(character, branch, prompt_index)
 	return _get_value_column_count(key)
 
 
@@ -63,12 +71,12 @@ func get_response(character: String, branch: int, response_index: int, column_in
 	assert(branch > -1)
 	assert(response_index > -1)
 	assert(column_index > -1)
-	var key := _format_response_key(character, branch, response_index)
+	var key := create_response_key(character, branch, response_index)
 	return _get_value_slice(key, column_index)
 
 
 func get_response_translation_count(character: String, branch: int, response_index: int) -> int:
-	var key := _format_response_key(character, branch, response_index)
+	var key := create_response_key(character, branch, response_index)
 	return _get_value_column_count(key)
 
 
@@ -85,12 +93,12 @@ func update(staged: Stage) -> void:
 
 	var prompts := staged.get_prompts()
 	for i in prompts.size():
-		var key := _format_prompt_key(staged.character, staged.branch, i)
+		var key := create_prompt_key(staged.character, staged.branch, i)
 		_data[key] = prompts[i]
 
 	var responses := staged.get_responses()
 	for i in responses.size():
-		var key := _format_response_key(staged.character, staged.branch, i)
+		var key := create_response_key(staged.character, staged.branch, i)
 		_data[key] = responses[i]
 
 
@@ -139,16 +147,8 @@ func _format_prompts_key(character: String, branch: int) -> String:
 	return "%s_%dp" % [character, branch]
 
 
-func _format_prompt_key(character: String, branch: int, index: int) -> String:
-	return "%s_%dp%d" % [character, branch, index]
-
-
 func _format_responses_key(character: String, branch: int) -> String:
 	return "%s_%dr" % [character, branch]
-
-
-func _format_response_key(character: String, branch: int, index: int) -> String:
-	return "%s_%dr%d" % [character, branch, index]
 
 
 func _get_partial_matches(partial_key: String) -> Dictionary[String, String]:
