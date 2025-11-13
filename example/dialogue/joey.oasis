@@ -1,0 +1,59 @@
+[[0]]
+[value]
+@prompt
+Woah woah woah.
+Haven't seen you around here before.
+@response
+Really? I've been here for YEARS. { branch 1 }
+Just moved in. { branch 2 }
+[position_offset]
+Vector2(440.0, 160.0)
+
+[[2]]
+[value]
+@prompt
+Oh nice, how do you like it so far?
+@response
+I love it! { branch 3 }
+It's eh. { branch 4 }
+[position_offset]
+Vector2(1020.0, 460.0)
+
+[[1]]
+[value]
+@prompt
+No way. I knew I shouldn't have stopped taking my pills.
+Anyways... { branch 5 }
+[position_offset]
+Vector2(1020.0, 20.0)
+
+[[3]]
+[value]
+@prompt
+That's great! { branch 5 }
+[position_offset]
+Vector2(1500.0, 420.0)
+
+[[4]]
+[value]
+@prompt
+Sorry to hear that. { branch 5 }
+[position_offset]
+Vector2(1500.0, 660.0)
+
+[[5]]
+[value]
+@prompt
+Well, my name is Joey. You can call me Joe, J, Bob.  Whatever you want really.
+I've run the one and only fishing shop in this whole town.
+So come on down when you want to take a little swim.
+@response
+Thanks will do.
+Swim? I thought you're a fishing shop?
+Why Bob though?
+[position_offset]
+Vector2(2020.0, 0.0)
+
+[[data]]
+[display_name]
+Joey

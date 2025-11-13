@@ -1,0 +1,2 @@
+## Ignore .oasis directory as it stores user and session settings.
+.oasis/

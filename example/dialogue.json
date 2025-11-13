@@ -1,0 +1,145 @@
+{
+	"joey": {
+		"0": {
+			"annotations": [
+				"seq"
+			],
+			"prompts": [
+				{
+					"key": "joey_0p0"
+				},
+				{
+					"key": "joey_0p1"
+				}
+			],
+			"responses": [
+				{
+					"actions": [
+						{
+							"name": "branch",
+							"value": 1
+						}
+					],
+					"key": "joey_0r0"
+				},
+				{
+					"actions": [
+						{
+							"name": "branch",
+							"value": 2
+						}
+					],
+					"key": "joey_0r1"
+				}
+			]
+		},
+		"1": {
+			"annotations": [
+				"seq"
+			],
+			"prompts": [
+				{
+					"key": "joey_1p0"
+				},
+				{
+					"actions": [
+						{
+							"name": "branch",
+							"value": 5
+						}
+					],
+					"key": "joey_1p1"
+				}
+			]
+		},
+		"2": {
+			"annotations": [
+				"seq"
+			],
+			"prompts": [
+				{
+					"key": "joey_2p0"
+				}
+			],
+			"responses": [
+				{
+					"actions": [
+						{
+							"name": "branch",
+							"value": 3
+						}
+					],
+					"key": "joey_2r0"
+				},
+				{
+					"actions": [
+						{
+							"name": "branch",
+							"value": 4
+						}
+					],
+					"key": "joey_2r1"
+				}
+			]
+		},
+		"3": {
+			"annotations": [
+				"seq"
+			],
+			"prompts": [
+				{
+					"actions": [
+						{
+							"name": "branch",
+							"value": 5
+						}
+					],
+					"key": "joey_3p0"
+				}
+			]
+		},
+		"4": {
+			"annotations": [
+				"seq"
+			],
+			"prompts": [
+				{
+					"actions": [
+						{
+							"name": "branch",
+							"value": 5
+						}
+					],
+					"key": "joey_4p0"
+				}
+			]
+		},
+		"5": {
+			"annotations": [
+				"seq"
+			],
+			"prompts": [
+				{
+					"key": "joey_5p0"
+				},
+				{
+					"key": "joey_5p1"
+				},
+				{
+					"key": "joey_5p2"
+				}
+			],
+			"responses": [
+				{
+					"key": "joey_5r0"
+				},
+				{
+					"key": "joey_5r1"
+				},
+				{
+					"key": "joey_5r2"
+				}
+			]
+		}
+	}
+}
