@@ -21,8 +21,6 @@ func visit_action(action: _AST.Action) -> void:
 		return
 	elif not action.value:
 		emit_error("Missing branch id after %s action." % _connect_keyword, action.line, action.column)
-	elif action.value.value == _id:
-		emit_error("Cannot %s to itself." % _connect_keyword, action.value.line, action.value.column)
 
 
 func cancel() -> void:
