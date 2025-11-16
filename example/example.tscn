@@ -6,9 +6,9 @@
 
 [node name="Example" type="Node" node_paths=PackedStringArray("_label", "_character", "_responses_parent")]
 script = ExtResource("1_fdt2r")
-_label = NodePath("Control/CenterContainer/VBoxContainer/Prompt/Label")
+_label = NodePath("PromptContainer/Label")
 _character = NodePath("OasisCharacter")
-_responses_parent = NodePath("Control/CenterContainer/VBoxContainer/Responses")
+_responses_parent = NodePath("ResponseContainer/Responses")
 
 [node name="ExampleDialogueManager" type="Node" parent="."]
 script = ExtResource("2_pjyox")
@@ -20,31 +20,26 @@ _manager = NodePath("../ExampleDialogueManager")
 _character = "Joey"
 metadata/_custom_type_script = "uid://b8fo0vqrq63n2"
 
-[node name="Control" type="Control" parent="."]
-layout_mode = 3
+[node name="PromptContainer" type="CenterContainer" parent="."]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="CenterContainer" type="CenterContainer" parent="Control"]
-layout_mode = 1
-anchors_preset = 15
+[node name="Label" type="Label" parent="PromptContainer"]
+layout_mode = 2
+text = "press space to start"
+
+[node name="ResponseContainer" type="CenterContainer" parent="."]
+anchors_preset = 12
+anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_top = -240.0
 grow_horizontal = 2
-grow_vertical = 2
+grow_vertical = 0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Control/CenterContainer"]
-layout_mode = 2
-
-[node name="Prompt" type="VBoxContainer" parent="Control/CenterContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="Control/CenterContainer/VBoxContainer/Prompt"]
-layout_mode = 2
-text = "press space to start..."
-
-[node name="Responses" type="VBoxContainer" parent="Control/CenterContainer/VBoxContainer"]
+[node name="Responses" type="VBoxContainer" parent="ResponseContainer"]
+custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
