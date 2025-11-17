@@ -6,7 +6,7 @@ func has_prompt(t: OasisTraverser) -> bool:
 			func(l: OasisLine) -> bool:
 				return t.get_condition_handler().call(t, l.conditions)
 	)
-	var i := randi_range(0, prompts.size())
+	var i := randi_range(0, prompts.size() - 1)
 	t.set_prompt_index(i)
 	return true
 
