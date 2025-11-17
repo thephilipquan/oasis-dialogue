@@ -70,9 +70,8 @@ func visit_response(_response: _AST.Response) -> void:
 
 
 func visit_condition(condition: _AST.Condition) -> void:
-	if _in_actions or _in_conditions:
+	if _in_conditions:
 		_pop()
-		_in_actions = false
 	_in_conditions = true
 	var conditions: Array = _lazy_get(LINE_CONDITIONS, [])
 	_push_new()
@@ -81,9 +80,8 @@ func visit_condition(condition: _AST.Condition) -> void:
 
 
 func visit_action(action: _AST.Action) -> void:
-	if _in_actions or _in_conditions:
+	if _in_actions:
 		_pop()
-		_in_conditions = false
 	_in_actions = true
 	var actions: Array = _lazy_get(LINE_ACTIONS, [])
 	_push_new()
@@ -93,6 +91,8 @@ func visit_action(action: _AST.Action) -> void:
 
 func visit_stringliteral(value: _AST.StringLiteral) -> void:
 	if _in_actions or _in_conditions:
+		_in_actions = false
+		_in_conditions = false
 		_pop()
 
 	assert(_in_prompt or _in_response)
