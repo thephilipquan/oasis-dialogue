@@ -44,7 +44,7 @@ func visit_branch(branch: _AST.Branch) -> void:
 
 
 func visit_annotation(annotation: _AST.Annotation) -> void:
-	var annotations: Array = _lazy_get(BRANCH_RESPONSES, [])
+	var annotations: Array = _lazy_get(BRANCH_ANNOTATIONS, [])
 	annotations.push_back(annotation.name)
 
 
