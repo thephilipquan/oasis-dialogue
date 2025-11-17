@@ -27,7 +27,7 @@ func test_prompt_to_prompt() -> void:
 	sut.init_controllers({ "seq": seq })
 	sut.init_translation(func(s: String) -> String: return s)
 	sut.init_condition_handler(
-			func(a: Array[OasisKeyValue]) -> bool:
+			func(t: OasisTraverser, a: Array[OasisKeyValue]) -> bool:
 				return true
 	)
 	sut.init_action_handler(
@@ -56,7 +56,7 @@ func test_prompt_to_response() -> void:
 	sut.init_controllers({ "seq": seq })
 	sut.init_translation(func(s: String) -> String: return s)
 	sut.init_condition_handler(
-			func(a: Array[OasisKeyValue]) -> bool:
+			func(t: OasisTraverser, a: Array[OasisKeyValue]) -> bool:
 				return true
 	)
 	sut.init_action_handler(
@@ -83,7 +83,7 @@ func test_prompt_to_finished() -> void:
 	sut.init_controllers({ "seq": seq })
 	sut.init_translation(func(s: String) -> String: return s)
 	sut.init_condition_handler(
-			func(a: Array[OasisKeyValue]) -> bool:
+			func(t: OasisTraverser, a: Array[OasisKeyValue]) -> bool:
 				return true
 	)
 	sut.init_action_handler(
@@ -123,7 +123,7 @@ func test_response_to_prompt() -> void:
 	sut.init_controllers({ "seq": seq })
 	sut.init_translation(func(s: String) -> String: return s)
 	sut.init_condition_handler(
-			func(a: Array[OasisKeyValue]) -> bool:
+			func(t: OasisTraverser, a: Array[OasisKeyValue]) -> bool:
 				return true
 	)
 	sut.init_action_handler(
@@ -166,7 +166,7 @@ func test_response_to_response() -> void:
 	sut.init_controllers({ "seq": seq })
 	sut.init_translation(func(s: String) -> String: return s)
 	sut.init_condition_handler(
-			func(a: Array[OasisKeyValue]) -> bool:
+			func(t: OasisTraverser, a: Array[OasisKeyValue]) -> bool:
 				return true
 	)
 	sut.init_action_handler(
@@ -196,7 +196,7 @@ func test_response_to_finished() -> void:
 	sut.init_controllers({ "seq": seq })
 	sut.init_translation(func(s: String) -> String: return s)
 	sut.init_condition_handler(
-			func(a: Array[OasisKeyValue]) -> bool:
+			func(t: OasisTraverser, a: Array[OasisKeyValue]) -> bool:
 				return true
 	)
 	sut.init_action_handler(

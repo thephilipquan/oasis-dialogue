@@ -142,7 +142,7 @@ func _translate(key: String) -> String:
 	return ""
 
 
-func _validate_conditions(conditions: Array[OasisKeyValue]) -> bool:
+func _validate_conditions(traverser: OasisTraverser, conditions: Array[OasisKeyValue]) -> bool:
 	return true
 
 
