@@ -115,9 +115,15 @@ func _has_prompt() -> bool:
 
 
 func _next_prompt() -> String:
+	var current_branch := _current.id
+
 	var translated := _translate.call(_current.prompts[_p].key)
-	_call_controllers(&"increment_prompt_index")
-	_action_handler.call(self, _current.prompts[_p - 1].actions)
+	_action_handler.call(self, _current.prompts[_p].actions)
+
+	# Only increment if we are still on the same branch.
+	if _current.id == current_branch:
+		_call_controllers(&"increment_prompt_index")
+
 	return translated
 
 
