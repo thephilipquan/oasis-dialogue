@@ -1,6 +1,10 @@
 extends OasisTraverserController
 
 
+func get_annotation() -> String:
+	return "seq"
+
+
 func has_prompt(t: OasisTraverser) -> bool:
 	var current := t.get_current()
 	var condition_handler := t.get_condition_handler()

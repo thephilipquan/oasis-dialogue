@@ -1,6 +1,10 @@
 extends OasisTraverserController
 
 
+func get_annotation() -> String:
+	return "rng"
+
+
 func has_prompt(t: OasisTraverser) -> bool:
 	var prompts := t._current.prompts.filter(
 			func(l: OasisLine) -> bool:

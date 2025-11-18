@@ -22,8 +22,11 @@ var _default_traverser_controllers: Dictionary[String, OasisTraverserController]
 
 
 func _init() -> void:
-	_default_traverser_controllers["seq"] = preload("res://addons/oasis_dialogue/traverser_controller/seq.gd").new()
-	_default_traverser_controllers["rng"] = preload("res://addons/oasis_dialogue/traverser_controller/rng.gd").new()
+	var seq_controller := preload("res://addons/oasis_dialogue/traverser_controller/seq.gd").new()
+	_default_traverser_controllers[seq_controller.get_annotation()] = seq_controller
+
+	var rng_controller := preload("res://addons/oasis_dialogue/traverser_controller/rng.gd").new()
+	_default_traverser_controllers[rng_controller.get_annotation()] = rng_controller
 
 
 ## Return an [OasisTraverer] with all reachable branches for the given [param character] starting

@@ -2,6 +2,10 @@
 class_name OasisTraverserController
 extends Node
 
+@abstract
+func get_annotation() -> String
+
+
 func reachable_branches_set(traverser: OasisTraverser) -> bool:
 	return false
 
