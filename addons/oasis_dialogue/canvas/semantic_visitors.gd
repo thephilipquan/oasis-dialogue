@@ -42,11 +42,11 @@ func setup(registry: _Registry) -> void:
 	var parse_error_visitor := _ParseErrorVisitor.new(on_err)
 	var empty_branch_visitor := _EmptyBranchVisitor.new(on_err)
 	var duplicate_annotation_visitor := _DuplicateAnnotationVisitor.new(on_err)
-	var unique_type_visitor := _UniqueTypeVisitor.new(
-		_Token.type_to_string(_Token.Type.RNG),
-		_Token.type_to_string(_Token.Type.SEQ),
-	)
-	unique_type_visitor.init_on_err(on_err)
+	#var unique_type_visitor := _UniqueTypeVisitor.new(
+		#_Token.type_to_string(_Token.Type.RNG),
+		#_Token.type_to_string(_Token.Type.SEQ),
+	#)
+	#unique_type_visitor.init_on_err(on_err)
 	var validate_connect_visitor := _ValidateConnectVisitor.new(
 		_Global.CONNECT_BRANCH_KEYWORD,
 		on_err,
@@ -69,7 +69,7 @@ func setup(registry: _Registry) -> void:
 		parse_error_visitor,
 		empty_branch_visitor,
 		duplicate_annotation_visitor,
-		unique_type_visitor,
+		#unique_type_visitor,
 		validate_connect_visitor,
 		create_branch_visitor,
 		connect_branch_visitor,
