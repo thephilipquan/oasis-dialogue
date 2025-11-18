@@ -19,15 +19,13 @@ const _JsonValidator := preload("res://addons/oasis_dialogue/model/oasis_json_va
 @export
 var _json_path := ""
 
-var _default_traverser_controllers: Dictionary[String, OasisTraverserController] = {}
+var _controllers: Dictionary[String, OasisTraverserController] = {}
 
 
-func _init() -> void:
-	var seq_controller := preload("res://addons/oasis_dialogue/traverser_controller/seq.gd").new()
-	_default_traverser_controllers[seq_controller.get_annotation()] = seq_controller
-
-	var rng_controller := preload("res://addons/oasis_dialogue/traverser_controller/rng.gd").new()
-	_default_traverser_controllers[rng_controller.get_annotation()] = rng_controller
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_READY:
+		_controllers.merge(_load_default_controllers())
+		_controllers.merge(_get_child_controllers(), true)
 
 
 ## Return an [OasisTraverer] with all reachable branches for the given [param character] starting
@@ -47,10 +45,8 @@ func get_reachable_branches(character: String, from: int) -> OasisTraverser:
 		return null
 
 	var reachable_branches: Dictionary[int, OasisBranch] = _get_reachable_branches(data, from)
-	var controllers := _default_traverser_controllers.duplicate()
-	#var annotations := _collect_reachable_annotations(reachable_branches)
-	# todo: load custom controllers
-	# validate a controller exists for each annotation
+	var annotations := _collect_reachable_annotations(reachable_branches)
+	var controllers := _filter_controllers(annotations)
 
 	var traverser := OasisTraverser.new(reachable_branches, from)
 	traverser.init_controllers(controllers)
@@ -140,6 +136,51 @@ func _append_unseen_branches(stack: Array[int], seen: Dictionary[int, bool], act
 			continue
 		stack.push_back(action.value)
 		seen[action.value] = true
+
+
+func _collect_reachable_annotations(branches: Dictionary[int, OasisBranch]) -> Array[String]:
+	var annotations: Array[String] = []
+	var seen: Dictionary[String, bool] = {} # Dummy value.
+	for branch in branches.values():
+		for a in branch.annotations:
+			if not a in seen:
+				annotations.push_back(a)
+				seen[a] = true
+	return annotations
+
+
+func _load_default_controllers() -> Dictionary[String, OasisTraverserController]:
+	var controllers: Dictionary[String, OasisTraverserController] = {}
+
+	var seq_controller := preload("res://addons/oasis_dialogue/traverser_controller/seq.gd").new()
+	controllers[seq_controller.get_annotation()] = seq_controller
+
+	var rng_controller := preload("res://addons/oasis_dialogue/traverser_controller/rng.gd").new()
+	controllers[rng_controller.get_annotation()] = rng_controller
+
+	return controllers
+
+
+func _get_child_controllers() -> Dictionary[String, OasisTraverserController]:
+	var controllers: Dictionary[String, OasisTraverserController] = {}
+	for child in get_children():
+		if is_instance_of(child, OasisTraverserController):
+			var cast := child as OasisTraverserController
+			controllers[cast.get_annotation()] = cast
+	return controllers
+
+
+func _filter_controllers(annotations: Array[String]) -> Dictionary[String, OasisTraverserController]:
+	var controllers: Dictionary[String, OasisTraverserController] = {}
+	for annotation in annotations:
+		if annotation in _controllers:
+			controllers[annotation] = _controllers[annotation]
+		else:
+			push_warning(
+					"No controller found to handle annotation (%s). Provide a OasisTraverserController and add it as a child of this node (%s)"
+					% [annotation, name]
+			)
+	return controllers
 
 
 func _translate(key: String) -> String:
