@@ -72,9 +72,11 @@ func set_prompt_index(index: int) -> void:
 
 func branch(id: int) -> void:
 	_current = _branches[id]
+	_current_event(&"exit_branch")
 	_p = 0
 	_responses.clear()
 	_responded = false
+	_current_event(&"enter_branch")
 
 
 func next(response_index := 0) -> void:
@@ -94,6 +96,7 @@ func next(response_index := 0) -> void:
 	if _has_responses() and not _responded:
 		responses.emit(_translate_responses())
 	elif not prompted:
+		_event(&"finish")
 		finished.emit()
 
 
@@ -110,7 +113,7 @@ func _respond(response_index: int) -> void:
 
 
 func _has_prompt() -> bool:
-	_call_controllers(&"has_prompt")
+	_current_exclusive_event(&"has_prompt")
 	return _p < _current.prompts.size()
 
 
@@ -122,7 +125,7 @@ func _next_prompt() -> String:
 
 	# Only increment if we are still on the same branch.
 	if _current.id == current_branch:
-		_call_controllers(&"increment_prompt_index")
+		_current_exclusive_event(&"increment_prompt_index")
 
 	return translated
 
@@ -147,11 +150,30 @@ func _translate_responses() -> Array[String]:
 	return translations
 
 
-func _call_controllers(method: StringName) -> void:
+func _event(method: StringName) -> void:
+	for key in _controllers.keys():
+		_controllers[key].call(method, self)
+
+
+func _current_event(method: StringName) -> void:
+	for a in _current.annotations:
+		if not a in _controllers:
+			# Warning already emitted in OasisManager:171.
+			continue
+
+		_controllers[a].call(method, self)
+
+
+func _current_exclusive_event(method: StringName) -> void:
 	var handled: Array[String] = []
 	for annotation in _current.annotations:
+		if not annotation in _controllers:
+			# Warning already emitted in OasisManager:171.
+			continue
+
 		if _controllers[annotation].call(method, self):
 			handled.push_back(annotation)
+
 	if handled.size() > 1:
 		push_warning(
 				"Multiple controllers (%s) handled method (%s). When only one should." %
