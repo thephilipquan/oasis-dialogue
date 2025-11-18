@@ -29,7 +29,7 @@ func _get_line_syntax_highlighting(line_number: int) -> Dictionary:
 	for token in tokens:
 		var color := _NORMAL
 		match token.type:
-			Type.ATSIGN, Type.SEQ, Type.RNG, Type.UNIQUE, Type.PROMPT, Type.RESPONSE:
+			Type.ATSIGN, Type.PROMPT, Type.RESPONSE:
 				color = _KEYWORD
 			Type.IDENTIFIER:
 				color = _IDENTIFIER

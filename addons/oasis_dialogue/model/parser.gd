@@ -153,11 +153,6 @@ func parse(tokens: Array[_Token]) -> _AST.Branch:
 
 
 func _parse_annotations() -> void:
-	const expected: Array[_Type] = [
-			_Type.SEQ,
-			_Type.RNG,
-			_Type.UNIQUE,
-	]
 	const prompt_sequence: Array[_Type] =  [_Type.ATSIGN, _Type.PROMPT]
 	const response_sequence: Array[_Type] =  [_Type.ATSIGN, _Type.RESPONSE]
 	while (
@@ -168,7 +163,7 @@ func _parse_annotations() -> void:
 	):
 		consume()
 
-		var token := peek_expected(expected)
+		var token := peek_expected(_Type.IDENTIFIER)
 		if token:
 			consume()
 			append_child(_AST.Annotation.new(

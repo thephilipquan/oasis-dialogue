@@ -359,8 +359,8 @@ func test_multiple_annotation() -> void:
 		assert_is(child, AST.Annotation)
 
 
-func test_annotation_unknown_identifier_appends_error() -> void:
-	var source := "@hey"
+func test_annotation_with_non_identifier_appends_error() -> void:
+	var source := "@6"
 	var tokens := lexer.tokenize(source)
 	var branch := sut.parse(tokens)
 
@@ -369,7 +369,7 @@ func test_annotation_unknown_identifier_appends_error() -> void:
 
 
 func test_annotation_error_consumes_whole_line() -> void:
-	var source := "@a\n@rng"
+	var source := "@6\n@rng"
 	var tokens := lexer.tokenize(source)
 	var branch := sut.parse(tokens)
 

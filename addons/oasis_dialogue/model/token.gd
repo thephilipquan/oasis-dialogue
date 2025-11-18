@@ -15,19 +15,11 @@ enum Type {
 	EOL,
 
 	# Keywords.
-	ID,
-	SEQ,
-	RNG,
-	UNIQUE,
 	PROMPT,
 	RESPONSE,
 }
 
 const reserved_keywords: Dictionary[String, Type] = {
-	"id": Type.ID,
-	"seq": Type.SEQ,
-	"rng": Type.RNG,
-	"unique": Type.UNIQUE,
 	"prompt": Type.PROMPT,
 	"response": Type.RESPONSE,
 }
