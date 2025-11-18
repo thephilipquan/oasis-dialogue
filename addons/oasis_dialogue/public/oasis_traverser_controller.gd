@@ -5,9 +5,8 @@ extends Node
 @abstract
 func get_annotation() -> String
 
-
-func reachable_branches_set(traverser: OasisTraverser) -> bool:
-	return false
+func reachable_branches_set(traverser: OasisTraverser) -> void:
+	pass
 
 func has_prompt(traverser: OasisTraverser) -> bool:
 	return false
@@ -15,11 +14,11 @@ func has_prompt(traverser: OasisTraverser) -> bool:
 func increment_prompt_index(traverser: OasisTraverser) -> bool:
 	return false
 
-func start(traverser: OasisTraverser) -> bool:
-	return false
+func start(traverser: OasisTraverser) -> void:
+	pass
 
-func finish(traverser: OasisTraverser) -> bool:
-	return false
+func finish(traverser: OasisTraverser) -> void:
+	pass
 
-func visit(traverser: OasisTraverser) -> bool:
-	return false
+func visit(traverser: OasisTraverser) -> void:
+	pass
