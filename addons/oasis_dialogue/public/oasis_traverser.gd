@@ -25,7 +25,8 @@ var _action_handler := Callable()
 var _current: OasisBranch = null
 var _p := 0
 
-var _responding := false
+var _responses: Array[OasisLine] = []
+var _responded := false
 
 
 func _init(branches: Dictionary[int, OasisBranch], root: int) -> void:
@@ -72,11 +73,13 @@ func set_prompt_index(index: int) -> void:
 func branch(id: int) -> void:
 	_current = _branches[id]
 	_p = 0
-	_responding = false
+	_responses.clear()
+	_responded = false
 
 
 func next(response_index := 0) -> void:
-	if _responding:
+	if _responses.size() != 0:
+		_responded = true
 		_respond(response_index)
 
 	if _has_prompt():
@@ -84,23 +87,24 @@ func next(response_index := 0) -> void:
 
 	if _has_prompt():
 		return
-	elif _has_responses() and not _responding:
-		_responding = true
-		responses.emit(_next_responses())
+
+	_responses = _filter_responses()
+	if _has_responses() and not _responded:
+		responses.emit(_translate_responses())
 	else:
 		finished.emit()
 
 
 func _respond(response_index: int) -> void:
-	if response_index >= _current.responses.size():
+	if response_index >= _responses.size():
 		push_warning(
 				"response index (%d) outside expected range (%d)" % [
 					response_index,
-					_current.responses.size(),
+					_responses.size(),
 				]
 		)
 		return
-	_action_handler.call(self, _current.responses[response_index].actions)
+	_action_handler.call(self, _responses[response_index].actions)
 
 
 func _has_prompt() -> bool:
@@ -116,15 +120,23 @@ func _next_prompt() -> String:
 
 
 func _has_responses() -> bool:
-	return _current.responses.size() > 0
+	return _responses.size() > 0
 
 
-func _next_responses() -> Array[String]:
-	var translated: Array[String] = []
-	translated.resize(_current.responses.size())
-	for i in translated.size():
-		translated[i] = _translate.call(_current.responses[i].key)
-	return translated
+func _filter_responses() -> Array[OasisLine]:
+	return _current.responses.filter(
+			func(line: OasisLine) -> bool:
+				return _condition_handler.call(self, line.conditions)
+	)
+
+
+func _translate_responses() -> Array[String]:
+	var translations: Array[String] = []
+	translations.assign(_responses.map(
+			func(l: OasisLine) -> String:
+				return _translate.call(l.key)
+	))
+	return translations
 
 
 func _call_controllers(method: StringName) -> void:
