@@ -1,6 +1,7 @@
 class_name OasisManager
 extends Node
 
+const _Global := preload("res://addons/oasis_dialogue/global.gd")
 const _JsonFile := preload("res://addons/oasis_dialogue/io/json_file.gd")
 const _JsonValidator := preload("res://addons/oasis_dialogue/model/oasis_json_validator.gd")
 
@@ -132,8 +133,7 @@ func _get_reachable_branches(branches: Dictionary[int, OasisBranch], root: int) 
 
 func _append_unseen_branches(stack: Array[int], seen: Dictionary[int, bool], actions: Array[OasisKeyValue]) -> void:
 	for action in actions:
-		if action.key != "branch":
-			push_warning("refactor this")
+		if action.key != _Global.CONNECT_BRANCH_KEYWORD:
 			continue
 		if action.value in seen:
 			continue
