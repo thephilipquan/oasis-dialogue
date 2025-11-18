@@ -20,5 +20,8 @@ func start(traverser: OasisTraverser) -> void:
 func finish(traverser: OasisTraverser) -> void:
 	pass
 
-func visit(traverser: OasisTraverser) -> void:
+func enter_branch(traverser: OasisTraverser) -> void:
+	pass
+
+func exit_branch(traverser: OasisTraverser) -> void:
 	pass
