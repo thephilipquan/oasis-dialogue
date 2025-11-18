@@ -97,6 +97,7 @@ func _load_character_dialogue(character: String) -> Dictionary[int, OasisBranch]
 	for key in data:
 		var id := int(key)
 		var branch := OasisBranch.from_json(data[key])
+		branch.init_id(id)
 		branches[id] = branch
 
 	return branches
