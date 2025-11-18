@@ -78,11 +78,13 @@ func branch(id: int) -> void:
 
 
 func next(response_index := 0) -> void:
+	var prompted := false
 	if _responses.size() != 0:
 		_responded = true
 		_respond(response_index)
 
 	if _has_prompt():
+		prompted = true
 		prompt.emit(_next_prompt())
 
 	if _has_prompt():
@@ -91,7 +93,7 @@ func next(response_index := 0) -> void:
 	_responses = _filter_responses()
 	if _has_responses() and not _responded:
 		responses.emit(_translate_responses())
-	else:
+	elif not prompted:
 		finished.emit()
 
 

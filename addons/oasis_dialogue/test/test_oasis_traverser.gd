@@ -94,6 +94,8 @@ func test_prompt_to_finished() -> void:
 	watch_signals(sut)
 	sut.next()
 	assert_signal_emitted_with_parameters(sut.prompt, ["a"])
+	assert_signal_not_emitted(sut.finished)
+	sut.next()
 	assert_signal_emitted(sut.finished)
 
 
