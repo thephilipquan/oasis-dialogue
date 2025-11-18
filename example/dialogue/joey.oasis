@@ -1,58 +1,128 @@
 [[0]]
 [value]
 @prompt
-Woah woah woah.
-Haven't seen you around here before.
+Hello World!
 @response
-Really? I've been here for YEARS. { branch 1 }
-Just moved in. { branch 2 }
+Why are you saying that? { branch 1 }
+Howd' you know my name was World? { branch 2 }
 [position_offset]
-Vector2(440.0, 160.0)
+Vector2(-540.0, -220.0)
 
 [[2]]
 [value]
+@track
 @prompt
-Oh nice, how do you like it so far?
+It is? { seen 2 }
+You have a weird name.
 @response
-I love it! { branch 3 }
-It's eh. { branch 4 }
+I'm the weird one here? { branch 7 }
 [position_offset]
-Vector2(1020.0, 460.0)
+Vector2(240.0, -80.0)
 
 [[1]]
 [value]
+@track
 @prompt
-No way. I knew I shouldn't have stopped taking my pills.
-Anyways... { branch 5 }
+What do you mean?
+Isn't that what you say in situations like these?
+@response
+You're right. Please continue. { branch 3 }
+Uhhh.. I wouldn't know. { branch 5 }
 [position_offset]
-Vector2(1020.0, 20.0)
+Vector2(160.0, -500.0)
 
 [[3]]
 [value]
 @prompt
-That's great! { branch 5 }
+Oh no. I'm done.
+@response
+What... { branch 4 }
 [position_offset]
-Vector2(1500.0, 420.0)
-
-[[4]]
-[value]
-@prompt
-Sorry to hear that. { branch 5 }
-[position_offset]
-Vector2(1500.0, 660.0)
+Vector2(660.0, -580.0)
 
 [[5]]
 [value]
 @prompt
-Well, my name is Joey. You can call me Joe, J, Bob.  Whatever you want really.
-I've run the one and only fishing shop in this whole town.
-So come on down when you want to take a little swim.
-@response
-Thanks will do.
-Swim? I thought you're a fishing shop?
-Why Bob though?
+Well. { branch 7 }
 [position_offset]
-Vector2(2020.0, 0.0)
+Vector2(720.0, -340.0)
+
+[[4]]
+[value]
+@response
+That's it? { branch 6 }
+[position_offset]
+Vector2(1080.0, -560.0)
+
+[[6]]
+[value]
+@prompt
+Want to hear it again?
+@response
+Yes please! { weird branch 8 }
+Oh no... { branch 8 }
+[position_offset]
+Vector2(1540.0, -600.0)
+
+[[7]]
+[value]
+@prompt
+Okay.
+Now its your turn to say hello world.
+@response
+No. { branch 13 }
+Hello World! { branch 12 }
+[position_offset]
+Vector2(2620.0, -60.0)
+
+[[10]]
+[value]
+@prompt
+Ummm. No offsense but..
+What's worng with you?
+@response
+YOU STARTED THIS! { branch 7 }
+[position_offset]
+Vector2(2620.0, -400.0)
+
+[[11]]
+[value]
+@response
+world... { branch 12 }
+[position_offset]
+Vector2(3820.0, -160.0)
+
+[[12]]
+[value]
+@prompt
+fin
+[position_offset]
+Vector2(3700.0, 300.0)
+
+[[13]]
+[value]
+@rng
+@track
+@prompt
+Come on.
+Say it.
+You can do it.
+I believe in you.
+@response
+No. { branch 13 }
+{ seen_more_than 3 } hello... { branch 11 }
+[position_offset]
+Vector2(3300.0, -260.0)
+
+[[8]]
+[value]
+@prompt
+Hello World!
+@response
+Okay. No more. { branch 7 }
+{ is_weird } again! { branch 10 }
+[position_offset]
+Vector2(2000.0, -740.0)
 
 [[data]]
 [display_name]

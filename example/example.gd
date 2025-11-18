@@ -91,6 +91,8 @@ func prompt(item: String) -> void:
 
 
 func show_responses(items: Array[String]) -> void:
+	if _responding:
+		remove_responses()
 	_responding = true
 	_response_size = items.size()
 	for i in items.size():

@@ -7,9 +7,6 @@
 			"prompts": [
 				{
 					"key": "joey_0p0"
-				},
-				{
-					"key": "joey_0p1"
 				}
 			],
 			"responses": [
@@ -35,6 +32,7 @@
 		},
 		"1": {
 			"annotations": [
+				"track",
 				"seq"
 			],
 			"prompts": [
@@ -42,23 +40,7 @@
 					"key": "joey_1p0"
 				},
 				{
-					"actions": [
-						{
-							"name": "branch",
-							"value": 5
-						}
-					],
 					"key": "joey_1p1"
-				}
-			]
-		},
-		"2": {
-			"annotations": [
-				"seq"
-			],
-			"prompts": [
-				{
-					"key": "joey_2p0"
 				}
 			],
 			"responses": [
@@ -69,16 +51,47 @@
 							"value": 3
 						}
 					],
-					"key": "joey_2r0"
+					"key": "joey_1r0"
 				},
 				{
 					"actions": [
 						{
 							"name": "branch",
-							"value": 4
+							"value": 5
 						}
 					],
-					"key": "joey_2r1"
+					"key": "joey_1r1"
+				}
+			]
+		},
+		"2": {
+			"annotations": [
+				"track",
+				"seq"
+			],
+			"prompts": [
+				{
+					"actions": [
+						{
+							"name": "seen",
+							"value": 2
+						}
+					],
+					"key": "joey_2p0"
+				},
+				{
+					"key": "joey_2p1"
+				}
+			],
+			"responses": [
+				{
+					"actions": [
+						{
+							"name": "branch",
+							"value": 7
+						}
+					],
+					"key": "joey_2r0"
 				}
 			]
 		},
@@ -88,13 +101,18 @@
 			],
 			"prompts": [
 				{
+					"key": "joey_3p0"
+				}
+			],
+			"responses": [
+				{
 					"actions": [
 						{
 							"name": "branch",
-							"value": 5
+							"value": 4
 						}
 					],
-					"key": "joey_3p0"
+					"key": "joey_3r0"
 				}
 			]
 		},
@@ -102,15 +120,15 @@
 			"annotations": [
 				"seq"
 			],
-			"prompts": [
+			"responses": [
 				{
 					"actions": [
 						{
 							"name": "branch",
-							"value": 5
+							"value": 6
 						}
 					],
-					"key": "joey_4p0"
+					"key": "joey_4r0"
 				}
 			]
 		},
@@ -120,24 +138,210 @@
 			],
 			"prompts": [
 				{
+					"actions": [
+						{
+							"name": "branch",
+							"value": 7
+						}
+					],
 					"key": "joey_5p0"
-				},
+				}
+			]
+		},
+		"6": {
+			"annotations": [
+				"seq"
+			],
+			"prompts": [
 				{
-					"key": "joey_5p1"
-				},
-				{
-					"key": "joey_5p2"
+					"key": "joey_6p0"
 				}
 			],
 			"responses": [
 				{
-					"key": "joey_5r0"
+					"actions": [
+						{
+							"name": "weird"
+						},
+						{
+							"name": "branch",
+							"value": 8
+						}
+					],
+					"key": "joey_6r0"
 				},
 				{
-					"key": "joey_5r1"
+					"actions": [
+						{
+							"name": "branch",
+							"value": 8
+						}
+					],
+					"key": "joey_6r1"
+				}
+			]
+		},
+		"7": {
+			"annotations": [
+				"seq"
+			],
+			"prompts": [
+				{
+					"key": "joey_7p0"
 				},
 				{
-					"key": "joey_5r2"
+					"key": "joey_7p1"
+				}
+			],
+			"responses": [
+				{
+					"actions": [
+						{
+							"name": "branch",
+							"value": 13
+						}
+					],
+					"key": "joey_7r0"
+				},
+				{
+					"actions": [
+						{
+							"name": "branch",
+							"value": 12
+						}
+					],
+					"key": "joey_7r1"
+				}
+			]
+		},
+		"8": {
+			"annotations": [
+				"seq"
+			],
+			"prompts": [
+				{
+					"key": "joey_8p0"
+				}
+			],
+			"responses": [
+				{
+					"actions": [
+						{
+							"name": "branch",
+							"value": 7
+						}
+					],
+					"key": "joey_8r0"
+				},
+				{
+					"actions": [
+						{
+							"name": "branch",
+							"value": 10
+						}
+					],
+					"conditions": [
+						{
+							"name": "is_weird"
+						}
+					],
+					"key": "joey_8r1"
+				}
+			]
+		},
+		"10": {
+			"annotations": [
+				"seq"
+			],
+			"prompts": [
+				{
+					"key": "joey_10p0"
+				},
+				{
+					"key": "joey_10p1"
+				}
+			],
+			"responses": [
+				{
+					"actions": [
+						{
+							"name": "branch",
+							"value": 7
+						}
+					],
+					"key": "joey_10r0"
+				}
+			]
+		},
+		"11": {
+			"annotations": [
+				"seq"
+			],
+			"responses": [
+				{
+					"actions": [
+						{
+							"name": "branch",
+							"value": 12
+						}
+					],
+					"key": "joey_11r0"
+				}
+			]
+		},
+		"12": {
+			"annotations": [
+				"seq"
+			],
+			"prompts": [
+				{
+					"key": "joey_12p0"
+				}
+			]
+		},
+		"13": {
+			"annotations": [
+				"rng",
+				"track"
+			],
+			"prompts": [
+				{
+					"key": "joey_13p0"
+				},
+				{
+					"key": "joey_13p1"
+				},
+				{
+					"key": "joey_13p2"
+				},
+				{
+					"key": "joey_13p3"
+				}
+			],
+			"responses": [
+				{
+					"actions": [
+						{
+							"name": "branch",
+							"value": 13
+						}
+					],
+					"key": "joey_13r0"
+				},
+				{
+					"actions": [
+						{
+							"name": "branch",
+							"value": 11
+						}
+					],
+					"conditions": [
+						{
+							"name": "seen_more_than",
+							"value": 3
+						}
+					],
+					"key": "joey_13r1"
 				}
 			]
 		}

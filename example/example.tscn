@@ -1,18 +1,24 @@
-[gd_scene load_steps=4 format=3 uid="uid://bfn8ycew7clfb"]
+[gd_scene load_steps=6 format=3 uid="uid://bfn8ycew7clfb"]
 
 [ext_resource type="Script" uid="uid://dhlca4ujw8g8j" path="res://example/example.gd" id="1_fdt2r"]
 [ext_resource type="Script" uid="uid://b2tgmp53fuljo" path="res://example/example_dialogue_manager.gd" id="2_pjyox"]
 [ext_resource type="Script" uid="uid://b8fo0vqrq63n2" path="res://addons/oasis_dialogue/public/oasis_character.gd" id="3_8clr1"]
+[ext_resource type="Script" uid="uid://cu5nnwoifpfw5" path="res://example/track_traverser_controller.gd" id="3_scst5"]
+[ext_resource type="Texture2D" uid="uid://cimjeadvn8t23" path="res://icon.svg" id="4_7cn0y"]
 
 [node name="Example" type="Node" node_paths=PackedStringArray("_label", "_character", "_responses_parent")]
 script = ExtResource("1_fdt2r")
-_label = NodePath("PromptContainer/Label")
+_label = NodePath("PromptContainer/Sprite2D/Label")
 _character = NodePath("OasisCharacter")
 _responses_parent = NodePath("ResponseContainer/Responses")
 
-[node name="ExampleDialogueManager" type="Node" parent="."]
+[node name="ExampleDialogueManager" type="Node" parent="." node_paths=PackedStringArray("track_controller")]
 script = ExtResource("2_pjyox")
+track_controller = NodePath("TrackController")
 _json_path = "res://example/dialogue.json"
+
+[node name="TrackController" type="Node" parent="ExampleDialogueManager"]
+script = ExtResource("3_scst5")
 
 [node name="OasisCharacter" type="Node" parent="." node_paths=PackedStringArray("_manager")]
 script = ExtResource("3_8clr1")
@@ -27,8 +33,16 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Label" type="Label" parent="PromptContainer"]
+[node name="Sprite2D" type="TextureRect" parent="PromptContainer"]
 layout_mode = 2
+texture = ExtResource("4_7cn0y")
+
+[node name="Label" type="Label" parent="PromptContainer/Sprite2D"]
+layout_mode = 0
+offset_left = 172.0
+offset_top = -43.0
+offset_right = 323.0
+offset_bottom = -20.666656
 text = "press space to start"
 
 [node name="ResponseContainer" type="CenterContainer" parent="."]
@@ -36,7 +50,8 @@ anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -240.0
+offset_top = -213.0
+offset_bottom = -99.0
 grow_horizontal = 2
 grow_vertical = 0
 
