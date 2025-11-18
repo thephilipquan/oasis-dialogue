@@ -6,6 +6,9 @@ func get_annotation() -> String:
 
 
 func has_prompt(t: OasisTraverser) -> bool:
+	if t.get_prompt_index() >= t.get_current().prompts.size():
+		return false
+
 	var prompts := t._current.prompts.filter(
 			func(l: OasisLine) -> bool:
 				return t.get_condition_handler().call(t, l.conditions)
