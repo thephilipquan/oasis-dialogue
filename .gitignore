@@ -2,3 +2,4 @@
 .editorconfig
 test.gd*
 .vimrc
+build/
