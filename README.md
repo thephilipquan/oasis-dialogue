@@ -17,7 +17,7 @@ A Godot plugin and standalone dialogue editor for creating branching dialogue.
 
 You can download the standalone app from the [latest release](https://github.com/thephilipquan/oasis-dialogue/releases/latest).
 
-You can view the [example](example/) provided, or take a look at [how to use](docs/how_to_use.md) for in-depth explanations.
+You can view the [example](example/) provided, take a look at [how to write](docs/how_to_write.md) if you're a writer, and [how to implement](docs/how_to_implement.gd) if you're a developer.
 
 ## when not to use Oasis Dialogue
 
