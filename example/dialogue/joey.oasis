@@ -12,7 +12,7 @@ Vector2(-540.0, -220.0)
 [value]
 @track
 @prompt
-It is? { seen 2 }
+It is?
 You have a weird name.
 @response
 I'm the weird one here? { branch 7 }
