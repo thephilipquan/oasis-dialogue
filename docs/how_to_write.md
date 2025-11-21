@@ -68,4 +68,4 @@ With an annotation, it becomes simpler.
 
 ![Example of using an annotation to automate seeing a branch.](media/annotations_kid_b.png)
 
-The example project uses an annotation [like `count_visit`](./example) to achieve the same functionality. To effectively use annotations, you should look at [what they can actually do](/addons/oasis_dialogue/public/oasis_traverser_controller.gd).
+The example project uses an annotation [like `count_visit`](/example) to achieve the same functionality. To effectively use annotations, you should look at [what they can actually do](/addons/oasis_dialogue/public/oasis_traverser_controller.gd).
