@@ -2,7 +2,7 @@
 
 ## Summary
 
-![Example of branch.](/media/branch.png)
+![Example of branch.](media/branch.png)
 
 * Text spoken by the character are listed under the `@prompt` header.
 * Text to be chosen by the player are written under the `@response` header.
@@ -32,11 +32,11 @@ Lines are only shown **if all conditions specified are true**.
 
 ## actions
 
-Similar to [conditions](##conditions), to execute code at runtime when a prompt is displayed or response is chosen, put a `{}` **after** the text to be displayed. Actions must **only contain letters and `_`** (no numbers and special characters), and like conditions, actions may **optionally be succeeded by a numeric value**. Actions are completely made up by you, the writer.
+Similar to conditions, to execute code at runtime when a prompt is displayed or response is chosen, put a `{}` **after** the text to be displayed. Actions must **only contain letters and `_`** (no numbers and special characters), and like conditions, actions may **optionally be succeeded by a numeric value**. Actions are completely made up by you, the writer.
 
 ![Action example.](media/action.png)
 
-And may contain multiple actions.
+And may contain multiple actions...
 
 ![Multiple actions example.](media/multiple_actions.png)
 
@@ -44,7 +44,7 @@ And may contain multiple actions.
 
 ## annotations part I
 
-Annotations can get complicated. The simple part of them is that, you use them to change how prompts are displayed.
+Annotations can get complicated. The simple part of them is that you use them to change how prompts are displayed.
 
 By default, prompts are displayed sequentially via the `seq` annotation. If you wanted a single prompt to be chosen at random and displayed, you can use the `@rng` notation. Annotations must be specified at the top of the branch before prompts and responses.
 
@@ -64,8 +64,8 @@ Lets say you're writing an annoying kid that the player has to pester for some i
 
 ![Example of using an annotation to automate seeing a branch.](media/annotations_kid_a.png)
 
-And with an annotation, it could look like.
+With an annotation, it becomes simpler.
 
 ![Example of using an annotation to automate seeing a branch.](media/annotations_kid_b.png)
 
-The example project uses an annotation [like `count_visit`](./example) to achieve the same functionality. To effectively use annotations, you should look at [what they can actually do](./addons/oasis_dialogue/public/oasis_traverser_controller.gd).
+The example project uses an annotation [like `count_visit`](./example) to achieve the same functionality. To effectively use annotations, you should look at [what they can actually do](/addons/oasis_dialogue/public/oasis_traverser_controller.gd).
