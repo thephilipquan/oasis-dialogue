@@ -90,12 +90,12 @@ Vector2(2620.0, -400.0)
 @response
 world... { branch 12 }
 [position_offset]
-Vector2(3820.0, -160.0)
+Vector2(3740.0, -160.0)
 
 [[12]]
 [value]
 @prompt
-fin
+fin { root 9 }
 [position_offset]
 Vector2(3700.0, 300.0)
 
@@ -123,6 +123,27 @@ Okay. No more. { branch 7 }
 { is_weird } again! { branch 10 }
 [position_offset]
 Vector2(2000.0, -740.0)
+
+[[9]]
+[value]
+@rng
+@prompt
+Why hello again.
+Back already?
+You really miss me huh.
+@response
+You remember me? { branch 14 }
+[position_offset]
+Vector2(2320.0, -1140.0)
+
+[[14]]
+[value]
+@prompt
+Of course I do!
+Lets do this again.
+Its your turn to say hello world. { branch 13 }
+[position_offset]
+Vector2(2720.0, -980.0)
 
 [[data]]
 [display_name]

@@ -56,3 +56,5 @@ func handle_actions(traverser: OasisTraverser, actions: Array[OasisKeyValue]) ->
 				traverser.branch(action.value)
 			"weird":
 				is_weird = true
+			"root":
+				get_character().set_root(action.value)

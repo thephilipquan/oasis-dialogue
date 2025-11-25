@@ -1,4 +1,258 @@
 {
+	"docs": {
+		"0": {
+			"annotations": [
+				"seq"
+			],
+			"prompts": [
+				{
+					"key": "docs_0p0"
+				},
+				{
+					"key": "docs_0p1"
+				}
+			],
+			"responses": [
+				{
+					"key": "docs_0r0"
+				},
+				{
+					"key": "docs_0r1"
+				}
+			]
+		},
+		"1": {
+			"annotations": [
+				"seq"
+			],
+			"prompts": [
+				{
+					"key": "docs_1p0"
+				},
+				{
+					"conditions": [
+						{
+							"name": "has_most_magical_sword"
+						}
+					],
+					"key": "docs_1p1"
+				}
+			],
+			"responses": [
+				{
+					"key": "docs_1r0"
+				},
+				{
+					"conditions": [
+						{
+							"name": "has_most_magical_sword"
+						}
+					],
+					"key": "docs_1r1"
+				}
+			]
+		},
+		"2": {
+			"annotations": [
+				"seq"
+			],
+			"prompts": [
+				{
+					"key": "docs_2p0"
+				},
+				{
+					"key": "docs_2p1"
+				}
+			],
+			"responses": [
+				{
+					"key": "docs_2r0"
+				},
+				{
+					"key": "docs_2r1"
+				},
+				{
+					"conditions": [
+						{
+							"name": "has_gold",
+							"value": 500
+						}
+					],
+					"key": "docs_2r2"
+				}
+			]
+		},
+		"3": {
+			"annotations": [
+				"seq"
+			],
+			"prompts": [
+				{
+					"conditions": [
+						{
+							"name": "npc_is_friendly"
+						},
+						{
+							"name": "player_has_gold",
+							"value": 1000
+						}
+					],
+					"key": "docs_3p0"
+				}
+			]
+		},
+		"4": {
+			"annotations": [
+				"seq"
+			],
+			"prompts": [
+				{
+					"actions": [
+						{
+							"name": "heal"
+						}
+					],
+					"key": "docs_4p0"
+				},
+				{
+					"key": "docs_4p1"
+				}
+			],
+			"responses": [
+				{
+					"key": "docs_4r0"
+				},
+				{
+					"actions": [
+						{
+							"name": "pay",
+							"value": 50
+						}
+					],
+					"key": "docs_4r1"
+				}
+			]
+		},
+		"5": {
+			"annotations": [
+				"seq"
+			],
+			"prompts": [
+				{
+					"actions": [
+						{
+							"name": "heal"
+						},
+						{
+							"name": "feed_to_full"
+						},
+						{
+							"name": "buff_ms"
+						}
+					],
+					"key": "docs_5p0"
+				}
+			]
+		},
+		"6": {
+			"annotations": [
+				"seq"
+			],
+			"prompts": [
+				{
+					"actions": [
+						{
+							"name": "damage"
+						}
+					],
+					"key": "docs_6p0"
+				}
+			]
+		},
+		"7": {
+			"annotations": [
+				"seq"
+			],
+			"prompts": [
+				{
+					"key": "docs_7p0"
+				}
+			],
+			"responses": [
+				{
+					"actions": [
+						{
+							"name": "branch",
+							"value": 8
+						}
+					],
+					"key": "docs_7r0"
+				}
+			]
+		},
+		"8": {
+			"annotations": [
+				"rng",
+				"count_visit"
+			],
+			"prompts": [
+				{
+					"key": "docs_8p0"
+				},
+				{
+					"key": "docs_8p1"
+				},
+				{
+					"key": "docs_8p2"
+				}
+			],
+			"responses": [
+				{
+					"actions": [
+						{
+							"name": "branch",
+							"value": 8
+						}
+					],
+					"conditions": [
+						{
+							"name": "seen_count_lt",
+							"value": 3
+						}
+					],
+					"key": "docs_8r0"
+				},
+				{
+					"actions": [
+						{
+							"name": "branch",
+							"value": 9
+						}
+					],
+					"conditions": [
+						{
+							"name": "seen",
+							"value": 3
+						}
+					],
+					"key": "docs_8r1"
+				}
+			]
+		},
+		"9": {
+			"annotations": [
+				"seq"
+			],
+			"responses": [
+				{
+					"key": "docs_9r0"
+				},
+				{
+					"key": "docs_9r1"
+				}
+			]
+		}
+	},
 	"joey": {
 		"0": {
 			"annotations": [
@@ -71,12 +325,6 @@
 			],
 			"prompts": [
 				{
-					"actions": [
-						{
-							"name": "seen",
-							"value": 2
-						}
-					],
 					"key": "joey_2p0"
 				},
 				{
@@ -249,6 +497,33 @@
 				}
 			]
 		},
+		"9": {
+			"annotations": [
+				"rng"
+			],
+			"prompts": [
+				{
+					"key": "joey_9p0"
+				},
+				{
+					"key": "joey_9p1"
+				},
+				{
+					"key": "joey_9p2"
+				}
+			],
+			"responses": [
+				{
+					"actions": [
+						{
+							"name": "branch",
+							"value": 14
+						}
+					],
+					"key": "joey_9r0"
+				}
+			]
+		},
 		"10": {
 			"annotations": [
 				"seq"
@@ -295,6 +570,12 @@
 			],
 			"prompts": [
 				{
+					"actions": [
+						{
+							"name": "root",
+							"value": 9
+						}
+					],
 					"key": "joey_12p0"
 				}
 			]
@@ -342,6 +623,28 @@
 						}
 					],
 					"key": "joey_13r1"
+				}
+			]
+		},
+		"14": {
+			"annotations": [
+				"seq"
+			],
+			"prompts": [
+				{
+					"key": "joey_14p0"
+				},
+				{
+					"key": "joey_14p1"
+				},
+				{
+					"actions": [
+						{
+							"name": "branch",
+							"value": 13
+						}
+					],
+					"key": "joey_14p2"
 				}
 			]
 		}
