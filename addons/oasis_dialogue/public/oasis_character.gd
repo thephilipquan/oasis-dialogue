@@ -12,27 +12,27 @@ const _NodeUtils := preload("res://addons/oasis_dialogue/utils/node_utils.gd")
 ## from the root of the whole project. If the manager is registered as an
 ## autoload, then you can ignore setting this.
 @export
-var _manager: OasisManager = null
+var manager: OasisManager = null
 @export
-var _character: String = ""
+var character: String = ""
 @export
-var _root := 0
+var root := 0
 
 
 func _ready() -> void:
-	if not _manager:
-		_manager = _NodeUtils.find_type(get_tree().root, OasisManager)
+	if not manager:
+		manager = _NodeUtils.find_type(get_tree().root, OasisManager)
 
 
-## Returns an [OasisTraverser] for the given [member _character] starting from [member _root].
+## Returns an [OasisTraverser] for the given [member character] starting from branch [member root].
 ## [br][br]
 ## [code]null[/code] will be returned in cases of invalid setup such as...
 ## [br]
-## * The [OasisManager] for this character's [member OasisManager._json_path] was not set.
+## * The [OasisManager] for this character's [member OasisManager.json_path] was not set.
 ## [br]
-## * [member _character] does not exist at [member OasisManager._json_path]
+## * [member character] does not exist at [member OasisManager.json_path]
 ## [br]
-## * [member _root] was not found.
+## * [member root] was not found.
 func start() -> OasisTraverser:
-	var traverser := _manager.get_reachable_branches(_character, _root)
+	var traverser := manager.get_reachable_branches(character, root)
 	return traverser

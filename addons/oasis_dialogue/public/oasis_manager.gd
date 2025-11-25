@@ -17,7 +17,7 @@ const _JsonValidator := preload("res://addons/oasis_dialogue/model/oasis_json_va
 ## [br]
 ## [code]res://dialogue[/code]
 @export
-var _json_path := ""
+var json_path := "res://"
 
 var _controllers: Dictionary[String, OasisTraverserController] = {}
 
@@ -32,7 +32,7 @@ func _notification(what: int) -> void:
 ## from branch [param from] at the file specified via [member _json_path].
 func get_reachable_branches(character: String, from: int) -> OasisTraverser:
 	character = character.to_lower()
-	if not _json_path:
+	if not json_path:
 		push_warning("path not set")
 		return null
 
@@ -50,37 +50,37 @@ func get_reachable_branches(character: String, from: int) -> OasisTraverser:
 
 	var traverser := OasisTraverser.new(reachable_branches, from)
 	traverser.init_controllers(controllers)
-	traverser.init_translation(_translate)
-	traverser.init_condition_handler(_validate_conditions)
-	traverser.init_action_handler(_handle_actions)
+	traverser.init_translation(translate)
+	traverser.init_condition_handler(validate_conditions)
+	traverser.init_action_handler(handle_actions)
 	return traverser
 
 
 func _load_character_dialogue(character: String) -> Dictionary[int, OasisBranch]:
-	if not _json_path:
+	if not json_path:
 		push_warning("Failed to _load_character_dialogue oasis dialogue json because no json path specified. Exiting.")
 		return {}
 
 	var data := {}
 	var file := _JsonFile.new()
-	var dir := DirAccess.open(_json_path)
+	var dir := DirAccess.open(json_path)
 	if dir:
-		var character_path := _json_path.path_join("%s.json" % character)
+		var character_path := json_path.path_join("%s.json" % character)
 		if not FileAccess.file_exists(character_path):
 			push_warning("Detected set path as a directory but %s does not exist. Exiting" % character_path)
 			return {}
 		file.load(character_path)
 		data = file.get_loaded_data()
 	else:
-		file.load(_json_path)
+		file.load(json_path)
 		data = file.get_loaded_data()
 		var is_character_file = data.keys().all(func(k: String) -> bool: return k.is_valid_int())
-		var path_file_name := _json_path.get_file().get_basename()
+		var path_file_name := json_path.get_file().get_basename()
 		if is_character_file and character != path_file_name:
-			push_warning("Detected set path as a character file but set path %s doesn't match character name: %s" % [_json_path, path_file_name])
+			push_warning("Detected set path as a character file but set path %s doesn't match character name: %s" % [json_path, path_file_name])
 			return {}
 		if not is_character_file:
-			# _json_path is a single file with all characters.
+			# json_path is a single file with all characters.
 			if not character in data:
 				push_warning("Detected set path as a file with all character, but %s does not exist. Exiting" % character)
 				return {}
