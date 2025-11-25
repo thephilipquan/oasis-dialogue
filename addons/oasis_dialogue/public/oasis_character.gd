@@ -47,5 +47,5 @@ func _ready() -> void:
 ## [br]
 ## * [member root] was not found.
 func start() -> OasisTraverser:
-	var traverser := manager.get_reachable_branches(character, root)
+	var traverser := manager.get_reachable_branches(self)
 	return traverser

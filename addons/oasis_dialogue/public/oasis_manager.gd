@@ -47,6 +47,7 @@ const _JsonValidator := preload("res://addons/oasis_dialogue/model/oasis_json_va
 var json_path := "res://"
 
 var _controllers: Dictionary[String, OasisTraverserController] = {}
+var _last_character: OasisCharacter = null
 
 
 func _notification(what: int) -> void:
@@ -57,29 +58,31 @@ func _notification(what: int) -> void:
 
 ## Return an [OasisTraverser] with all reachable branches for the given [param character] starting
 ## from branch [param from] at the file specified via [member json_path].
-func get_reachable_branches(character: String, from: int) -> OasisTraverser:
-	character = character.to_lower()
+func get_reachable_branches(character: OasisCharacter) -> OasisTraverser:
+	var character_name := character.character.to_lower()
 	if not json_path:
 		push_warning("path not set")
 		return null
 
-	var data: Dictionary[int, OasisBranch] = _load_character_dialogue(character)
+	var data: Dictionary[int, OasisBranch] = _load_character_dialogue(character_name)
 	if not data:
 		return null
 
-	if not from in data:
-		push_warning("OasisDialogueBranch %d not found in data. Are you sure its a valid branch id?" % from)
+	if not character.root in data:
+		push_warning("OasisDialogueBranch %d not found in data. Are you sure its a valid branch id?" % character.root)
 		return null
 
-	var reachable_branches: Dictionary[int, OasisBranch] = _get_reachable_branches(data, from)
+	var reachable_branches: Dictionary[int, OasisBranch] = _get_reachable_branches(data, character.root)
 	var annotations := _collect_reachable_annotations(reachable_branches)
 	var controllers := _filter_controllers(annotations)
 
-	var traverser := OasisTraverser.new(reachable_branches, from)
+	var traverser := OasisTraverser.new(reachable_branches, character.root)
 	traverser.init_controllers(controllers)
 	traverser.init_translation(translate)
 	traverser.init_condition_handler(validate_conditions)
 	traverser.init_action_handler(handle_actions)
+
+	_last_character = character
 	return traverser
 
 
@@ -262,3 +265,8 @@ func validate_conditions(traverser: OasisTraverser, conditions: Array[OasisKeyVa
 ## [/codeblock]
 @abstract
 func handle_actions(traverser: OasisTraverser, actions: Array[OasisKeyValue]) -> void
+
+
+## Returns the current or last character traversed.
+func get_character() -> OasisCharacter:
+	return _last_character
