@@ -1,3 +1,7 @@
+## An example script that showcases how to interact with OasisDialogue.
+##
+## Most of the script handles input and showing prompts and responses.
+## The interaction is found within [method select].
 extends Node
 
 @export
@@ -56,24 +60,28 @@ func select() -> void:
 	if not _started:
 		_started = true
 
-		# Starting a dialogue or conversation.
+		# Start a dialogue or conversation.
 		_traverser = _character.start()
 
+		# You should check if a traverser was returned. start() will return null
+		# if there is an error. See [method OasisCharacter.start] for details.
+		assert(_traverser)
+
 		# Connect to traverser signals via collision, interaction, or any means.
-		# See OasisTraverser for details on when signals are emitted.
 		_traverser.finished.connect(on_finished)
 		_traverser.prompt.connect(prompt)
 		_traverser.responses.connect(show_responses)
 
-		# You should check if a traverser was returned. start() will return null
-		# if there is an error. See OasisManager and OasisCharacter for details.
-		assert(_traverser)
-
+	# Call next for both getting the next prompt, as well as responding.
+	# The response index is ignored if the traverser is not expecting a
+	# response - which is only after [signal responses] is emitted.
 	_traverser.next(_response_index)
 
 
+# [signal OasisTraverser.finished] emits after the last prompt or response is
+# 'interacted' with.
 func on_finished() -> void:
-	remove_responses()
+	clear_responses()
 	_finished = true
 	_label.text = "finished"
 	get_tree().create_timer(2).timeout.connect(
@@ -84,15 +92,17 @@ func on_finished() -> void:
 	)
 
 
+# [signal OasisTraverser.prompt] emits 1 prompt at a time.
 func prompt(item: String) -> void:
 	if _responding:
-		remove_responses()
+		clear_responses()
 	_label.text = item
 
 
+# [signal OasisTraverser.responses] emits all responses at once.
 func show_responses(items: Array[String]) -> void:
 	if _responding:
-		remove_responses()
+		clear_responses()
 	_responding = true
 	_response_size = items.size()
 	for i in items.size():
@@ -102,6 +112,7 @@ func show_responses(items: Array[String]) -> void:
 	update_responses_state()
 
 
+## Color the focused label white and the rest gray.
 func update_responses_state() -> void:
 	var labels := _responses_parent.get_children()
 	for i in labels.size():
@@ -112,7 +123,8 @@ func update_responses_state() -> void:
 			label.add_theme_color_override("font_color", Color.DIM_GRAY)
 
 
-func remove_responses() -> void:
+## Remove all labels.
+func clear_responses() -> void:
 	for child in _responses_parent.get_children():
 		child.queue_free()
 		_responses_parent.remove_child(child)
