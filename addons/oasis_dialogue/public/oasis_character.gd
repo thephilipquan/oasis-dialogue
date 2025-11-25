@@ -49,3 +49,8 @@ func _ready() -> void:
 func start() -> OasisTraverser:
 	var traverser := manager.get_reachable_branches(self)
 	return traverser
+
+
+func set_root(new_root: int) -> void:
+	root = new_root
+
