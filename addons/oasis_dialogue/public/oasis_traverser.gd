@@ -66,6 +66,10 @@ func get_prompt_index() -> int:
 	return _p
 
 
+func get_prompts_size() -> int:
+	return _current.prompts.size()
+
+
 func set_prompt_index(index: int) -> void:
 	_p = clampi(index, 0, _current.prompts.size())
 

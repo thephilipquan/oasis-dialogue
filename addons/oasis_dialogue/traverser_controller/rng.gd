@@ -6,7 +6,7 @@ func get_annotation() -> String:
 
 
 func has_prompt(t: OasisTraverser) -> bool:
-	if t.get_prompt_index() >= t.get_current().prompts.size():
+	if t.get_prompt_index() >= t.get_prompts_size():
 		return false
 
 	var prompts := t._current.prompts.filter(
@@ -19,5 +19,5 @@ func has_prompt(t: OasisTraverser) -> bool:
 
 
 func increment_prompt_index(t: OasisTraverser) -> bool:
-	t.set_prompt_index(t.get_current().prompts.size())
+	t.set_prompt_index(t.get_prompts_size())
 	return true
