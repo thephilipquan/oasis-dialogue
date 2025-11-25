@@ -37,11 +37,12 @@ func _ready() -> void:
 		manager = _NodeUtils.find_type(get_tree().root, OasisManager)
 
 
-## Returns an [OasisTraverser] for the given [member character] starting from branch [member root].
+## Returns an [OasisTraverser] for the given [member character] starting from
+## branch [member root].
 ## [br][br]
-## [code]null[/code] will be returned in cases of invalid setup such as...
+## Returns [code]null[/code] in the following situations:
 ## [br]
-## * The [OasisManager] for this character's [member OasisManager.json_path] was not set.
+## * The [member OasisManager.json_path] is not set.
 ## [br]
 ## * [member character] does not exist at [member OasisManager.json_path]
 ## [br]
