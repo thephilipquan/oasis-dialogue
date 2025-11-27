@@ -34,7 +34,5 @@ auto_brace_completion_pairs = {
 "{": "}"
 }
 
-[connection signal="node_deselected" from="." to="." method="_on_node_deselected"]
-[connection signal="node_selected" from="." to="." method="_on_node_selected"]
 [connection signal="timeout" from="ParserTimer" to="." method="_on_parser_timer_timeout"]
 [connection signal="text_changed" from="CodeEdit" to="." method="_on_code_edit_text_changed"]

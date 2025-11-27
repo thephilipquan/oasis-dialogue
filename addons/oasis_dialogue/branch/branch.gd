@@ -29,6 +29,9 @@ func _ready() -> void:
 	_remove_button.button_up.connect(_on_remove_branch_button_up)
 	hbox.add_child(_remove_button)
 
+	node_selected.connect(_on_node_selected)
+	node_deselected.connect(_on_node_deselected)
+
 
 func init(highlighter: SyntaxHighlighter) -> void:
 	($CodeEdit as CodeEdit).syntax_highlighter = highlighter
