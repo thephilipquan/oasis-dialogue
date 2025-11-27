@@ -79,6 +79,7 @@ func color_normal() -> void:
 func _on_code_edit_text_changed() -> void:
 	var parser_timer: Timer = $ParserTimer
 	parser_timer.start()
+	reset_size()
 
 
 func _on_parser_timer_timeout() -> void:
