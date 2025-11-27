@@ -63,7 +63,7 @@ func save(path: String) -> Error:
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if not file:
 		return FileAccess.get_open_error()
-	file.store_string(encode_to_text())
+	file.store_line(encode_to_text())
 	return Error.OK
 
 

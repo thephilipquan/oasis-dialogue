@@ -29,7 +29,7 @@ func save(path: String, data: Dictionary) -> Error:
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if not file:
 		return FileAccess.get_open_error()
-	file.store_string(JSON.stringify(data, "\t"))
+	file.store_line(JSON.stringify(data, "\t"))
 	file.close()
 	saved.emit(path)
 	return Error.OK

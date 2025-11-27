@@ -112,7 +112,7 @@ func save(path: String) -> Error:
 	if not file:
 		return FileAccess.get_open_error()
 	var contents := _encode_to_string()
-	file.store_string(contents)
+	file.store_line(contents)
 	file.close()
 	saved.emit(path)
 	return Error.OK
