@@ -186,6 +186,7 @@ script = ExtResource("3_4e1bp")
 layout_mode = 2
 size_flags_horizontal = 3
 grid_pattern = 1
+snapping_enabled = false
 panning_scheme = 1
 minimap_enabled = false
 show_zoom_buttons = false
