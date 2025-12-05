@@ -86,7 +86,7 @@ func test_keyword() -> void:
 	var source := "@rng"
 	var expected: Array[Type] = [
 		Type.ATSIGN,
-		Type.RNG,
+		Type.IDENTIFIER,
 		Type.EOF,
 	]
 	var got := sut.tokenize(source).map(func(t: Token): return t.type)
