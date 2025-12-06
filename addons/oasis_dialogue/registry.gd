@@ -26,5 +26,5 @@ func add(key: String, instance: Variant) -> void:
 
 
 func at(key: String) -> Variant:
-	assert(key in _map)
+	assert(key in _map, "%s not found" % key)
 	return _map[key]
