@@ -24,13 +24,16 @@ const _StatusLabelScene := preload("res://addons/oasis_dialogue/status/status_la
 const _Lexer := preload("res://addons/oasis_dialogue/model/lexer.gd")
 const _Parser := preload("res://addons/oasis_dialogue/model/parser.gd")
 
+@export
+var _graph: GraphEdit = null
+
+
 func _ready() -> void:
 	if is_part_of_edited_scene():
 		return
 
 	var add_branch: TextureButton = $AddBranch
-	var graph: GraphEdit = $VBoxContainer/SplitContainer/BranchEdit
-	add_branch.reparent(graph.get_menu_hbox())
+	add_branch.reparent(_graph.get_menu_hbox())
 	add_branch.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 
 

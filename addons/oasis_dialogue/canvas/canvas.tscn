@@ -22,7 +22,7 @@
 [ext_resource type="Script" uid="uid://col6d6dlfwg4s" path="res://addons/oasis_dialogue/canvas/export_handler.gd" id="13_hd21m"]
 [ext_resource type="Texture2D" uid="uid://badhsjdmlotct" path="res://addons/oasis_dialogue/assets/add_hovered_16.png" id="13_oj43n"]
 [ext_resource type="Script" path="res://addons/oasis_dialogue/canvas/call_to_action_handler.gd" id="15_vow0r"]
-[ext_resource type="Script" path="res://addons/oasis_dialogue/canvas/split_container.gd" id="16_1wr22"]
+[ext_resource type="Script" uid="uid://0ttgl6a5kmao" path="res://addons/oasis_dialogue/canvas/split_container.gd" id="16_1wr22"]
 [ext_resource type="Script" uid="uid://bquh5t51cxg87" path="res://addons/oasis_dialogue/menu_bar/project.gd" id="16_8jbp4"]
 [ext_resource type="Texture2D" uid="uid://cquqinlns0onb" path="res://addons/oasis_dialogue/assets/remove_default_32.png" id="16_ba7lg"]
 [ext_resource type="Texture2D" uid="uid://bnj3xmgeov1er" path="res://addons/oasis_dialogue/assets/remove_selected_32.png" id="17_1ink7"]
@@ -37,7 +37,7 @@
 [ext_resource type="Script" path="res://addons/oasis_dialogue/canvas/character_call_to_action.gd" id="30_oj43n"]
 [ext_resource type="Script" path="res://addons/oasis_dialogue/canvas/branch_call_to_action.gd" id="31_y5ltl"]
 
-[node name="Canvas" type="Control" groups=["oasis_registerable"]]
+[node name="Canvas" type="Control" node_paths=PackedStringArray("_graph") groups=["oasis_registerable"]]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -46,6 +46,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_ta1sa")
 script = ExtResource("1_pyvqf")
+_graph = NodePath("VBoxContainer/SplitContainer/BranchEdit")
 
 [node name="AddBranch" type="TextureButton" parent="." groups=["oasis_registerable"]]
 visible = false
