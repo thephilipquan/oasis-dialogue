@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="oasis-dialogue"
-config/version="0.1.1"
+config/version="0.3.0"
 run/main_scene="uid://t8shr44ts4y"
 config/features=PackedStringArray("4.5", "Forward Plus")
 run/low_processor_mode=true
