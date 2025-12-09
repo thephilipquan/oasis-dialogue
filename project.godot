@@ -15,7 +15,7 @@ config/version="0.3.0"
 run/main_scene="uid://t8shr44ts4y"
 config/features=PackedStringArray("4.5", "Forward Plus")
 run/low_processor_mode=true
-config/icon="res://icon.svg"
+config/icon="res://src/icon_128px.png"
 
 [debug]
 
