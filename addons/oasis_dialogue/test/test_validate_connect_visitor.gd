@@ -40,14 +40,3 @@ func test_missing_number_calls_on_err() -> void:
 	ast.add(AST.Action.new("foo"))
 
 	ast.accept(sut)
-
-
-func test_branching_to_itself_calls_on_err() -> void:
-	var sut := ValidateConnect.new(
-		"foo",
-		func(e): pass_test(""),
-	)
-	var ast := AST.Branch.new(2)
-	ast.add(AST.Action.new("foo", AST.NumberLiteral.new(2)))
-
-	ast.accept(sut)

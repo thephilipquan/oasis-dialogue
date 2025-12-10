@@ -1,11 +1,11 @@
 extends GutTest
 
-const SequenceController := preload("res://addons/oasis_dialogue/traverser_controller/rng.gd")
+const RandomController := preload("res://addons/oasis_dialogue/traverser_controller/rng.gd")
 var rng: OasisTraverserController = null
 
 
 func before_all() -> void:
-	rng = SequenceController.new()
+	rng = RandomController.new()
 	add_child(rng)
 
 
@@ -15,29 +15,30 @@ func after_all() -> void:
 
 func test_prompt_to_prompt() -> void:
 	var one := OasisBranch.new()
+	one.id = 1
 	one.annotations.push_back("rng")
 	one.prompts.push_back(
 		OasisLine.new(
 			"a",
 			[],
 			[
-				OasisKeyValue.new("b", 2),
+				OasisKeyValue.new("branch", 2),
 			]
 		)
 	)
 	var two := OasisBranch.new()
+	two.id = 2
 	two.annotations.push_back("rng")
 	two.prompts.push_back(OasisLine.new("b"))
 
 	var branches: Dictionary[int, OasisBranch] = {
-			1: one,
-			2: two,
+			one.id: one,
+			two.id: two,
 	}
 	var root := 1
 	var sut := OasisTraverser.new(branches, root)
 	sut.init_controllers({ "rng": rng })
 	sut.init_translation(func(s: String) -> String: return s)
-	sut.init_visit_branch(func(t: OasisTraverser, id: int) -> void: pass)
 	sut.init_condition_handler(
 			func(t: OasisTraverser, a: Array[OasisKeyValue]) -> bool:
 				return true
@@ -45,7 +46,7 @@ func test_prompt_to_prompt() -> void:
 	sut.init_action_handler(
 			func(t: OasisTraverser, actions: Array[OasisKeyValue]) -> void:
 				for a in actions:
-					if a.key == "b":
+					if a.key == "branch":
 						t.branch(a.value)
 	)
 
@@ -138,7 +139,6 @@ func test_response_to_prompt() -> void:
 	var sut := OasisTraverser.new(branches, root)
 	sut.init_controllers({ "rng": rng })
 	sut.init_translation(func(s: String) -> String: return s)
-	sut.init_visit_branch(func(t: OasisTraverser, id: int) -> void: pass)
 	sut.init_condition_handler(
 			func(t: OasisTraverser, a: Array[OasisKeyValue]) -> bool:
 				return true
@@ -182,7 +182,6 @@ func test_response_to_response() -> void:
 	var sut := OasisTraverser.new(branches, root)
 	sut.init_controllers({ "rng": rng })
 	sut.init_translation(func(s: String) -> String: return s)
-	sut.init_visit_branch(func(t: OasisTraverser, id: int) -> void: pass)
 	sut.init_condition_handler(
 			func(t: OasisTraverser, a: Array[OasisKeyValue]) -> bool:
 				return true

@@ -1,6 +1,7 @@
 extends GutTest
 
 const AST := preload("res://addons/oasis_dialogue/model/ast.gd")
+const Character := preload("res://addons/oasis_dialogue/public/oasis_character.gd")
 const ExportConfig := preload("res://addons/oasis_dialogue/model/export_config.gd")
 const JsonExporter := preload("res://addons/oasis_dialogue/canvas/json_exporter.gd")
 const JsonFile := preload("res://addons/oasis_dialogue/io/json_file.gd")
@@ -31,12 +32,14 @@ func after_all() -> void:
 func test_get_reachable_branches_from_directory() -> void:
 	var config := ExportConfig.new()
 	config.path = TESTDIR
+	config.is_directory_export = true
 	_create_json_file_for_tests(config, "Frank")
 
-	var sut := OasisManager.new()
-	sut._path = config.path
+	var sut: _Manager = add_child_autofree(_Manager.new())
+	sut.json_path = config.path
 
-	var iterator := sut.get_reachable_branches("Frank", 0)
+	var character := _create_character("Frank", sut, 0)
+	var iterator := sut.get_reachable_branches(character)
 	assert_not_null(iterator)
 
 
@@ -45,34 +48,38 @@ func test_get_reachable_branches_from_characters_file() -> void:
 	config.path = TESTDIR.path_join("abc.json")
 	_create_json_file_for_tests(config, "Frank")
 
-	var sut := OasisManager.new()
-	sut._path = config.path
-
-	var iterator := sut.get_reachable_branches("Frank", 0)
+	var sut: _Manager = add_child_autofree(_Manager.new())
+	sut.json_path = config.path
+	var character := _create_character("Frank", sut, 0)
+	var iterator := sut.get_reachable_branches(character)
 	assert_not_null(iterator)
 
 
 func test_get_reachable_branches_from_character_file() -> void:
 	var config := ExportConfig.new()
 	config.path = TESTDIR
+	config.is_directory_export = true
 	_create_json_file_for_tests(config, "Frank")
 
-	var sut := OasisManager.new()
-	sut._path = config.path.path_join("frank.json")
-
-	var iterator := sut.get_reachable_branches("Frank", 0)
+	var sut: _Manager = add_child_autofree(_Manager.new())
+	sut.json_path = config.path.path_join("frank.json")
+	var character := _create_character("Frank", sut, 0)
+	var iterator := sut.get_reachable_branches(character)
 	assert_not_null(iterator)
 
 
 func test_directory_and_character_subpath_not_found_returns_null() -> void:
 	var config := ExportConfig.new()
 	config.path = TESTDIR
+	config.is_directory_export = true
 	_create_json_file_for_tests(config, "Frank")
 
-	var sut := OasisManager.new()
-	sut._path = config.path
+	var sut: _Manager = add_child_autofree(_Manager.new())
+	sut.json_path = config.path
+	var character := _create_character("Tom", sut, 0)
 
-	var iterator := sut.get_reachable_branches("Tom", 0)
+	# This is expected to push a warning.
+	var iterator := sut.get_reachable_branches(character)
 	assert_null(iterator)
 
 
@@ -81,34 +88,42 @@ func test_characters_file_and_character_not_found_returns_null() -> void:
 	config.path = TESTDIR.path_join("abc.json")
 	_create_json_file_for_tests(config, "Frank")
 
-	var sut := OasisManager.new()
-	sut._path = config.path
+	var sut: _Manager = add_child_autofree(_Manager.new())
+	sut.json_path = config.path
+	var character := _create_character("Tom", sut, 0)
 
-	var iterator := sut.get_reachable_branches("Tom", 0)
+	# This is expected to push a warning.
+	var iterator := sut.get_reachable_branches(character)
 	assert_null(iterator)
 
 
 func test_character_file_and_wrong_character_name_returns_null() -> void:
 	var config := ExportConfig.new()
 	config.path = TESTDIR
+	config.is_directory_export = true
 	_create_json_file_for_tests(config, "Frank")
 
-	var sut := OasisManager.new()
-	sut._path = config.path.path_join("frank.json")
+	var sut: _Manager = add_child_autofree(_Manager.new())
+	sut.json_path = config.path.path_join("frank.json")
+	var character := _create_character("Tom", sut, 0)
 
-	var iterator := sut.get_reachable_branches("Tom", 0)
+	# This is expected to push a warning.
+	var iterator := sut.get_reachable_branches(character)
 	assert_null(iterator)
 
 
 func test_character_file_and_branch_id_not_found_returns_null() -> void:
 	var config := ExportConfig.new()
 	config.path = TESTDIR
+	config.is_directory_export = true
 	_create_json_file_for_tests(config, "Frank")
 
-	var sut := OasisManager.new()
-	sut._path = config.path.path_join("frank.json")
+	var sut: _Manager = add_child_autofree(_Manager.new())
+	sut.json_path = config.path.path_join("frank.json")
+	var character := _create_character("frank", sut, 5)
 
-	var iterator := sut.get_reachable_branches("frank", 5)
+	# This is expected to push a warning.
+	var iterator := sut.get_reachable_branches(character)
 	assert_null(iterator)
 
 
@@ -158,3 +173,25 @@ func _create_json_file_for_tests(config: ExportConfig, character: String) -> voi
 	fred.set_value("2", Save.Character.Branch.VALUE, "c")
 	fred.set_value("3", Save.Character.Branch.VALUE, "d")
 	json_exporter.export(config, [fred])
+
+
+func _create_character(name: String, manager: OasisManager, root: int) -> Character:
+	var character := Character.new()
+	character.character = name
+	character.manager = manager
+	character.root = root
+	add_child_autofree(character)
+	return character
+
+
+class _Manager:
+	extends OasisManager
+
+	func translate(key: String) -> String:
+		return key
+
+	func validate_conditions(traverser: OasisTraverser, conditions: Array[OasisKeyValue]) -> bool:
+		return true
+
+	func handle_actions(traverser: OasisTraverser, actions: Array[OasisKeyValue]) -> void:
+		pass

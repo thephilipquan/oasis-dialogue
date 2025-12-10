@@ -2,20 +2,20 @@ extends GutTest
 
 const OasisFile := preload("res://addons/oasis_dialogue/io/oasis_file.gd")
 
-const BASE := "res://"
-var TESTDIR := BASE.path_join("test_oasis_file")
+const BASEDIR := "res://"
+var TESTDIR := BASEDIR.path_join("test_oasis_file")
 
 var sut: OasisFile = null
 
 
 func before_all() -> void:
-	var dir := DirAccess.open(BASE)
+	var dir := DirAccess.open(BASEDIR)
 	dir.make_dir(TESTDIR)
 	after_each()
 
 
 func after_all() -> void:
-	var dir := DirAccess.open(BASE)
+	var dir := DirAccess.open(BASEDIR)
 	dir.remove(TESTDIR)
 
 
@@ -151,22 +151,22 @@ func test_missing_key_at_eof_returns_error() -> void:
 func test_load_recovers_saved_data() -> void:
 	sut.set_value("a", "b", "c")
 	sut.set_value("d", "e", "f")
-	sut.save("test.oasis")
+	sut.save(TESTDIR.path_join("test.oasis"))
 
 	sut = OasisFile.new()
-	sut.load("test.oasis")
+	sut.load(TESTDIR.path_join("test.oasis"))
 	assert_eq(sut.get_value("a", "b"), "c")
 	assert_eq(sut.get_value("d", "e"), "f")
 
 
 func test_load_recovers_saved_data_with_extra_lines_at_end() -> void:
 	sut.set_value("a", "b", "c")
-	sut.save("test.oasis")
+	sut.save(TESTDIR.path_join("test.oasis"))
 
-	var file := FileAccess.open("test.oasis", FileAccess.READ_WRITE)
+	var file := FileAccess.open(TESTDIR.path_join("test.oasis"), FileAccess.READ_WRITE)
 	file.store_string(file.get_as_text() + "\n\n\n")
 	file.close()
 
 	sut = OasisFile.new()
-	sut.load("test.oasis")
+	sut.load(TESTDIR.path_join("test.oasis"))
 	assert_eq(sut.get_value("a", "b"), "c")

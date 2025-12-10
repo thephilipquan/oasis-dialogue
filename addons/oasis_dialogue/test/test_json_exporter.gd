@@ -79,8 +79,9 @@ func test_export_single_file() -> void:
 	json.load(path)
 	var data := json.get_loaded_data()
 
-	assert_ne(data.get("Fred", {}).size(), 0)
-	assert_ne(data.get("Tim", {}).size(), 0)
+	# JsonExporter writes character names in lower case.
+	assert_ne(data.get("fred", {}).size(), 0)
+	assert_ne(data.get("tim", {}).size(), 0)
 
 
 func test_export_directory() -> void:
@@ -127,6 +128,7 @@ func test_export_directory() -> void:
 
 	var config := ExportConfig.new()
 	config.path = TESTDIR
+	config.is_directory_export = true
 	sut.export(config, characters)
 
 	var json := JsonFile.new()

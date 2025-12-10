@@ -4,7 +4,7 @@ const ConfirmDialog := preload("res://addons/oasis_dialogue/confirm_dialog/confi
 const ConfirmDialogScene := preload("res://addons/oasis_dialogue/confirm_dialog/confirm_dialog.tscn")
 const RemoveCharacterHandler := preload("res://addons/oasis_dialogue/canvas/remove_character_handler.gd")
 
-var sut: RemoveCharacterButton = null
+var sut: RemoveCharacterHandler = null
 var dialog: ConfirmDialog = null
 var dialog_factory := Callable()
 
@@ -17,7 +17,7 @@ func before_all() -> void:
 
 
 func before_each() -> void:
-	sut = RemoveCharacterButton.new()
+	sut = RemoveCharacterHandler.new()
 	sut.init_confirm_dialog_factory(dialog_factory)
 
 	add_child_autofree(sut)
@@ -27,7 +27,7 @@ func test_has_no_branches() -> void:
 	watch_signals(sut)
 	sut.init_get_branch_count(func(): return 0)
 
-	sut._on_button_up()
+	sut.remove()
 
 	assert_signal_emitted(sut.character_removed)
 
@@ -37,7 +37,7 @@ func test_has_branches_confirmed() -> void:
 	sut.init_get_branch_count(func(): return 1)
 	sut.init_get_active_character(func(): return "")
 
-	sut._on_button_up()
+	sut.remove()
 	dialog.confirmed.emit()
 	await wait_physics_frames(1)
 
@@ -49,7 +49,7 @@ func test_has_branches_canceled() -> void:
 	sut.init_get_branch_count(func(): return 1)
 	sut.init_get_active_character(func(): return "")
 
-	sut._on_button_up()
+	sut.remove()
 	dialog.canceled.emit()
 	await wait_physics_frames(1)
 
