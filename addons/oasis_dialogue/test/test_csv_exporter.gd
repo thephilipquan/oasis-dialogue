@@ -17,6 +17,7 @@ var csv: CsvFile = null
 func before_all() -> void:
 	var dir := DirAccess.open(BASEDIR)
 	dir.make_dir(TESTDIR)
+	FileAccess.open(TESTDIR.path_join(".gdignore"), FileAccess.WRITE)
 	after_each()
 
 
@@ -32,11 +33,15 @@ func before_each() -> void:
 func after_each() -> void:
 	var dir := DirAccess.open(TESTDIR)
 	for file in dir.get_files():
+		if file == ".gdignore":
+			continue
 		dir.remove(file)
 
 
 func after_all() -> void:
-	var dir := DirAccess.open(BASEDIR)
+	var dir := DirAccess.open(TESTDIR)
+	dir.remove(".gdignore")
+	dir = DirAccess.open(BASEDIR)
 	dir.remove(TESTDIR)
 
 
@@ -70,7 +75,7 @@ func test_csv_writes_all_characters() -> void:
 	]
 	var config := ExportConfig.new()
 	config.path = path
-	sut.export(characters, config)
+	sut.export(config, characters)
 
 	csv = CsvFile.new()
 	csv.load(path)

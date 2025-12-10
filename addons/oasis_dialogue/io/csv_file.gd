@@ -179,13 +179,16 @@ func _get_partial_key_count(partial_key: String) -> int:
 
 
 func _get_value_slice(key: String, slice: int) -> String:
-	var value: String = _data.get(key, "")
+	var line: String = _data.get(key, "")
 
-	var column_count := value.count(",") + 1
+	var column_count := line.count(",") + 1
 	if slice >= column_count:
 		return ""
 
-	return value.get_slice(",", slice)
+	var value := line.get_slice(",", slice)
+	value = value.trim_prefix("\"")
+	value = value.trim_suffix("\"")
+	return value
 
 
 func _get_value_column_count(key: String) -> int:
