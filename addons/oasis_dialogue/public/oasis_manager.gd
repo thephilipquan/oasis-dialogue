@@ -97,7 +97,7 @@ func _load_character_dialogue(character: String) -> Dictionary[int, OasisBranch]
 	if dir:
 		var character_path := json_path.path_join("%s.json" % character)
 		if not FileAccess.file_exists(character_path):
-			push_warning("Detected set path as a directory but %s does not exist. Exiting" % character_path)
+			push_warning("Detected set path as a directory but %s does not exist. Returning null." % character_path)
 			return {}
 		file.load(character_path)
 		data = file.get_loaded_data()
@@ -107,12 +107,12 @@ func _load_character_dialogue(character: String) -> Dictionary[int, OasisBranch]
 		var is_character_file = data.keys().all(func(k: String) -> bool: return k.is_valid_int())
 		var path_file_name := json_path.get_file().get_basename()
 		if is_character_file and character != path_file_name:
-			push_warning("Detected set path as a character file but set path %s doesn't match character name: %s" % [json_path, path_file_name])
+			push_warning("Detected set path as a character file but set path %s doesn't match character name: %s. Returning null." % [json_path, character])
 			return {}
 		if not is_character_file:
 			# json_path is a single file with all characters.
 			if not character in data:
-				push_warning("Detected set path as a file with all character, but %s does not exist. Exiting" % character)
+				push_warning("Detected set path as a file with all characters, but %s does not exist. Returning null." % character)
 				return {}
 			data = data[character]
 
