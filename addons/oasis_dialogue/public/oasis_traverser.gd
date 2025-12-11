@@ -135,8 +135,8 @@ func set_prompt_index(index: int) -> void:
 ## when encountering the action notated by the writer. Usually this is the
 ## action [code]branch[/code] itself, but can be whatever the writer chooses in the end.
 func branch(id: int) -> void:
-	_current = _branches[id]
 	_current_event(&"exit_branch")
+	_current = _branches[id]
 	_p = 0
 	_responses.clear()
 	_responded = false
