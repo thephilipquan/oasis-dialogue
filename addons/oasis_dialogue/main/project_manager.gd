@@ -323,6 +323,7 @@ func rename_active_character(to_name: String) -> void:
 	_active = to_name
 	save_active_character_and_config()
 
+	_erase_dirty_character(old_active)
 	var old_active_path := _character_to_path(old_active)
 	if dir.file_exists(old_active_path):
 		dir.remove(old_active_path)
