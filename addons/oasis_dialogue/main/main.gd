@@ -25,6 +25,10 @@ func _ready() -> void:
 	_open_project_dialog()
 
 
+func _exit_tree() -> void:
+	_manager.quit()
+
+
 func _open_project_dialog() -> void:
 	_project_dialog = _ProjectDialogScene.instantiate()
 	_project_dialog.add_to_group(_Registry.GROUP)

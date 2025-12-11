@@ -48,10 +48,6 @@ var _is_dirty := false
 var _dirty_characters: Array[String] = []
 
 
-func _exit_tree() -> void:
-	quit()
-
-
 func register(registry: _Registry) -> void:
 	registry.add(REGISTRY_KEY, self)
 
