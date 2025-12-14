@@ -1,10 +1,15 @@
 [gd_resource type="Theme" format=3 uid="uid://br6up8xh8ljsg"]
 
 [resource]
+DefinitionTextEdit/colors/annotation_color = Color(1, 0.7176471, 0.39607844, 1)
+DefinitionTextEdit/colors/description_color = Color(0.6, 0.6, 0.6, 1)
+DefinitionTextEdit/colors/identifier_color = Color(1, 1, 1, 1)
+DefinitionTextEdit/font_sizes/font_size = 16
 Label/font_sizes/font_size = 16
 MarginContainer/constants/margin_bottom = 8
 MarginContainer/constants/margin_left = 16
 MarginContainer/constants/margin_right = 16
 MarginContainer/constants/margin_top = 8
-TextEdit/font_sizes/font_size = 16
+Project/colors/enabled_color = Color(0.5, 0.83333325, 1, 1)
+Project/colors/invalid_color = Color(1, 0.5, 0.5, 1)
 VBoxContainer/constants/separation = 8

@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://cxhc7jrc6kcgo"]
+
+[ext_resource type="Script" uid="uid://dalxniu1jvre5" path="res://addons/oasis_dialogue/toggle_flip_texture_button/toggle_flip_texture_button.gd" id="1_jhyrp"]
+
+[node name="ToggleFlipTextureButton" type="TextureButton"]
+custom_minimum_size = Vector2(32, 0)
+ignore_texture_size = true
+stretch_mode = 5
+script = ExtResource("1_jhyrp")

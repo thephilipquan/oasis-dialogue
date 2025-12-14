@@ -2,6 +2,7 @@
 
 [resource]
 default_font_size = 16
+HBoxContainer/constants/separation = 0
 Label/colors/font_color = Color(1, 1, 1, 1)
 MarginContainer/constants/margin_bottom = 8
 MarginContainer/constants/margin_left = 16
@@ -10,3 +11,4 @@ MarginContainer/constants/margin_top = 8
 SplitContainer/constants/separation = 8
 Tree/constants/inner_item_margin_left = 16
 Tree/constants/v_separation = 8
+VBoxContainer/constants/separation = 0

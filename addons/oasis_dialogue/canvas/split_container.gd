@@ -59,4 +59,3 @@ func update() -> void:
 
 func _on_dragged(offset: int) -> void:
 	split_offset = mini(offset, _max_offset)
-

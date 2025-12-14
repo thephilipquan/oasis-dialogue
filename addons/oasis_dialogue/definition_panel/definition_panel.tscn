@@ -1,0 +1,164 @@
+[gd_scene load_steps=23 format=3 uid="uid://5s7p0xabevpo"]
+
+[ext_resource type="Script" uid="uid://c04fu4b8b7b5t" path="res://addons/oasis_dialogue/definition_panel/definition_panel.gd" id="1_0ac86"]
+[ext_resource type="ButtonGroup" uid="uid://dx8e7psrwc6mk" path="res://addons/oasis_dialogue/definition_panel/button_group.tres" id="1_aie43"]
+[ext_resource type="Theme" uid="uid://br6up8xh8ljsg" path="res://addons/oasis_dialogue/theme.tres" id="1_elfwv"]
+[ext_resource type="Texture2D" uid="uid://cjsjqw17vnfxn" path="res://addons/oasis_dialogue/assets/annotations_default.png" id="2_0ac86"]
+[ext_resource type="Texture2D" uid="uid://cau7xcipmpwsu" path="res://addons/oasis_dialogue/assets/annotations_selected.png" id="3_hxrne"]
+[ext_resource type="Texture2D" uid="uid://dtduca0d3d03" path="res://addons/oasis_dialogue/assets/annotations_hovered.png" id="4_xpa7h"]
+[ext_resource type="Texture2D" uid="uid://dotc3ej5fnkpa" path="res://addons/oasis_dialogue/assets/conditions_default.png" id="5_4ypvr"]
+[ext_resource type="Texture2D" uid="uid://c2bw6vit54wc" path="res://addons/oasis_dialogue/assets/conditions_selected.png" id="6_kla20"]
+[ext_resource type="Texture2D" uid="uid://bwgmmntdutsnr" path="res://addons/oasis_dialogue/assets/conditions_hovered.png" id="7_lfuql"]
+[ext_resource type="Texture2D" uid="uid://dq7tqhm112sd5" path="res://addons/oasis_dialogue/assets/actions_default.png" id="8_elfwv"]
+[ext_resource type="Texture2D" uid="uid://csdiovs1h1qo2" path="res://addons/oasis_dialogue/assets/actions_selected.png" id="9_8cvwl"]
+[ext_resource type="Texture2D" uid="uid://deap1yfn5k44v" path="res://addons/oasis_dialogue/assets/actions_hovered.png" id="10_vwucj"]
+[ext_resource type="Script" uid="uid://cv50sj3bc2gyv" path="res://addons/oasis_dialogue/definition_panel/text_edit.gd" id="12_hxrne"]
+[ext_resource type="Script" uid="uid://b4npn0yjtmwuv" path="res://addons/oasis_dialogue/definition_panel/language_server.gd" id="13_xpa7h"]
+[ext_resource type="Script" uid="uid://dtiy7yrp88yne" path="res://addons/oasis_dialogue/definition_panel/checker.gd" id="14_4ypvr"]
+[ext_resource type="Script" uid="uid://chygcik4ip5ks" path="res://addons/oasis_dialogue/definition_panel/shared.gd" id="15_kla20"]
+[ext_resource type="Script" uid="uid://c5vw4nrynpevv" path="res://addons/oasis_dialogue/definition_panel/status.gd" id="16_lfuql"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0ac86"]
+content_margin_left = 18.0
+content_margin_top = 8.0
+content_margin_right = 18.0
+content_margin_bottom = 8.0
+bg_color = Color(0.1, 0.1, 0.1, 0.6)
+corner_detail = 5
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_aie43"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_aie43"]
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+bg_color = Color(0.1, 0.1, 0.1, 0.6)
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_elfwv"]
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+bg_color = Color(0.1, 0.1, 0.1, 0.3)
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kla20"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+bg_color = Color(0.1, 0.1, 0.1, 0.6)
+
+[node name="DefinitionsPanel" type="VBoxContainer" groups=["oasis_registerable"]]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_elfwv")
+script = ExtResource("1_0ac86")
+
+[node name="HeaderBackground" type="PanelContainer" parent="."]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_0ac86")
+
+[node name="Header" type="HBoxContainer" parent="HeaderBackground"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="EnablePage" type="CheckBox" parent="HeaderBackground/Header"]
+layout_mode = 2
+theme_override_styles/focus = SubResource("StyleBoxEmpty_aie43")
+
+[node name="Spacer" type="Control" parent="HeaderBackground/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ShowAnnotations" type="TextureButton" parent="HeaderBackground/Header"]
+custom_minimum_size = Vector2(16, 0)
+layout_mode = 2
+tooltip_text = "View annotations"
+toggle_mode = true
+action_mode = 0
+button_group = ExtResource("1_aie43")
+texture_normal = ExtResource("2_0ac86")
+texture_pressed = ExtResource("3_hxrne")
+texture_hover = ExtResource("4_xpa7h")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="ShowConditions" type="TextureButton" parent="HeaderBackground/Header"]
+custom_minimum_size = Vector2(16, 0)
+layout_mode = 2
+tooltip_text = "View conditions"
+toggle_mode = true
+action_mode = 0
+button_group = ExtResource("1_aie43")
+texture_normal = ExtResource("5_4ypvr")
+texture_pressed = ExtResource("6_kla20")
+texture_hover = ExtResource("7_lfuql")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="ShowActions" type="TextureButton" parent="HeaderBackground/Header"]
+custom_minimum_size = Vector2(16, 0)
+layout_mode = 2
+tooltip_text = "View actions"
+toggle_mode = true
+action_mode = 0
+button_group = ExtResource("1_aie43")
+texture_normal = ExtResource("8_elfwv")
+texture_pressed = ExtResource("9_8cvwl")
+texture_hover = ExtResource("10_vwucj")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="TextEdit" type="TextEdit" parent="." node_paths=PackedStringArray("_shared")]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/normal = SubResource("StyleBoxFlat_aie43")
+theme_override_styles/read_only = SubResource("StyleBoxFlat_elfwv")
+editable = false
+wrap_mode = 1
+tab_input_mode = false
+script = ExtResource("12_hxrne")
+_shared = NodePath("../Shared")
+
+[node name="ParseTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
+[node name="LanguageServer" type="Node" parent="." node_paths=PackedStringArray("_shared")]
+script = ExtResource("13_xpa7h")
+_shared = NodePath("../Shared")
+
+[node name="Checker" type="Node" parent="." node_paths=PackedStringArray("_panel", "_text", "_status")]
+script = ExtResource("14_4ypvr")
+_panel = NodePath("..")
+_text = NodePath("../TextEdit")
+_status = NodePath("../Status")
+
+[node name="Shared" type="Node" parent="."]
+script = ExtResource("15_kla20")
+
+[node name="Status" type="PanelContainer" parent="."]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_kla20")
+script = ExtResource("16_lfuql")
+
+[node name="Label" type="Label" parent="Status"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.61, 0.61, 1)
+autowrap_mode = 3
+
+[connection signal="changed" from="." to="LanguageServer" method="parse"]
+[connection signal="cleared" from="." to="TextEdit" method="clear_highlights"]
+[connection signal="cleared" from="." to="Status" method="clear"]
+[connection signal="toggled" from="HeaderBackground/Header/EnablePage" to="." method="_on_enable_page_toggled"]
+[connection signal="focus_entered" from="TextEdit" to="." method="show_source"]
+[connection signal="focus_exited" from="TextEdit" to="." method="show_summary"]
+[connection signal="text_changed" from="TextEdit" to="." method="_on_summary_edit_text_changed"]
+[connection signal="timeout" from="ParseTimer" to="." method="_on_parse_timer_timeout"]
+[connection signal="parsed" from="LanguageServer" to="Checker" method="check"]

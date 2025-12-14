@@ -3,12 +3,12 @@ extends Tree
 
 const REGISTRY_KEY := "character_tree"
 
-const _Graph := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
-const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
-const _RenameCharacterHandler := preload("res://addons/oasis_dialogue/canvas/rename_character_handler.gd")
 const _AddCharacterHandler := preload("res://addons/oasis_dialogue/canvas/add_character_handler.gd")
-const _RemoveCharacterHandler := preload("res://addons/oasis_dialogue/canvas/remove_character_handler.gd")
+const _Graph := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
 const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
+const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
+const _RemoveCharacterHandler := preload("res://addons/oasis_dialogue/canvas/remove_character_handler.gd")
+const _RenameCharacterHandler := preload("res://addons/oasis_dialogue/canvas/rename_character_handler.gd")
 const _Save := preload("res://addons/oasis_dialogue/save.gd")
 
 signal item_rename_requested
