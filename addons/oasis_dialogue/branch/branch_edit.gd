@@ -29,6 +29,9 @@ var _tween: Tween = null
 var _branches: Dictionary[int, _Branch] = {}
 var _dirty_branches: Array[int] = []
 var _branch_factory := Callable()
+# A hack for users to determine if they should call connect_branches without
+# rearranging. This only happens during load_character when we do not want to
+# rearrange as the branches are being rebuilt incrementally.
 var _is_restoring_branches := false
 
 
