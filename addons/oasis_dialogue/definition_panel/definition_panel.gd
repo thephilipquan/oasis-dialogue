@@ -6,7 +6,12 @@ const REGISTRY_KEY := "definition_panel"
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 const _TextEdit := preload("res://addons/oasis_dialogue/definition_panel/text_edit.gd")
 
+## Emitted, after the debounce period, when a page is edited.
 signal changed(text: String)
+## Emitted when a page is enabled.
+signal enabled
+## Emitted when a page is disabled.
+signal disabled
 ## Emitted when the panel needs to be cleared via disabling or changing pages.
 signal cleared
 
@@ -160,6 +165,10 @@ func _on_parse_timer_timeout() -> void:
 func _on_enable_page_toggled(toggled_on: bool) -> void:
 	_page.enabled = toggled_on
 	_sync_page()
+	if toggled_on:
+		enabled.emit()
+	else:
+		disabled.emit()
 
 
 class _Page:

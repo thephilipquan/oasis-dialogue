@@ -6,6 +6,7 @@ const REGISTRY_KEY := "branch_edit"
 const _AddBranch := preload("res://addons/oasis_dialogue/canvas/add_branch_button.gd")
 const _Branch := preload("res://addons/oasis_dialogue/branch/branch.gd")
 const _Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
+const _Definitions := preload("res://addons/oasis_dialogue/definition_panel/definition_panel.gd")
 const _OasisFile := preload("res://addons/oasis_dialogue/io/oasis_file.gd")
 const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
@@ -53,6 +54,11 @@ func setup(registry: _Registry) -> void:
 	manager.character_config_loaded.connect(load_character_config)
 
 	init_branch_factory(registry.at(_Canvas.BRANCH_FACTORY_REGISTRY_KEY))
+
+	var definitions: _Definitions = registry.at(_Definitions.REGISTRY_KEY)
+	definitions.changed.connect(_emit_all_branches_changed.unbind(1))
+	definitions.enabled.connect(_emit_all_branches_changed)
+	definitions.disabled.connect(_emit_all_branches_changed)
 
 
 func init_branch_factory(branch_factory: Callable) -> void:
@@ -330,6 +336,11 @@ func _on_branch_changed(id: int, text: String) -> void:
 	branch_changed.emit(id, text)
 	_dirty_branches.push_back(id)
 	dirtied.emit()
+
+
+func _emit_all_branches_changed() -> void:
+	for id in _branches:
+		branch_changed.emit(id, get_branch_text(id))
 
 
 func _setup_tween() -> void:
