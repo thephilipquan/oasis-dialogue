@@ -104,6 +104,30 @@ func set_summary(summary: PackedStringArray) -> void:
 	_page.summary = summary
 
 
+func annotation_exists(annotation: String) -> bool:
+	return annotation in _annotations.summary
+
+
+func annotations_enabled() -> bool:
+	return _annotations.enabled
+
+
+func condition_exists(condition: String) -> bool:
+	return condition in _conditions.summary
+
+
+func conditions_enabled() -> bool:
+	return _conditions.enabled
+
+
+func action_exists(action: String) -> bool:
+	return action in _actions.summary
+
+
+func actions_enabled() -> bool:
+	return _actions.enabled
+
+
 func _sync_page() -> void:
 	_enable_page_checkbox.button_pressed = _page.enabled
 	_text.editable = _page.enabled

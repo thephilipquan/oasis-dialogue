@@ -10,6 +10,7 @@ const _SemanticError := preload("res://addons/oasis_dialogue/model/semantic_erro
 const _Status := preload("res://addons/oasis_dialogue/status/status.gd")
 const _Token := preload("res://addons/oasis_dialogue/model/token.gd")
 const _VisitorIterator := preload("res://addons/oasis_dialogue/visitor/visitor_iterator.gd")
+const _Definitions := preload("res://addons/oasis_dialogue/definition_panel/definition_panel.gd")
 
 const _ConnectBranchVisitor := preload("res://addons/oasis_dialogue/visitor/connect_branch_visitor.gd")
 const _CreateBranchVisitor := preload("res://addons/oasis_dialogue/visitor/create_branch_visitor.gd")
@@ -20,6 +21,7 @@ const _LanguageServer := preload("res://addons/oasis_dialogue/canvas/language_se
 const _ParseErrorVisitor := preload("res://addons/oasis_dialogue/visitor/parse_error_visitor.gd")
 const _UniqueTypeVisitor := preload("res://addons/oasis_dialogue/visitor/unique_type_visitor.gd")
 const _ValidateConnectVisitor := preload("res://addons/oasis_dialogue/visitor/validate_connect_visitor.gd")
+const _ValidateDefinitions := preload("res://addons/oasis_dialogue/visitor/validate_definitions.gd")
 
 var _visitors: _VisitorIterator = null
 
@@ -31,6 +33,7 @@ func register(registry: _Registry) -> void:
 func setup(registry: _Registry) -> void:
 	var graph: _BranchEdit = registry.at(_BranchEdit.REGISTRY_KEY)
 	var status: _Status = registry.at(_Status.REGISTRY_KEY)
+	var definitions: _Definitions = registry.at(_Definitions.REGISTRY_KEY)
 
 	_visitors = _VisitorIterator.new()
 
@@ -41,6 +44,15 @@ func setup(registry: _Registry) -> void:
 
 	var parse_error_visitor := _ParseErrorVisitor.new(on_err)
 	var empty_branch_visitor := _EmptyBranchVisitor.new(on_err)
+	var validate_definitions := _ValidateDefinitions.new()
+	validate_definitions.init_on_err(on_err)
+	validate_definitions.init_annotation_exists(definitions.annotation_exists)
+	validate_definitions.init_annotations_enabled(definitions.annotations_enabled)
+	validate_definitions.init_condition_exists(definitions.condition_exists)
+	validate_definitions.init_conditions_enabled(definitions.conditions_enabled)
+	validate_definitions.init_action_exists(definitions.action_exists)
+	validate_definitions.init_actions_enabled(definitions.actions_enabled)
+
 	var duplicate_annotation_visitor := _DuplicateAnnotationVisitor.new(on_err)
 	#var unique_type_visitor := _UniqueTypeVisitor.new(
 		#_Token.type_to_string(_Token.Type.RNG),
@@ -68,6 +80,7 @@ func setup(registry: _Registry) -> void:
 	_visitors.set_visitors([
 		parse_error_visitor,
 		empty_branch_visitor,
+		validate_definitions,
 		duplicate_annotation_visitor,
 		#unique_type_visitor,
 		validate_connect_visitor,
