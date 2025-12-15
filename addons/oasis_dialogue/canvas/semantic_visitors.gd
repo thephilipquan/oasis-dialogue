@@ -15,7 +15,6 @@ const _Definitions := preload("res://addons/oasis_dialogue/definition_panel/defi
 const _ConnectBranchVisitor := preload("res://addons/oasis_dialogue/visitor/connect_branch_visitor.gd")
 const _CreateBranchVisitor := preload("res://addons/oasis_dialogue/visitor/create_branch_visitor.gd")
 const _DuplicateAnnotationVisitor := preload("res://addons/oasis_dialogue/visitor/duplicate_annotation_visitor.gd")
-const _EmptyBranchVisitor := preload("res://addons/oasis_dialogue/visitor/empty_branch_visitor.gd")
 const _FinishCallbackVisitor := preload("res://addons/oasis_dialogue/visitor/finish_callback_visitor.gd")
 const _LanguageServer := preload("res://addons/oasis_dialogue/canvas/language_server.gd")
 const _ParseErrorVisitor := preload("res://addons/oasis_dialogue/visitor/parse_error_visitor.gd")
@@ -43,7 +42,6 @@ func setup(registry: _Registry) -> void:
 		_visitors.stop()
 
 	var parse_error_visitor := _ParseErrorVisitor.new(on_err)
-	var empty_branch_visitor := _EmptyBranchVisitor.new(on_err)
 	var validate_definitions := _ValidateDefinitions.new()
 	validate_definitions.init_on_err(on_err)
 	validate_definitions.init_annotation_exists(definitions.annotation_exists)
@@ -77,9 +75,9 @@ func setup(registry: _Registry) -> void:
 	)
 	var clear_status_err := _FinishCallbackVisitor.new(status.clear_err)
 	var clear_branch_highlights_visitor := _FinishCallbackVisitor.new(graph.clear_branch_highlights)
+
 	_visitors.set_visitors([
 		parse_error_visitor,
-		empty_branch_visitor,
 		validate_definitions,
 		duplicate_annotation_visitor,
 		#unique_type_visitor,
