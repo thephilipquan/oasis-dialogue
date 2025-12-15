@@ -22,7 +22,7 @@ var _text: _TextEdit = $TextEdit
 @onready
 var _enable_page_checkbox: CheckBox = $HeaderBackground/Header/EnablePage
 
-var _annotations := _Page.new()
+var _annotations := _AnnotationPage.new()
 var _conditions := _Page.new()
 var _actions := _Page.new()
 
@@ -79,6 +79,10 @@ func annotation_is_default(value: String) -> bool:
 	return value == "default"
 
 
+func annotation_is_exclusive(value: String) -> bool:
+	return value == "prompt"
+
+
 func show_source() -> void:
 	if _viewing_source:
 		return
@@ -105,11 +109,31 @@ func mark_page_valid() -> void:
 	)
 
 
+func viewing_annotations() -> bool:
+	return _page == _annotations
+
+
+func viewing_conditions() -> bool:
+	return _page == _conditions
+
+
+func viewing_actions() -> bool:
+	return _page == _actions
+
+
 func set_summary(summary: PackedStringArray) -> void:
 	_page.summary = summary
 
 
-func annotation_exists(annotation: String) -> bool:
+func set_annotation_exclusives(exclusives: PackedStringArray) -> void:
+	(_page as _AnnotationPage).exclusives = exclusives
+
+
+func branch_annotation_is_exclusive(annotation: String) -> bool:
+	return _annotations.exclusives.find(annotation) != -1
+
+
+func branch_annotation_exists(annotation: String) -> bool:
 	return annotation in _annotations.summary
 
 
@@ -179,3 +203,9 @@ class _Page:
 	var summary := PackedStringArray()
 	var has_error := false
 	var button: BaseButton = null
+
+
+class _AnnotationPage:
+	extends _Page
+
+	var exclusives := PackedStringArray()

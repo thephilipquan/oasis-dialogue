@@ -21,6 +21,7 @@ const _ParseErrorVisitor := preload("res://addons/oasis_dialogue/visitor/parse_e
 const _UniqueTypeVisitor := preload("res://addons/oasis_dialogue/visitor/unique_type_visitor.gd")
 const _ValidateConnectVisitor := preload("res://addons/oasis_dialogue/visitor/validate_connect_visitor.gd")
 const _ValidateDefinitions := preload("res://addons/oasis_dialogue/visitor/validate_definitions.gd")
+const _ValidateExclusiveAnnotations := preload("res://addons/oasis_dialogue/visitor/validate_exclusive_annotations.gd")
 
 var _visitors: _VisitorIterator = null
 
@@ -44,7 +45,7 @@ func setup(registry: _Registry) -> void:
 	var parse_error_visitor := _ParseErrorVisitor.new(on_err)
 	var validate_definitions := _ValidateDefinitions.new()
 	validate_definitions.init_on_err(on_err)
-	validate_definitions.init_annotation_exists(definitions.annotation_exists)
+	validate_definitions.init_annotation_exists(definitions.branch_annotation_exists)
 	validate_definitions.init_annotations_enabled(definitions.annotations_enabled)
 	validate_definitions.init_condition_exists(definitions.condition_exists)
 	validate_definitions.init_conditions_enabled(definitions.conditions_enabled)
@@ -52,11 +53,12 @@ func setup(registry: _Registry) -> void:
 	validate_definitions.init_actions_enabled(definitions.actions_enabled)
 
 	var duplicate_annotation_visitor := _DuplicateAnnotationVisitor.new(on_err)
-	#var unique_type_visitor := _UniqueTypeVisitor.new(
-		#_Token.type_to_string(_Token.Type.RNG),
-		#_Token.type_to_string(_Token.Type.SEQ),
-	#)
-	#unique_type_visitor.init_on_err(on_err)
+
+	var validate_exclusive_annotations := _ValidateExclusiveAnnotations.new()
+	validate_exclusive_annotations.init_is_enabled(definitions.annotations_enabled)
+	validate_exclusive_annotations.init_is_exclusive(definitions.branch_annotation_is_exclusive)
+	validate_exclusive_annotations.init_on_err(on_err)
+
 	var validate_connect_visitor := _ValidateConnectVisitor.new(
 		_Global.CONNECT_BRANCH_KEYWORD,
 		on_err,
@@ -80,7 +82,7 @@ func setup(registry: _Registry) -> void:
 		parse_error_visitor,
 		validate_definitions,
 		duplicate_annotation_visitor,
-		#unique_type_visitor,
+		validate_exclusive_annotations,
 		validate_connect_visitor,
 		create_branch_visitor,
 		connect_branch_visitor,

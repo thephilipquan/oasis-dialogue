@@ -12,6 +12,7 @@ const _DuplicateDefault := preload("res://addons/oasis_dialogue/definition_panel
 const _DuplicateId := preload("res://addons/oasis_dialogue/definition_panel/visitor/duplicate_id.gd")
 const _FinishCallback := preload("res://addons/oasis_dialogue/definition_panel/visitor/finish_callback.gd")
 const _UpdateSummary := preload("res://addons/oasis_dialogue/definition_panel/visitor/update_summary.gd")
+const _UpdateExclusiveAnnotations := preload("res://addons/oasis_dialogue/definition_panel/visitor/update_exclusive_annotations.gd")
 const _ParseError := preload("res://addons/oasis_dialogue/definition_panel/visitor/parse_error.gd")
 const _VisitorIterator := preload("res://addons/oasis_dialogue/definition_panel/visitor/visitor_iterator.gd")
 const _ValidateAnnotation := preload("res://addons/oasis_dialogue/definition_panel/visitor/validate_annotation.gd")
@@ -58,6 +59,11 @@ func _ready() -> void:
 	var update_summary := _UpdateSummary.new()
 	update_summary.set_update(_panel.set_summary)
 
+	var update_exclusive_annotations := _UpdateExclusiveAnnotations.new()
+	update_exclusive_annotations.init_is_viewing_annotations(_panel.viewing_annotations)
+	update_exclusive_annotations.init_is_exclusive_annotation(_panel.annotation_is_exclusive)
+	update_exclusive_annotations.init_update_exclusives(_panel.set_annotation_exclusives)
+
 	var mark_page_valid := _FinishCallback.new(_panel.mark_page_valid)
 
 	_iterator.set_visitors([
@@ -67,6 +73,7 @@ func _ready() -> void:
 			duplicate_annotation,
 			duplicate_default,
 			update_summary,
+			update_exclusive_annotations,
 			mark_page_valid,
 	])
 
