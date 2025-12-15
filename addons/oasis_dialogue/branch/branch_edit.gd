@@ -28,6 +28,7 @@ var duration: float = 0.5:
 
 var _tween: Tween = null
 var _branches: Dictionary[int, _Branch] = {}
+# Branches edited and needs to be prettied on save.
 var _dirty_branches: Array[int] = []
 var _branch_factory := Callable()
 # A hack for users to determine if they should call connect_branches without
@@ -181,6 +182,7 @@ func remove_branches() -> void:
 		remove_child(branch)
 		branch.queue_free()
 	_branches.clear()
+	_dirty_branches.clear()
 
 
 func highlight_branch(id: int, lines: Array[int]) -> void:
