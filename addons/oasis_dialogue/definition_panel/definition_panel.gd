@@ -73,7 +73,7 @@ func change_page(to: Page) -> void:
 
 
 func show_page_source() -> void:
-	if _viewing_source:
+	if not _page.enabled or _viewing_source:
 		return
 	_text.text = _page.source
 	_viewing_source = true
