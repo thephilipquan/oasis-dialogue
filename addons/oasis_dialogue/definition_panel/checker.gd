@@ -1,7 +1,7 @@
 @tool
 extends Node
 
-const _DefinitionPanel := preload("res://addons/oasis_dialogue/definition_panel/definition_panel.gd")
+const _Definitions := preload("res://addons/oasis_dialogue/definition_panel/definition_panel.gd")
 const _Status := preload("res://addons/oasis_dialogue/definition_panel/status.gd")
 const _TextEdit := preload("res://addons/oasis_dialogue/definition_panel/text_edit.gd")
 const _AST := preload("res://addons/oasis_dialogue/definition_panel/model/ast.gd")
@@ -20,7 +20,7 @@ const _ValidateAnnotation := preload("res://addons/oasis_dialogue/definition_pan
 var _iterator: _VisitorIterator = null
 
 @export
-var _panel: _DefinitionPanel = null
+var _definitions: _Definitions = null
 @export
 var _text: _TextEdit = null
 @export
@@ -37,13 +37,13 @@ func _ready() -> void:
 		_iterator.stop()
 		_status.err(error)
 		_text.highlight(error.line)
-		_panel.mark_page_invalid()
+		_definitions.mark_page_invalid()
 
 	var parse_error := _ParseError.new()
 	parse_error.init_on_err(on_err)
 
 	var validate_annotation := _ValidateAnnotation.new()
-	validate_annotation.init_get_annotations(_panel.get_annotations)
+	validate_annotation.init_get_annotations(_definitions.annotations.get_annotations)
 	validate_annotation.init_on_err(on_err)
 
 	var duplicate_id := _DuplicateId.new()
@@ -53,18 +53,18 @@ func _ready() -> void:
 	duplicate_annotation.init_on_err(on_err)
 
 	var duplicate_default := _DuplicateDefault.new()
-	duplicate_default.init_is_default(_panel.annotation_is_default)
+	duplicate_default.init_is_default(_definitions.annotations.annotation_marks_default)
 	duplicate_default.init_on_err(on_err)
 
 	var update_summary := _UpdateSummary.new()
-	update_summary.set_update(_panel.set_summary)
+	update_summary.set_update(_definitions.update_page_summary)
 
 	var update_exclusive_annotations := _UpdateExclusiveAnnotations.new()
-	update_exclusive_annotations.init_is_viewing_annotations(_panel.viewing_annotations)
-	update_exclusive_annotations.init_is_exclusive_annotation(_panel.annotation_is_exclusive)
-	update_exclusive_annotations.init_update_exclusives(_panel.set_annotation_exclusives)
+	update_exclusive_annotations.init_is_viewing_annotations(_definitions.annotations.is_active)
+	update_exclusive_annotations.init_is_exclusive_annotation(_definitions.annotations.annotation_marks_exclusive)
+	update_exclusive_annotations.init_update_exclusives(_definitions.annotations.set_exclusives)
 
-	var mark_page_valid := _FinishCallback.new(_panel.mark_page_valid)
+	var mark_page_valid := _FinishCallback.new(_definitions.mark_page_valid)
 
 	_iterator.set_visitors([
 			parse_error,

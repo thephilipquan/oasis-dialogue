@@ -45,18 +45,18 @@ func setup(registry: _Registry) -> void:
 	var parse_error_visitor := _ParseErrorVisitor.new(on_err)
 	var validate_definitions := _ValidateDefinitions.new()
 	validate_definitions.init_on_err(on_err)
-	validate_definitions.init_annotation_exists(definitions.branch_annotation_exists)
-	validate_definitions.init_annotations_enabled(definitions.annotations_enabled)
-	validate_definitions.init_condition_exists(definitions.condition_exists)
-	validate_definitions.init_conditions_enabled(definitions.conditions_enabled)
-	validate_definitions.init_action_exists(definitions.action_exists)
-	validate_definitions.init_actions_enabled(definitions.actions_enabled)
+	validate_definitions.init_annotation_exists(definitions.annotations.exists)
+	validate_definitions.init_annotations_enabled(definitions.annotations.is_enabled)
+	validate_definitions.init_condition_exists(definitions.conditions.exists)
+	validate_definitions.init_conditions_enabled(definitions.conditions.is_enabled)
+	validate_definitions.init_action_exists(definitions.actions.exists)
+	validate_definitions.init_actions_enabled(definitions.actions.is_enabled)
 
 	var duplicate_annotation_visitor := _DuplicateAnnotationVisitor.new(on_err)
 
 	var validate_exclusive_annotations := _ValidateExclusiveAnnotations.new()
-	validate_exclusive_annotations.init_is_enabled(definitions.annotations_enabled)
-	validate_exclusive_annotations.init_is_exclusive(definitions.branch_annotation_is_exclusive)
+	validate_exclusive_annotations.init_is_enabled(definitions.annotations.is_enabled)
+	validate_exclusive_annotations.init_is_exclusive(definitions.annotations.is_exclusive)
 	validate_exclusive_annotations.init_on_err(on_err)
 
 	var validate_connect_visitor := _ValidateConnectVisitor.new(

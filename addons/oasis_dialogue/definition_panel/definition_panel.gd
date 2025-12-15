@@ -22,11 +22,11 @@ var _text: _TextEdit = $TextEdit
 @onready
 var _enable_page_checkbox: CheckBox = $HeaderBackground/Header/EnablePage
 
-var _annotations := _AnnotationPage.new()
-var _conditions := _Page.new()
-var _actions := _Page.new()
+var annotations := AnnotationPage.new()
+var conditions := Page.new()
+var actions := ActionsPage.new()
 
-var _page: _Page = null
+var _page: Page = null
 # Prevents re-setting _text.text when the source is already displayed.
 # If there are errors and the text is highlighted, re-setting the text
 # will bug the lines already colored.
@@ -38,16 +38,16 @@ func _ready() -> void:
 		return
 
 	var show_annotations: BaseButton = $HeaderBackground/Header/ShowAnnotations
-	show_annotations.pressed.connect(change_page.bind(_annotations))
-	_annotations.button = show_annotations
+	show_annotations.pressed.connect(change_page.bind(annotations))
+	annotations.button = show_annotations
 
 	var show_conditions: BaseButton = $HeaderBackground/Header/ShowConditions
-	show_conditions.pressed.connect(change_page.bind(_conditions))
-	_conditions.button = show_conditions
+	show_conditions.pressed.connect(change_page.bind(conditions))
+	conditions.button = show_conditions
 
 	var show_actions: BaseButton = $HeaderBackground/Header/ShowActions
-	show_actions.pressed.connect(change_page.bind(_actions))
-	_actions.button = show_actions
+	show_actions.pressed.connect(change_page.bind(actions))
+	actions.button = show_actions
 
 	# Simulate button press. Remove in future. Press the button on loading from project.
 	# If none-last viewed, the default to annotation.
@@ -59,38 +59,27 @@ func register(registry: _Registry) -> void:
 	registry.add(REGISTRY_KEY, self)
 
 
-func change_page(to: _Page) -> void:
+func change_page(to: Page) -> void:
 	if _page == to:
 		return
+
+	# _page is not set the first time we change pages.
+	if _page:
+		_page.active = false
+
 	_page = to
+	_page.active = true
 	_sync_page()
 
 
-func get_annotations() -> PackedStringArray:
-	var result := PackedStringArray()
-	if _page == _annotations:
-		result = ["default", "prompt"]
-	elif _page == _actions:
-		result =  ["branch"]
-	return result
-
-
-func annotation_is_default(value: String) -> bool:
-	return value == "default"
-
-
-func annotation_is_exclusive(value: String) -> bool:
-	return value == "prompt"
-
-
-func show_source() -> void:
+func show_page_source() -> void:
 	if _viewing_source:
 		return
 	_text.text = _page.source
 	_viewing_source = true
 
 
-func show_summary() -> void:
+func show_page_summary() -> void:
 	_text.text = "\n".join(_page.summary)
 	_viewing_source = false
 
@@ -109,52 +98,8 @@ func mark_page_valid() -> void:
 	)
 
 
-func viewing_annotations() -> bool:
-	return _page == _annotations
-
-
-func viewing_conditions() -> bool:
-	return _page == _conditions
-
-
-func viewing_actions() -> bool:
-	return _page == _actions
-
-
-func set_summary(summary: PackedStringArray) -> void:
+func update_page_summary(summary: PackedStringArray) -> void:
 	_page.summary = summary
-
-
-func set_annotation_exclusives(exclusives: PackedStringArray) -> void:
-	(_page as _AnnotationPage).exclusives = exclusives
-
-
-func branch_annotation_is_exclusive(annotation: String) -> bool:
-	return _annotations.exclusives.find(annotation) != -1
-
-
-func branch_annotation_exists(annotation: String) -> bool:
-	return annotation in _annotations.summary
-
-
-func annotations_enabled() -> bool:
-	return _annotations.enabled
-
-
-func condition_exists(condition: String) -> bool:
-	return condition in _conditions.summary
-
-
-func conditions_enabled() -> bool:
-	return _conditions.enabled
-
-
-func action_exists(action: String) -> bool:
-	return action in _actions.summary
-
-
-func actions_enabled() -> bool:
-	return _actions.enabled
 
 
 func _sync_page() -> void:
@@ -162,17 +107,17 @@ func _sync_page() -> void:
 	_text.editable = _page.enabled
 
 	if not _page.enabled:
-		show_summary()
+		show_page_summary()
 		_page.button.modulate = Color.WHITE
 		cleared.emit()
 		return
 
 	if _page.has_error:
-		show_source()
+		show_page_source()
 		_page.button.modulate = get_theme_color("invalid_color", "Project")
 		changed.emit(_page.source)
 	else:
-		show_summary()
+		show_page_summary()
 		_page.button.modulate = get_theme_color("enabled_color", "Project")
 		cleared.emit()
 
@@ -195,7 +140,7 @@ func _on_enable_page_toggled(toggled_on: bool) -> void:
 		disabled.emit()
 
 
-class _Page:
+class Page:
 	extends RefCounted
 
 	var enabled := false
@@ -203,9 +148,55 @@ class _Page:
 	var summary := PackedStringArray()
 	var has_error := false
 	var button: BaseButton = null
+	var active := false
+
+	var _annotations := PackedStringArray()
+
+	func is_enabled() -> bool:
+		return enabled
 
 
-class _AnnotationPage:
-	extends _Page
+	func exists(value: String) -> bool:
+		return value in summary
 
-	var exclusives := PackedStringArray()
+
+	func is_active() -> bool:
+		return active
+
+
+	func get_annotations() -> PackedStringArray:
+		return _annotations
+
+
+class AnnotationPage:
+	extends Page
+
+	var _exclusives := PackedStringArray()
+
+
+	func _init() -> void:
+		_annotations = ["default", "prompt"]
+
+
+	func annotation_marks_default(value: String) -> bool:
+		return value == "default"
+
+
+	func annotation_marks_exclusive(value: String) -> bool:
+		return value == "prompt"
+
+
+	func is_exclusive(value: String) -> bool:
+		return value in _exclusives
+
+
+	func set_exclusives(values: PackedStringArray) -> void:
+		_exclusives = values
+
+
+class ActionsPage:
+	extends Page
+
+
+	func _init() -> void:
+		_annotations = ["branch"]
