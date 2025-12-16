@@ -68,7 +68,7 @@ script = ExtResource("4_wvnn7")
 
 [node name="Model" type="Node" parent="."]
 
-[node name="Model" type="Node" parent="Model" groups=["oasis_registerable"]]
+[node name="Model" type="Node" parent="Model"]
 script = ExtResource("3_ytw7q")
 
 [node name="LanguageServer" type="Node" parent="Model" groups=["oasis_registerable"]]
@@ -119,16 +119,18 @@ grow_vertical = 2
 custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
 
-[node name="LeftPanelSpacer" type="Control" parent="View/Header" node_paths=PackedStringArray("_parent_split_container", "_panel")]
+[node name="LeftPanelSpacer" type="Control" parent="View/Header" node_paths=PackedStringArray("_parent_split_container", "_panel") groups=["oasis_registerable"]]
 layout_mode = 2
 script = ExtResource("20_kiihh")
 _parent_split_container = NodePath("../../Body")
 _panel = NodePath("../../Body/CharacterTree")
+settings_header = "characters"
 
-[node name="ToggleCharacterPanel" parent="View/Header" instance=ExtResource("20_iqooe")]
+[node name="ToggleCharacterPanel" parent="View/Header" groups=["oasis_registerable"] instance=ExtResource("20_iqooe")]
 layout_mode = 2
 texture_normal = ExtResource("21_kiihh")
 texture_hover = ExtResource("22_nsqch")
+settings_header = "characters"
 
 [node name="MenuBar" type="MenuBar" parent="View/Header"]
 layout_mode = 2
@@ -156,17 +158,19 @@ script = ExtResource("21_q6oy7")
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ToggleDefinitionsPanel" parent="View/Header" instance=ExtResource("20_iqooe")]
+[node name="ToggleDefinitionsPanel" parent="View/Header" groups=["oasis_registerable"] instance=ExtResource("20_iqooe")]
 layout_mode = 2
 texture_normal = ExtResource("21_kiihh")
 texture_hover = ExtResource("22_nsqch")
 flip_h = true
+settings_header = "definitions"
 
-[node name="RightPanelSpacer" type="Control" parent="View/Header" node_paths=PackedStringArray("_parent_split_container", "_panel")]
+[node name="RightPanelSpacer" type="Control" parent="View/Header" node_paths=PackedStringArray("_parent_split_container", "_panel") groups=["oasis_registerable"]]
 layout_mode = 2
 script = ExtResource("20_kiihh")
 _parent_split_container = NodePath("../../Body/HSplitContainer")
 _panel = NodePath("../../Body/HSplitContainer/HSplitContainer")
+settings_header = "definitions"
 
 [node name="Body" type="HSplitContainer" parent="View"]
 layout_mode = 2
@@ -283,12 +287,16 @@ layout_mode = 2
 [node name="DefinitionsPanel" parent="View/Body/HSplitContainer/HSplitContainer" instance=ExtResource("41_nsqch")]
 layout_mode = 2
 
-[node name="ToggleLeftPanelVisibility" type="Node" parent="View" node_paths=PackedStringArray("button", "target")]
+[node name="ToggleLeftPanelVisibility" type="Node" parent="View" node_paths=PackedStringArray("button", "target", "container") groups=["oasis_registerable"]]
 script = ExtResource("42_0fanf")
 button = NodePath("../Header/ToggleCharacterPanel")
 target = NodePath("../Body/CharacterTree")
+container = NodePath("../Body")
+settings_header = "characters"
 
-[node name="ToggleRightPanelVisibility" type="Node" parent="View" node_paths=PackedStringArray("button", "target")]
+[node name="ToggleRightPanelVisibility" type="Node" parent="View" node_paths=PackedStringArray("button", "target", "container") groups=["oasis_registerable"]]
 script = ExtResource("42_0fanf")
 button = NodePath("../Header/ToggleDefinitionsPanel")
 target = NodePath("../Body/HSplitContainer/HSplitContainer")
+container = NodePath("../Body/HSplitContainer")
+settings_header = "definitions"
