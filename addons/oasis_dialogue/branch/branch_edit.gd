@@ -57,7 +57,7 @@ func setup(registry: _Registry) -> void:
 	init_branch_factory(registry.at(_Canvas.BRANCH_FACTORY_REGISTRY_KEY))
 
 	var definitions: _Definitions = registry.at(_Definitions.REGISTRY_KEY)
-	definitions.changed.connect(_emit_all_branches_changed.unbind(1))
+	definitions.updated.connect(_emit_all_branches_changed)
 	definitions.enabled.connect(_emit_all_branches_changed)
 	definitions.disabled.connect(_emit_all_branches_changed)
 

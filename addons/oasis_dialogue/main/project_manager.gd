@@ -20,6 +20,7 @@ const _Save := preload("res://addons/oasis_dialogue/save.gd")
 
 const _SETTINGS_DIR := ".oasis/"
 const _USER_SETTINGS := "user"
+const _ANNOTATIONS := "annotations"
 const _ACTIONS := "actions"
 const _CONDITIONS := "conditions"
 
@@ -30,11 +31,14 @@ signal character_saved(name: String)
 signal saving_character_config(file: ConfigFile)
 signal character_config_loaded(file: ConfigFile)
 
-signal saving_actions(file: _OasisFile)
-signal actions_loaded(file: _OasisFile)
+signal saving_annotations(file: _OasisFile)
+signal annotations_loaded(file: _OasisFile)
 
 signal saving_conditions(file: _OasisFile)
 signal conditions_loaded(file: _OasisFile)
+
+signal saving_actions(file: _OasisFile)
+signal actions_loaded(file: _OasisFile)
 
 signal saving_settings(file: ConfigFile)
 signal settings_loaded(file: ConfigFile)
@@ -140,10 +144,12 @@ func open_project(path: String) -> void:
 		var file := _OasisFile.new()
 		file.load(_directory.path_join(f))
 
-		if filename == _ACTIONS:
-			actions_loaded.emit(file)
+		if filename == _ANNOTATIONS:
+			annotations_loaded.emit(file)
 		elif filename == _CONDITIONS:
 			conditions_loaded.emit(file)
+		elif filename == _ACTIONS:
+			actions_loaded.emit(file)
 		else:
 			var character: String = file.get_value(
 					_Save.Character.DATA,
@@ -176,8 +182,9 @@ func save_project() -> void:
 		replace_save_with_temp(character)
 
 	save_settings()
-	save_actions()
+	save_annotations()
 	save_conditions()
+	save_actions()
 
 
 func save_settings() -> void:
@@ -191,16 +198,22 @@ func save_settings() -> void:
 	settings.save(_get_user_settings_path())
 
 
-func save_actions() -> void:
-	var actions := _OasisFile.new()
-	saving_actions.emit(actions)
-	actions.save(_get_actions_path())
+func save_annotations() -> void:
+	var annotations := _OasisFile.new()
+	saving_annotations.emit(annotations)
+	annotations.save(_get_annotations_path())
 
 
 func save_conditions() -> void:
 	var conditions := _OasisFile.new()
 	saving_conditions.emit(conditions)
 	conditions.save(_get_conditions_path())
+
+
+func save_actions() -> void:
+	var actions := _OasisFile.new()
+	saving_actions.emit(actions)
+	actions.save(_get_actions_path())
 
 
 func export(config: _ExportConfig) -> void:
@@ -414,6 +427,10 @@ func _character_to_config_path(character: String) -> String:
 			.path_join(_SETTINGS_DIR)
 			.path_join("%s.cfg" % _format_character_filename(character))
 	)
+
+
+func _get_annotations_path() -> String:
+	return _directory.path_join("%s.%s" % [_ANNOTATIONS, EXTENSION])
 
 
 func _get_actions_path() -> String:
