@@ -201,19 +201,19 @@ func save_settings() -> void:
 func save_annotations() -> void:
 	var annotations := _OasisFile.new()
 	saving_annotations.emit(annotations)
-	annotations.save(_get_annotations_path())
+	annotations.save(_character_to_path(_ANNOTATIONS))
 
 
 func save_conditions() -> void:
 	var conditions := _OasisFile.new()
 	saving_conditions.emit(conditions)
-	conditions.save(_get_conditions_path())
+	conditions.save(_character_to_path(_CONDITIONS))
 
 
 func save_actions() -> void:
 	var actions := _OasisFile.new()
 	saving_actions.emit(actions)
-	actions.save(_get_actions_path())
+	actions.save(_character_to_path(_ACTIONS))
 
 
 func export(config: _ExportConfig) -> void:
@@ -427,18 +427,6 @@ func _character_to_config_path(character: String) -> String:
 			.path_join(_SETTINGS_DIR)
 			.path_join("%s.cfg" % _format_character_filename(character))
 	)
-
-
-func _get_annotations_path() -> String:
-	return _directory.path_join("%s.%s" % [_ANNOTATIONS, EXTENSION])
-
-
-func _get_actions_path() -> String:
-	return _directory.path_join("%s.%s" % [_ACTIONS, EXTENSION])
-
-
-func _get_conditions_path() -> String:
-	return _directory.path_join("%s.%s" % [_CONDITIONS, EXTENSION])
 
 
 func _get_user_settings_path() -> String:
