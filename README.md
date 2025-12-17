@@ -1,6 +1,6 @@
 # OasisDialogue
 
-A Godot plugin and standalone dialogue editor for creating branching dialogue.
+A visual editor to write branching dialogue for games. Write with complete autonomy without consulting devs. No coding needed. If using Godot - comes with tools for quick and easy integration.
 
 ![GIF of Oasis Dialogue example.](src/gif/export/example.gif)
 
@@ -8,14 +8,14 @@ A Godot plugin and standalone dialogue editor for creating branching dialogue.
 
 * Show dialogue based on conditions
 * Run code in response to player's dialogue choices
-* Isolation from game code with safe integration 
+* Isolation from game code with safe and easy integration
 * CSV export for localization
 * Standalone editor
 * Version control friendly file format
 
 ## getting started
 
-You can download the standalone app from the [latest release](https://github.com/thephilipquan/oasis-dialogue/releases/latest).
+You can search *Oasis Dialogue* in Godot's Asset Manager, or download the standalone app from the [latest release](https://github.com/thephilipquan/oasis-dialogue/releases/latest).
 
 You can view the [example](example/) provided, take a look at [how to write](docs/how_to_write.md) if you're a writer, and [how to implement](docs/how_to_implement.md) if you're a developer.
 
@@ -25,7 +25,7 @@ Overall, OasisDialogue meets most game needs for dialogue branching. The followi
 
 * The player conversates with multiple characters at the same time.
 
-> OasisDialogue provides **intuitive design for conversations between the player and a single character**. It may be possible to make it work with custom [traverser controllers](addons/oasis_dialogue/public/oasis_traverser_controller.gd), but that would require under-the-hood knowledge from the writer to force the architecture to work. If the game dev is also the writer, this may not be a problem, but you may have a better time using a different dialogue tool. 
+> OasisDialogue provides **intuitive design for conversations between the player and a single character**. It may be possible to make it work with custom [traverser controllers](addons/oasis_dialogue/public/oasis_traverser_controller.gd), but that would require under-the-hood knowledge from the writer to force the architecture to work. If the game dev is also the writer, this may not be a problem, but you may have a better time using a different dialogue tool.
 
 Additionally, you **should not use** OasisDialogue as a means of translating everything in your game. For example...
 

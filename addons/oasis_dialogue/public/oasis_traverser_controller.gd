@@ -5,11 +5,14 @@
 ## branches.
 ##
 ## Events whose return type is [code]bool[/code] indicate that it is an
-## [b]exclusive event[/b], meaning only [b]1[/b] controller should handle that event at
-## runtime.
+## [b]exclusive event[/b], meaning only [b]1[/b] controller should handle that 
+## event at runtime.
 ##
 ## If you override an [i]exclusive[/i] method, you [b]must return
 ## [code]true[/code][b].
+##
+## All custom OasisTraverserControllers [b]must be added as children of an
+## OasisManager to be registered[/b].
 @abstract
 class_name OasisTraverserController
 extends Node

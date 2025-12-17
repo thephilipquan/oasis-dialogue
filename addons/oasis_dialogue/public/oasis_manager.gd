@@ -1,5 +1,10 @@
-## A node responsible for both loading Oasis json files and performing runtime
-## condition validation and action execution for oasis dialogue.
+## The adapter between the writer and the game. This is where the developer
+## handles runtime condition validation and action execution for dialogue.
+## Additionally, it is responsible for loading Oasis json files.
+##
+## Developers must extend and implement all abstract methods. This class serves
+## as the adapter between OasisDialogue and their game.
+## [br][br]
 ##
 ## An OasisManager can manage one to many [OasisCharacter]s depending on the
 ## [member json_path] specified.
