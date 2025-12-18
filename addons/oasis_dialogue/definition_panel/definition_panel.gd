@@ -111,6 +111,10 @@ func update_page_summary(summary: PackedStringArray) -> void:
 	updated.emit()
 
 
+func get_page_annotations() -> PackedStringArray:
+	return _page.annotations
+
+
 func save_annotations(file: _OasisFile) -> void:
 	file.set_value("data", "source", annotations.source)
 
@@ -237,7 +241,7 @@ class Page:
 	var button: BaseButton = null
 	var active := false
 
-	var _annotations := PackedStringArray()
+	var annotations := PackedStringArray()
 
 	func is_enabled() -> bool:
 		return enabled
@@ -251,10 +255,6 @@ class Page:
 		return active
 
 
-	func get_annotations() -> PackedStringArray:
-		return _annotations
-
-
 class AnnotationPage:
 	extends Page
 
@@ -262,7 +262,7 @@ class AnnotationPage:
 
 
 	func _init() -> void:
-		_annotations = ["default", "prompt"]
+		annotations = ["default", "prompt"]
 
 
 	func annotation_marks_default(value: String) -> bool:
@@ -286,4 +286,4 @@ class ActionsPage:
 
 
 	func _init() -> void:
-		_annotations = ["branch"]
+		annotations = ["branch"]

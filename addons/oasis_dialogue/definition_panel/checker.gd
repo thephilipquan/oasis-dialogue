@@ -43,7 +43,7 @@ func _ready() -> void:
 	parse_error.init_on_err(on_err)
 
 	var validate_annotation := _ValidateAnnotation.new()
-	validate_annotation.init_get_annotations(_definitions.annotations.get_annotations)
+	validate_annotation.init_get_annotations(_definitions.get_page_annotations)
 	validate_annotation.init_on_err(on_err)
 
 	var duplicate_id := _DuplicateId.new()
