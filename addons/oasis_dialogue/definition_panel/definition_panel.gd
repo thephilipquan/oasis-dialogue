@@ -167,7 +167,12 @@ func load_settings(file: ConfigFile) -> void:
 		# Methods exposed by this class allow visitors to only alter the current
 		# page, so we have to simulate each page being active to visit them.
 		change_page(page)
-		changed.emit(_page.source)
+		changed.emit(page.source)
+
+	# The for loop finishes with actions being active. If action = active_page,
+	# change_page is never successful since it doesn't process the request if
+	# we are currently on the page.
+	_page = null
 
 	active_page.button.button_pressed = true
 	active_page.button.pressed.emit()
