@@ -1,2 +1,8 @@
-[[actions]]
-[value]
+[[data]]
+[source]
+@branch
+root: Change the character's starting branch to x.
+@branch
+branch: Transition to branch x.
+
+weird: Make the conversation weird.

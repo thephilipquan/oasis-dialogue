@@ -1,0 +1,10 @@
+[[data]]
+[source]
+@default
+@prompt
+seq: Display valid prompts in order.
+
+@prompt
+rng: Pick at random one valid prompt and only display that prompt.
+
+track: Count the number of times is seen.

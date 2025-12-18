@@ -1,2 +1,5 @@
-[[conditions]]
-[value]
+[[data]]
+[source]
+seen_more_than: Return true if the user has seen the branch more than x times.
+
+is_weird: Return true if the player made the conversation weird.
