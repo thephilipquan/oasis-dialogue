@@ -153,9 +153,9 @@ layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.61, 0.61, 1)
 autowrap_mode = 3
 
+[connection signal="changed" from="." to="LanguageServer" method="parse"]
 [connection signal="cleared" from="." to="TextEdit" method="clear_highlights"]
 [connection signal="cleared" from="." to="Status" method="clear"]
-[connection signal="changed" from="." to="LanguageServer" method="parse"]
 [connection signal="toggled" from="HeaderBackground/Header/EnablePage" to="." method="_on_enable_page_toggled"]
 [connection signal="focus_entered" from="TextEdit" to="." method="show_page_source"]
 [connection signal="focus_exited" from="TextEdit" to="." method="show_page_summary"]
