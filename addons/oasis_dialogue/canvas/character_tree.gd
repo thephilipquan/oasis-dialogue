@@ -103,7 +103,6 @@ func unmark_dirty(character: String) -> void:
 	var text := _dirty_text(character)
 	var item := find_item(text)
 	if not item:
-		push_warning("couldn't find item (%s) to undirty" % character)
 		return
 	item.set_text(0, character)
 	changed.emit()
