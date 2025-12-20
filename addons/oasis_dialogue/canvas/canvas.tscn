@@ -119,7 +119,7 @@ grow_vertical = 2
 custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
 
-[node name="LeftPanelSpacer" type="Control" parent="View/Header" node_paths=PackedStringArray("_parent_split_container", "_panel") groups=["oasis_registerable"]]
+[node name="LeftPanelSpacer" type="Control" parent="View/Header" node_paths=PackedStringArray("_parent_split_container", "_panel")]
 layout_mode = 2
 script = ExtResource("20_kiihh")
 _parent_split_container = NodePath("../../Body")
@@ -165,7 +165,7 @@ texture_hover = ExtResource("22_nsqch")
 flip_h = true
 settings_header = "definitions"
 
-[node name="RightPanelSpacer" type="Control" parent="View/Header" node_paths=PackedStringArray("_parent_split_container", "_panel") groups=["oasis_registerable"]]
+[node name="RightPanelSpacer" type="Control" parent="View/Header" node_paths=PackedStringArray("_parent_split_container", "_panel")]
 layout_mode = 2
 script = ExtResource("20_kiihh")
 _parent_split_container = NodePath("../../Body/HSplitContainer")
