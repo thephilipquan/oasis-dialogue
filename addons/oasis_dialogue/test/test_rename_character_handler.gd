@@ -17,7 +17,7 @@ func before_all() -> void:
 
 
 func before_each() -> void:
-	sut = RenameCharacterHandler.new()
+	sut = add_child_autofree(RenameCharacterHandler.new())
 	sut.init_input_dialog_factory(dialog_factory)
 
 

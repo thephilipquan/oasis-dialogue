@@ -188,10 +188,10 @@ func _load_default_controllers() -> Dictionary[String, OasisTraverserController]
 	var controllers: Dictionary[String, OasisTraverserController] = {}
 
 	var seq_controller := preload("res://addons/oasis_dialogue/traverser_controller/seq.gd").new()
-	controllers[seq_controller.get_annotation()] = seq_controller
+	add_child(seq_controller)
 
 	var rng_controller := preload("res://addons/oasis_dialogue/traverser_controller/rng.gd").new()
-	controllers[rng_controller.get_annotation()] = rng_controller
+	add_child(rng_controller)
 
 	return controllers
 
