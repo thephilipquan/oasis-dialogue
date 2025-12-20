@@ -24,8 +24,6 @@ func visit_numberliteral(value: _AST.NumberLiteral) -> void:
 	pass
 func visit_error(error: _AST.Error) -> void:
 	pass
-func visit_recovery(error: _AST.Recovery) -> void:
-	pass
 func cancel() -> void:
 	pass
 func finish() -> void:

@@ -85,14 +85,6 @@ func visit_numberliteral(value: _AST.NumberLiteral) -> void:
 	_append_line(" %d" % value.value)
 
 
-func visit_recovery(recovery: _AST.Recovery) -> void:
-	var line := _line
-	if recovery.line != -1:
-		line = recovery.line
-	_move_line(line)
-	_append_line(recovery.message)
-
-
 func cancel() -> void:
 	_id = -1
 	_text = ""
