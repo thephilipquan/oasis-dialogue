@@ -1,8 +1,8 @@
 extends GutTest
 
-const AST := preload("res://addons/oasis_dialogue/definition_panel/model/ast.gd")
-const Lexer := preload("res://addons/oasis_dialogue/definition_panel/model/lexer.gd")
-const Parser := preload("res://addons/oasis_dialogue/definition_panel/model/parser.gd")
+const AST := preload("res://addons/oasis_dialogue/definitions/model/ast.gd")
+const Lexer := preload("res://addons/oasis_dialogue/definitions/model/lexer.gd")
+const Parser := preload("res://addons/oasis_dialogue/definitions/model/parser.gd")
 
 var parser: Parser = null
 var lexer: Lexer = null

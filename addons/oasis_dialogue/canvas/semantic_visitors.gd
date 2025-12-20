@@ -10,7 +10,7 @@ const _SemanticError := preload("res://addons/oasis_dialogue/model/semantic_erro
 const _Status := preload("res://addons/oasis_dialogue/status/status.gd")
 const _Token := preload("res://addons/oasis_dialogue/model/token.gd")
 const _VisitorIterator := preload("res://addons/oasis_dialogue/visitor/visitor_iterator.gd")
-const _Definitions := preload("res://addons/oasis_dialogue/definition_panel/definition_panel.gd")
+const _Definitions := preload("res://addons/oasis_dialogue/definitions/definitions.gd")
 
 const _ConnectBranchVisitor := preload("res://addons/oasis_dialogue/visitor/connect_branch_visitor.gd")
 const _CreateBranchVisitor := preload("res://addons/oasis_dialogue/visitor/create_branch_visitor.gd")

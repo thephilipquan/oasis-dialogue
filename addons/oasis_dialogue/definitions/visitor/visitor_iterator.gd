@@ -1,7 +1,7 @@
 extends RefCounted
 
-const _AST := preload("res://addons/oasis_dialogue/definition_panel/model/ast.gd")
-const _Visitor := preload("res://addons/oasis_dialogue/definition_panel/visitor/visitor.gd")
+const _AST := preload("res://addons/oasis_dialogue/definitions/model/ast.gd")
+const _Visitor := preload("res://addons/oasis_dialogue/definitions/visitor/visitor.gd")
 
 var _visitors: Array[_Visitor] = []
 var _is_valid := false

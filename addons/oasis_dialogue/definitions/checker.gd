@@ -1,21 +1,21 @@
 @tool
 extends Node
 
-const _Definitions := preload("res://addons/oasis_dialogue/definition_panel/definition_panel.gd")
-const _Status := preload("res://addons/oasis_dialogue/definition_panel/status.gd")
-const _TextEdit := preload("res://addons/oasis_dialogue/definition_panel/text_edit.gd")
-const _AST := preload("res://addons/oasis_dialogue/definition_panel/model/ast.gd")
-const _Error := preload("res://addons/oasis_dialogue/definition_panel/model/error.gd")
+const _Definitions := preload("res://addons/oasis_dialogue/definitions/definitions.gd")
+const _Status := preload("res://addons/oasis_dialogue/definitions/status.gd")
+const _TextEdit := preload("res://addons/oasis_dialogue/definitions/text_edit.gd")
+const _AST := preload("res://addons/oasis_dialogue/definitions/model/ast.gd")
+const _Error := preload("res://addons/oasis_dialogue/definitions/model/error.gd")
 
-const _DuplicateAnnotation := preload("res://addons/oasis_dialogue/definition_panel/visitor/duplicate_annotation.gd")
-const _DuplicateDefault := preload("res://addons/oasis_dialogue/definition_panel/visitor/duplicate_default.gd")
-const _DuplicateId := preload("res://addons/oasis_dialogue/definition_panel/visitor/duplicate_id.gd")
-const _FinishCallback := preload("res://addons/oasis_dialogue/definition_panel/visitor/finish_callback.gd")
-const _UpdateSummary := preload("res://addons/oasis_dialogue/definition_panel/visitor/update_summary.gd")
-const _UpdateExclusiveAnnotations := preload("res://addons/oasis_dialogue/definition_panel/visitor/update_exclusive_annotations.gd")
-const _ParseError := preload("res://addons/oasis_dialogue/definition_panel/visitor/parse_error.gd")
-const _VisitorIterator := preload("res://addons/oasis_dialogue/definition_panel/visitor/visitor_iterator.gd")
-const _ValidateAnnotation := preload("res://addons/oasis_dialogue/definition_panel/visitor/validate_annotation.gd")
+const _DuplicateAnnotation := preload("res://addons/oasis_dialogue/definitions/visitor/duplicate_annotation.gd")
+const _DuplicateDefault := preload("res://addons/oasis_dialogue/definitions/visitor/duplicate_default.gd")
+const _DuplicateId := preload("res://addons/oasis_dialogue/definitions/visitor/duplicate_id.gd")
+const _FinishCallback := preload("res://addons/oasis_dialogue/definitions/visitor/finish_callback.gd")
+const _UpdateSummary := preload("res://addons/oasis_dialogue/definitions/visitor/update_summary.gd")
+const _UpdateExclusiveAnnotations := preload("res://addons/oasis_dialogue/definitions/visitor/update_exclusive_annotations.gd")
+const _ParseError := preload("res://addons/oasis_dialogue/definitions/visitor/parse_error.gd")
+const _VisitorIterator := preload("res://addons/oasis_dialogue/definitions/visitor/visitor_iterator.gd")
+const _ValidateAnnotation := preload("res://addons/oasis_dialogue/definitions/visitor/validate_annotation.gd")
 
 var _iterator: _VisitorIterator = null
 

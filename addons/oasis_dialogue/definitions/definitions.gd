@@ -1,12 +1,12 @@
 @tool
 extends VBoxContainer
 
-const REGISTRY_KEY := "definition_panel"
+const REGISTRY_KEY := "definitions"
 
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 const _OasisFile := preload("res://addons/oasis_dialogue/io/oasis_file.gd")
 const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
-const _TextEdit := preload("res://addons/oasis_dialogue/definition_panel/text_edit.gd")
+const _TextEdit := preload("res://addons/oasis_dialogue/definitions/text_edit.gd")
 
 ## Emitted definitions have updated and branches should re-parse.
 signal updated

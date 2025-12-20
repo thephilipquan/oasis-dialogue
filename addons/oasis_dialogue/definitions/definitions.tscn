@@ -1,22 +1,22 @@
 [gd_scene load_steps=23 format=3 uid="uid://5s7p0xabevpo"]
 
-[ext_resource type="Script" uid="uid://c04fu4b8b7b5t" path="res://addons/oasis_dialogue/definition_panel/definition_panel.gd" id="1_0ac86"]
-[ext_resource type="ButtonGroup" uid="uid://dx8e7psrwc6mk" path="res://addons/oasis_dialogue/definition_panel/button_group.tres" id="1_aie43"]
-[ext_resource type="Theme" uid="uid://br6up8xh8ljsg" path="res://addons/oasis_dialogue/theme.tres" id="1_elfwv"]
-[ext_resource type="Texture2D" uid="uid://cjsjqw17vnfxn" path="res://addons/oasis_dialogue/assets/annotations_default.png" id="2_0ac86"]
-[ext_resource type="Texture2D" uid="uid://cau7xcipmpwsu" path="res://addons/oasis_dialogue/assets/annotations_selected.png" id="3_hxrne"]
-[ext_resource type="Texture2D" uid="uid://dtduca0d3d03" path="res://addons/oasis_dialogue/assets/annotations_hovered.png" id="4_xpa7h"]
-[ext_resource type="Texture2D" uid="uid://dotc3ej5fnkpa" path="res://addons/oasis_dialogue/assets/conditions_default.png" id="5_4ypvr"]
-[ext_resource type="Texture2D" uid="uid://c2bw6vit54wc" path="res://addons/oasis_dialogue/assets/conditions_selected.png" id="6_kla20"]
-[ext_resource type="Texture2D" uid="uid://bwgmmntdutsnr" path="res://addons/oasis_dialogue/assets/conditions_hovered.png" id="7_lfuql"]
-[ext_resource type="Texture2D" uid="uid://dq7tqhm112sd5" path="res://addons/oasis_dialogue/assets/actions_default.png" id="8_elfwv"]
-[ext_resource type="Texture2D" uid="uid://csdiovs1h1qo2" path="res://addons/oasis_dialogue/assets/actions_selected.png" id="9_8cvwl"]
-[ext_resource type="Texture2D" uid="uid://deap1yfn5k44v" path="res://addons/oasis_dialogue/assets/actions_hovered.png" id="10_vwucj"]
-[ext_resource type="Script" uid="uid://cv50sj3bc2gyv" path="res://addons/oasis_dialogue/definition_panel/text_edit.gd" id="12_hxrne"]
-[ext_resource type="Script" uid="uid://b4npn0yjtmwuv" path="res://addons/oasis_dialogue/definition_panel/language_server.gd" id="13_xpa7h"]
-[ext_resource type="Script" uid="uid://dtiy7yrp88yne" path="res://addons/oasis_dialogue/definition_panel/checker.gd" id="14_4ypvr"]
-[ext_resource type="Script" uid="uid://chygcik4ip5ks" path="res://addons/oasis_dialogue/definition_panel/shared.gd" id="15_kla20"]
-[ext_resource type="Script" uid="uid://c5vw4nrynpevv" path="res://addons/oasis_dialogue/definition_panel/status.gd" id="16_lfuql"]
+[ext_resource type="Theme" uid="uid://br6up8xh8ljsg" path="res://addons/oasis_dialogue/theme.tres" id="1_k434e"]
+[ext_resource type="Script" uid="uid://c04fu4b8b7b5t" path="res://addons/oasis_dialogue/definitions/definitions.gd" id="2_m1qqk"]
+[ext_resource type="ButtonGroup" uid="uid://dx8e7psrwc6mk" path="res://addons/oasis_dialogue/definitions/button_group.tres" id="3_nqn5n"]
+[ext_resource type="Texture2D" uid="uid://cjsjqw17vnfxn" path="res://addons/oasis_dialogue/assets/annotations_default.png" id="4_nwdeg"]
+[ext_resource type="Texture2D" uid="uid://cau7xcipmpwsu" path="res://addons/oasis_dialogue/assets/annotations_selected.png" id="5_5bqsf"]
+[ext_resource type="Texture2D" uid="uid://dtduca0d3d03" path="res://addons/oasis_dialogue/assets/annotations_hovered.png" id="6_2a8c5"]
+[ext_resource type="Texture2D" uid="uid://dotc3ej5fnkpa" path="res://addons/oasis_dialogue/assets/conditions_default.png" id="7_efnsq"]
+[ext_resource type="Texture2D" uid="uid://c2bw6vit54wc" path="res://addons/oasis_dialogue/assets/conditions_selected.png" id="8_wkpdw"]
+[ext_resource type="Texture2D" uid="uid://bwgmmntdutsnr" path="res://addons/oasis_dialogue/assets/conditions_hovered.png" id="9_f4b16"]
+[ext_resource type="Texture2D" uid="uid://dq7tqhm112sd5" path="res://addons/oasis_dialogue/assets/actions_default.png" id="10_q1jdr"]
+[ext_resource type="Texture2D" uid="uid://csdiovs1h1qo2" path="res://addons/oasis_dialogue/assets/actions_selected.png" id="11_2ktj8"]
+[ext_resource type="Texture2D" uid="uid://deap1yfn5k44v" path="res://addons/oasis_dialogue/assets/actions_hovered.png" id="12_ds57u"]
+[ext_resource type="Script" uid="uid://cv50sj3bc2gyv" path="res://addons/oasis_dialogue/definitions/text_edit.gd" id="13_sf00k"]
+[ext_resource type="Script" uid="uid://b4npn0yjtmwuv" path="res://addons/oasis_dialogue/definitions/language_server.gd" id="14_gvd4q"]
+[ext_resource type="Script" uid="uid://dtiy7yrp88yne" path="res://addons/oasis_dialogue/definitions/checker.gd" id="15_okhrx"]
+[ext_resource type="Script" uid="uid://chygcik4ip5ks" path="res://addons/oasis_dialogue/definitions/shared.gd" id="16_npbbv"]
+[ext_resource type="Script" uid="uid://c5vw4nrynpevv" path="res://addons/oasis_dialogue/definitions/status.gd" id="17_u4ixy"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0ac86"]
 content_margin_left = 18.0
@@ -51,14 +51,14 @@ content_margin_right = 16.0
 content_margin_bottom = 8.0
 bg_color = Color(0.1, 0.1, 0.1, 0.6)
 
-[node name="DefinitionsPanel" type="VBoxContainer" groups=["oasis_registerable"]]
+[node name="Definitions" type="VBoxContainer" groups=["oasis_registerable"]]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("1_elfwv")
-script = ExtResource("1_0ac86")
+theme = ExtResource("1_k434e")
+script = ExtResource("2_m1qqk")
 
 [node name="HeaderBackground" type="PanelContainer" parent="."]
 layout_mode = 2
@@ -82,10 +82,10 @@ layout_mode = 2
 tooltip_text = "View annotations"
 toggle_mode = true
 action_mode = 0
-button_group = ExtResource("1_aie43")
-texture_normal = ExtResource("2_0ac86")
-texture_pressed = ExtResource("3_hxrne")
-texture_hover = ExtResource("4_xpa7h")
+button_group = ExtResource("3_nqn5n")
+texture_normal = ExtResource("4_nwdeg")
+texture_pressed = ExtResource("5_5bqsf")
+texture_hover = ExtResource("6_2a8c5")
 ignore_texture_size = true
 stretch_mode = 5
 
@@ -95,10 +95,10 @@ layout_mode = 2
 tooltip_text = "View conditions"
 toggle_mode = true
 action_mode = 0
-button_group = ExtResource("1_aie43")
-texture_normal = ExtResource("5_4ypvr")
-texture_pressed = ExtResource("6_kla20")
-texture_hover = ExtResource("7_lfuql")
+button_group = ExtResource("3_nqn5n")
+texture_normal = ExtResource("7_efnsq")
+texture_pressed = ExtResource("8_wkpdw")
+texture_hover = ExtResource("9_f4b16")
 ignore_texture_size = true
 stretch_mode = 5
 
@@ -108,10 +108,10 @@ layout_mode = 2
 tooltip_text = "View actions"
 toggle_mode = true
 action_mode = 0
-button_group = ExtResource("1_aie43")
-texture_normal = ExtResource("8_elfwv")
-texture_pressed = ExtResource("9_8cvwl")
-texture_hover = ExtResource("10_vwucj")
+button_group = ExtResource("3_nqn5n")
+texture_normal = ExtResource("10_q1jdr")
+texture_pressed = ExtResource("11_2ktj8")
+texture_hover = ExtResource("12_ds57u")
 ignore_texture_size = true
 stretch_mode = 5
 
@@ -123,7 +123,7 @@ theme_override_styles/read_only = SubResource("StyleBoxFlat_elfwv")
 editable = false
 wrap_mode = 1
 tab_input_mode = false
-script = ExtResource("12_hxrne")
+script = ExtResource("13_sf00k")
 _shared = NodePath("../Shared")
 
 [node name="ParseTimer" type="Timer" parent="."]
@@ -131,22 +131,22 @@ wait_time = 0.5
 one_shot = true
 
 [node name="LanguageServer" type="Node" parent="." node_paths=PackedStringArray("_shared")]
-script = ExtResource("13_xpa7h")
+script = ExtResource("14_gvd4q")
 _shared = NodePath("../Shared")
 
 [node name="Checker" type="Node" parent="." node_paths=PackedStringArray("_definitions", "_text", "_status")]
-script = ExtResource("14_4ypvr")
+script = ExtResource("15_okhrx")
 _definitions = NodePath("..")
 _text = NodePath("../TextEdit")
 _status = NodePath("../Status")
 
 [node name="Shared" type="Node" parent="."]
-script = ExtResource("15_kla20")
+script = ExtResource("16_npbbv")
 
 [node name="Status" type="PanelContainer" parent="."]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_kla20")
-script = ExtResource("16_lfuql")
+script = ExtResource("17_u4ixy")
 
 [node name="Label" type="Label" parent="Status"]
 layout_mode = 2

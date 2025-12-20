@@ -39,7 +39,7 @@
 [ext_resource type="Script" uid="uid://dp50oi44nwmpt" path="res://addons/oasis_dialogue/canvas/remove_character_button.gd" id="26_ycj4d"]
 [ext_resource type="Script" path="res://addons/oasis_dialogue/canvas/character_call_to_action.gd" id="30_oj43n"]
 [ext_resource type="Script" path="res://addons/oasis_dialogue/canvas/branch_call_to_action.gd" id="31_y5ltl"]
-[ext_resource type="PackedScene" uid="uid://5s7p0xabevpo" path="res://addons/oasis_dialogue/definition_panel/definition_panel.tscn" id="41_nsqch"]
+[ext_resource type="PackedScene" uid="uid://5s7p0xabevpo" path="res://addons/oasis_dialogue/definitions/definitions.tscn" id="41_nsqch"]
 [ext_resource type="Script" uid="uid://bkt8n6baoto56" path="res://addons/oasis_dialogue/canvas/toggle_visibiility.gd" id="42_0fanf"]
 
 [node name="Canvas" type="Control" node_paths=PackedStringArray("_graph") groups=["oasis_registerable"]]
@@ -284,7 +284,7 @@ vertical_alignment = 1
 visible = false
 layout_mode = 2
 
-[node name="DefinitionsPanel" parent="View/Body/HSplitContainer/HSplitContainer" instance=ExtResource("41_nsqch")]
+[node name="Definitions" parent="View/Body/HSplitContainer/HSplitContainer" instance=ExtResource("41_nsqch")]
 layout_mode = 2
 
 [node name="ToggleLeftPanelVisibility" type="Node" parent="View" node_paths=PackedStringArray("button", "target", "container") groups=["oasis_registerable"]]

@@ -1,8 +1,8 @@
 @tool
 extends TextEdit
 
-const _Highlighter := preload("res://addons/oasis_dialogue/definition_panel/highlighter.gd")
-const _Shared := preload("res://addons/oasis_dialogue/definition_panel/shared.gd")
+const _Highlighter := preload("res://addons/oasis_dialogue/definitions/highlighter.gd")
+const _Shared := preload("res://addons/oasis_dialogue/definitions/shared.gd")
 
 @export
 var _shared: _Shared = null

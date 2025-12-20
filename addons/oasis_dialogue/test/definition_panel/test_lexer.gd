@@ -1,7 +1,7 @@
 extends GutTest
 
-const Lexer := preload("res://addons/oasis_dialogue/definition_panel/model/lexer.gd")
-const Token := preload("res://addons/oasis_dialogue/definition_panel/model/token.gd")
+const Lexer := preload("res://addons/oasis_dialogue/definitions/model/lexer.gd")
+const Token := preload("res://addons/oasis_dialogue/definitions/model/token.gd")
 
 const Type := Token.Type
 

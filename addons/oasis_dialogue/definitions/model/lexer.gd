@@ -1,6 +1,6 @@
 extends RefCounted
 
-const _Token := preload("res://addons/oasis_dialogue/definition_panel/model/token.gd")
+const _Token := preload("res://addons/oasis_dialogue/definitions/model/token.gd")
 
 const _Type := _Token.Type
 

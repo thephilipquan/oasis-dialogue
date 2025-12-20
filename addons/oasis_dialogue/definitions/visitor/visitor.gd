@@ -1,7 +1,7 @@
 @abstract
 extends RefCounted
 
-const _AST := preload("res://addons/oasis_dialogue/definition_panel/model/ast.gd")
+const _AST := preload("res://addons/oasis_dialogue/definitions/model/ast.gd")
 
 
 func visit_program(ast: _AST.Program) -> void:

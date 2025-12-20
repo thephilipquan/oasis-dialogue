@@ -1,6 +1,6 @@
 extends RefCounted
 
-const _Visitor := preload("res://addons/oasis_dialogue/definition_panel/visitor/visitor.gd")
+const _Visitor := preload("res://addons/oasis_dialogue/definitions/visitor/visitor.gd")
 
 
 @abstract

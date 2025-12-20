@@ -1,6 +1,6 @@
-extends "res://addons/oasis_dialogue/definition_panel/visitor/visitor.gd"
+extends "res://addons/oasis_dialogue/definitions/visitor/visitor.gd"
 
-const _Error := preload("res://addons/oasis_dialogue/definition_panel/model/error.gd")
+const _Error := preload("res://addons/oasis_dialogue/definitions/model/error.gd")
 
 var _on_err := Callable()
 var _is_default := Callable()

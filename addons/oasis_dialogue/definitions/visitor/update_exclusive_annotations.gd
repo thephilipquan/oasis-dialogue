@@ -1,6 +1,6 @@
-extends "res://addons/oasis_dialogue/definition_panel/visitor/visitor.gd"
+extends "res://addons/oasis_dialogue/definitions/visitor/visitor.gd"
 
-const _Definitions := preload("res://addons/oasis_dialogue/definition_panel/definition_panel.gd")
+const _Definitions := preload("res://addons/oasis_dialogue/definitions/definitions.gd")
 
 var _is_viewing_annotations := Callable()
 var _is_exclusive_annotation := Callable()

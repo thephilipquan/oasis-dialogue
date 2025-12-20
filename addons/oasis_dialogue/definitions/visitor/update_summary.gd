@@ -1,4 +1,4 @@
-extends "res://addons/oasis_dialogue/definition_panel/visitor/visitor.gd"
+extends "res://addons/oasis_dialogue/definitions/visitor/visitor.gd"
 
 
 var _summary := PackedStringArray()
