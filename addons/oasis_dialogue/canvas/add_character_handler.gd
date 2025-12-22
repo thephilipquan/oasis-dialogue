@@ -9,7 +9,6 @@ const _CharacterMenu := preload("res://addons/oasis_dialogue/menu_bar/character.
 const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 const _InputDialog := preload("res://addons/oasis_dialogue/input_dialog/input_dialog.gd")
-const _Model := preload("res://addons/oasis_dialogue/model/model.gd")
 
 signal character_added(name: String)
 

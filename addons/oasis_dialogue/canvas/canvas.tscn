@@ -1,11 +1,10 @@
-[gd_scene load_steps=42 format=3 uid="uid://4plc4vhymybs"]
+[gd_scene load_steps=41 format=3 uid="uid://4plc4vhymybs"]
 
 [ext_resource type="Script" uid="uid://bkn5mac6gdvq3" path="res://addons/oasis_dialogue/canvas/canvas.gd" id="1_pyvqf"]
 [ext_resource type="Theme" uid="uid://b17l0ux5wllk5" path="res://addons/oasis_dialogue/canvas/canvas_theme.tres" id="1_ta1sa"]
 [ext_resource type="Script" uid="uid://bkmgq6oqeg575" path="res://addons/oasis_dialogue/canvas/add_character_button.gd" id="3_4e1bp"]
-[ext_resource type="Script" uid="uid://b2vsiv15rt33f" path="res://addons/oasis_dialogue/model/model.gd" id="3_ytw7q"]
 [ext_resource type="Script" uid="uid://e5g8rlgh7tl7" path="res://addons/oasis_dialogue/canvas/language_server.gd" id="4_0dkm1"]
-[ext_resource type="Script" path="res://addons/oasis_dialogue/canvas/remove_character_handler.gd" id="4_6xxxj"]
+[ext_resource type="Script" uid="uid://collm4lemrw6i" path="res://addons/oasis_dialogue/canvas/remove_character_handler.gd" id="4_6xxxj"]
 [ext_resource type="Script" uid="uid://cwosx2xibo8sq" path="res://addons/oasis_dialogue/canvas/add_branch_button.gd" id="4_wvnn7"]
 [ext_resource type="Script" uid="uid://dcu534fs10qbb" path="res://addons/oasis_dialogue/canvas/semantic_visitors.gd" id="5_65wvt"]
 [ext_resource type="Script" uid="uid://dug54oaf67dch" path="res://addons/oasis_dialogue/canvas/character_tree.gd" id="6_gyuj5"]
@@ -15,13 +14,13 @@
 [ext_resource type="Script" uid="uid://crlgqb4exlb5x" path="res://addons/oasis_dialogue/canvas/branch_prettier.gd" id="8_h1x05"]
 [ext_resource type="Script" uid="uid://bmsfi1lplad1r" path="res://addons/oasis_dialogue/canvas/unbrancher_visitors.gd" id="8_unkvg"]
 [ext_resource type="Script" uid="uid://dece57l7ihxc2" path="res://addons/oasis_dialogue/canvas/csv_exporter.gd" id="9_xkohu"]
-[ext_resource type="Script" path="res://addons/oasis_dialogue/canvas/add_character_handler.gd" id="10_6s5dc"]
+[ext_resource type="Script" uid="uid://c2pi8wsr6mopo" path="res://addons/oasis_dialogue/canvas/add_character_handler.gd" id="10_6s5dc"]
 [ext_resource type="Script" uid="uid://chio7d8hrpwj8" path="res://addons/oasis_dialogue/canvas/json_exporter.gd" id="10_g4vuv"]
 [ext_resource type="Texture2D" uid="uid://dqhrdft4f7mx7" path="res://addons/oasis_dialogue/assets/add_default_16.png" id="11_ye1hp"]
 [ext_resource type="Texture2D" uid="uid://dlevgagyhy7aj" path="res://addons/oasis_dialogue/assets/add_selected_16.png" id="12_vow0r"]
 [ext_resource type="Script" uid="uid://col6d6dlfwg4s" path="res://addons/oasis_dialogue/canvas/export_handler.gd" id="13_hd21m"]
 [ext_resource type="Texture2D" uid="uid://badhsjdmlotct" path="res://addons/oasis_dialogue/assets/add_hovered_16.png" id="13_oj43n"]
-[ext_resource type="Script" path="res://addons/oasis_dialogue/canvas/call_to_action_handler.gd" id="15_vow0r"]
+[ext_resource type="Script" uid="uid://c5bwvouvr2eh" path="res://addons/oasis_dialogue/canvas/call_to_action_handler.gd" id="15_vow0r"]
 [ext_resource type="Script" uid="uid://bquh5t51cxg87" path="res://addons/oasis_dialogue/menu_bar/project.gd" id="16_8jbp4"]
 [ext_resource type="Texture2D" uid="uid://cquqinlns0onb" path="res://addons/oasis_dialogue/assets/remove_default_32.png" id="16_ba7lg"]
 [ext_resource type="Texture2D" uid="uid://bnj3xmgeov1er" path="res://addons/oasis_dialogue/assets/remove_selected_32.png" id="17_1ink7"]
@@ -67,9 +66,6 @@ texture_hover = ExtResource("13_oj43n")
 script = ExtResource("4_wvnn7")
 
 [node name="Model" type="Node" parent="."]
-
-[node name="Model" type="Node" parent="Model"]
-script = ExtResource("3_ytw7q")
 
 [node name="LanguageServer" type="Node" parent="Model" groups=["oasis_registerable"]]
 script = ExtResource("4_0dkm1")

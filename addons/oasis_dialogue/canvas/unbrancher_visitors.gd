@@ -6,7 +6,6 @@ const REGISTRY_KEY := "unbrancher_visitors"
 const _AST := preload("res://addons/oasis_dialogue/model/ast.gd")
 const _BranchEdit := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
 const _Global := preload("res://addons/oasis_dialogue/global.gd")
-const _Model := preload("res://addons/oasis_dialogue/model/model.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 const _RemoveActionVisitor := preload("res://addons/oasis_dialogue/visitor/remove_action_visitor.gd")
 const _UnparserVisitor := preload("res://addons/oasis_dialogue/visitor/unparser_visitor.gd")
