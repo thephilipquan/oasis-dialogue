@@ -289,6 +289,20 @@ class AnnotationPage:
 class ActionsPage:
 	extends Page
 
+	var _branch_keywords := PackedStringArray()
+
 
 	func _init() -> void:
 		annotations = ["branch"]
+
+
+	func is_branch(value: String) -> bool:
+		return value in _branch_keywords
+
+
+	func annotation_marks_branch(value: String) -> bool:
+		return value == "branch"
+
+
+	func set_branch_actions(values: PackedStringArray) -> void:
+		_branch_keywords = values
