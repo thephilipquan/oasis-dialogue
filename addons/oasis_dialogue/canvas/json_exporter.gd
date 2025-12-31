@@ -5,6 +5,7 @@ const REGISTRY_KEY := "json_exporter"
 
 const _AST := preload("res://addons/oasis_dialogue/model/ast.gd")
 const _CsvFile := preload("res://addons/oasis_dialogue/io/csv_file.gd")
+const _Definitions := preload("res://addons/oasis_dialogue/definitions/definitions.gd")
 const _ExportConfig := preload("res://addons/oasis_dialogue/model/export_config.gd")
 const _JsonFile := preload("res://addons/oasis_dialogue/io/json_file.gd")
 const _JsonVisitor := preload("res://addons/oasis_dialogue/visitor/json_visitor.gd")
@@ -18,6 +19,8 @@ signal exported(path: String)
 
 var _parse := Callable()
 var _json_file_factory := Callable()
+## Callback for json_visitor who needs to know what annotations are exclusive.
+var _is_exclusive_annotation := Callable()
 
 
 func register(registry: _Registry) -> void:
@@ -31,6 +34,8 @@ func setup(registry: _Registry) -> void:
 	var language_server: _LanguageServer = registry.at(_LanguageServer.REGISTRY_KEY)
 	init_parse(language_server.parse_branch_text)
 
+	var definitions: _Definitions = registry.at(_Definitions.REGISTRY_KEY)
+	_is_exclusive_annotation = definitions.annotations.is_exclusive
 	init_json_file_factory(func() -> _JsonFile: return _JsonFile.new())
 
 
@@ -63,6 +68,8 @@ func export(config: _ExportConfig, files: Array[_OasisFile]) -> void:
 				character_name,
 				_CsvFile.create_prompt_key,
 				_CsvFile.create_response_key,
+				config.default_annotation,
+				_is_exclusive_annotation
 		)
 		for key in file.get_sections():
 			if not _OasisFile.section_is_branch(key):

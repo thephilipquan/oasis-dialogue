@@ -6,10 +6,8 @@ const Visitor := preload("res://addons/oasis_dialogue/visitor/visitor.gd")
 
 func test_only_specified_branch_removed() -> void:
 	var sut := RemoveAction.new(
-			AST.Action.new(
-				"foo",
-				AST.NumberLiteral.new(3),
-			),
+			"foo",
+			3,
 	)
 
 	var ast := AST.Line.new()

@@ -28,13 +28,11 @@ func setup(registry: _Registry) -> void:
 	var unbranch_removed := func unbranch_from_deleted(removed_id: int, dirty_ids: Array[int]) -> void:
 		var visitors := _VisitorIterator.new()
 		visitors.set_visitors([
-			_RemoveActionVisitor.new(
-				_AST.Action.new(
+				_RemoveActionVisitor.new(
 					_Global.CONNECT_BRANCH_KEYWORD,
-					_AST.NumberLiteral.new(removed_id)
-				)
-			),
-			unparser_visitor,
+					removed_id,
+				),
+				unparser_visitor,
 		])
 
 		for id in dirty_ids:

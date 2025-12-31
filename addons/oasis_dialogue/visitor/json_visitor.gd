@@ -13,6 +13,8 @@ var _out: Dictionary[int, Variant] = {}
 var _character_name := ""
 var _create_prompt_key := Callable()
 var _create_response_key := Callable()
+var _default_annotation := ""
+var _is_exclusive_annotation := Callable()
 
 var _current: Dictionary[String, Variant] = {}
 var _stack: Array[Dictionary] = []
@@ -31,11 +33,15 @@ func _init(
 	character_name: String,
 	create_prompt_key: Callable,
 	create_response_key: Callable,
+	default_annotation: String,
+	is_exclusive_annotation: Callable
 ) -> void:
 	_out = out
 	_character_name = character_name
 	_create_prompt_key = create_prompt_key
 	_create_response_key = create_response_key
+	_default_annotation = default_annotation
+	_is_exclusive_annotation = is_exclusive_annotation
 
 
 func visit_branch(branch: _AST.Branch) -> void:
@@ -127,7 +133,10 @@ func cancel() -> void:
 
 func finish() -> void:
 	_pop_to_root()
-	_add_default()
+
+	if not _has_prompt_annotation():
+		_add_default()
+
 	_out[_id] = _stack[0]
 	cancel()
 
@@ -157,5 +166,14 @@ func _lazy_get(key: String, default: Variant = null) -> Variant:
 
 func _add_default() -> void:
 	var annotations: Array = _lazy_get(BRANCH_ANNOTATIONS, [])
-	if annotations.find("seq") == -1 and annotations.find("rng") == -1:
-		annotations.push_back("seq")
+	annotations.push_back(_default_annotation)
+
+
+func _has_prompt_annotation() -> bool:
+	var annotations: Array = _lazy_get(BRANCH_ANNOTATIONS, [])
+	var has := false
+	for a in annotations:
+		if _is_exclusive_annotation.call(a):
+			has = true
+			break
+	return has

@@ -1,11 +1,14 @@
 extends "res://addons/oasis_dialogue/visitor/visitor.gd"
 
-var _action: _AST.Action = null
+var _action := ""
+var _value := -1
+
 var _parent: _AST.Line = null
 
 
-func _init(action: _AST.Action) -> void:
+func _init(action: String, value: int) -> void:
 	_action = action
+	_value = value
 
 
 func visit_line(line: _AST.Line) -> void:
@@ -13,14 +16,19 @@ func visit_line(line: _AST.Line) -> void:
 
 
 func visit_action(action: _AST.Action) -> void:
-	if _action.equals(action):
+	if (
+		action.name == _action
+		and action.value
+		and action.value.value == _value
+	):
 		_parent.remove(action)
 
 
 func cancel() -> void:
+	_action = ""
+	_value = -1
 	_parent = null
 
 
 func finish() -> void:
-	_parent = null
-
+	cancel()
