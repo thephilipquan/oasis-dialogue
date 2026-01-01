@@ -187,6 +187,10 @@ func _create_character(name: String, manager: OasisManager, root: int) -> Charac
 class _Manager:
 	extends OasisManager
 
+	func _ready() -> void:
+		add_child(_BlankController.new())
+
+
 	func translate(key: String) -> String:
 		return key
 
@@ -195,3 +199,10 @@ class _Manager:
 
 	func handle_actions(traverser: OasisTraverser, actions: Array[OasisKeyValue]) -> void:
 		pass
+
+
+class _BlankController:
+	extends OasisTraverserController
+
+	func get_annotation() -> String:
+		return ""
