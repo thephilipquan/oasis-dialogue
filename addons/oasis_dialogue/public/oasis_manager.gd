@@ -66,7 +66,7 @@ func _notification(what: int) -> void:
 func get_reachable_branches(character: OasisCharacter) -> OasisTraverser:
 	var character_name := character.character.to_lower()
 	if not json_path:
-		push_warning("path not set")
+		push_error("path not set")
 		return null
 
 	var data: Dictionary[int, OasisBranch] = _load_character_dialogue(character_name)
@@ -74,7 +74,7 @@ func get_reachable_branches(character: OasisCharacter) -> OasisTraverser:
 		return null
 
 	if not character.root in data:
-		push_warning("OasisDialogueBranch %d not found in data. Are you sure its a valid branch id?" % character.root)
+		push_error("OasisDialogueBranch %d not found in data. Are you sure its a valid branch id?" % character.root)
 		return null
 
 	var reachable_branches: Dictionary[int, OasisBranch] = _get_reachable_branches(data, character.root)
@@ -93,7 +93,7 @@ func get_reachable_branches(character: OasisCharacter) -> OasisTraverser:
 
 func _load_character_dialogue(character: String) -> Dictionary[int, OasisBranch]:
 	if not json_path:
-		push_warning("Failed to _load_character_dialogue oasis dialogue json because no json path specified. Exiting.")
+		push_error("Failed to _load_character_dialogue oasis dialogue json because no json path specified. Exiting.")
 		return {}
 
 	var data := {}
@@ -102,7 +102,7 @@ func _load_character_dialogue(character: String) -> Dictionary[int, OasisBranch]
 	if dir:
 		var character_path := json_path.path_join("%s.json" % character)
 		if not FileAccess.file_exists(character_path):
-			push_warning("Detected set path as a directory but %s does not exist. Returning null." % character_path)
+			push_error("Detected set path as a directory but %s does not exist. Returning null." % character_path)
 			return {}
 		file.load(character_path)
 		data = file.get_loaded_data()
@@ -112,12 +112,12 @@ func _load_character_dialogue(character: String) -> Dictionary[int, OasisBranch]
 		var is_character_file = data.keys().all(func(k: String) -> bool: return k.is_valid_int())
 		var path_file_name := json_path.get_file().get_basename()
 		if is_character_file and character != path_file_name:
-			push_warning("Detected set path as a character file but set path %s doesn't match character name: %s. Returning null." % [json_path, character])
+			push_error("Detected set path as a character file but set path %s doesn't match character name: %s. Returning null." % [json_path, character])
 			return {}
 		if not is_character_file:
 			# json_path is a single file with all characters.
 			if not character in data:
-				push_warning("Detected set path as a file with all characters, but %s does not exist. Returning null." % character)
+				push_error("Detected set path as a file with all characters, but %s does not exist. Returning null." % character)
 				return {}
 			data = data[character]
 
@@ -211,7 +211,7 @@ func _filter_controllers(annotations: Array[String]) -> Dictionary[String, Oasis
 		if annotation in _controllers:
 			controllers[annotation] = _controllers[annotation]
 		else:
-			push_warning(
+			push_error(
 					"No controller found to handle annotation (%s). Provide a OasisTraverserController and add it as a child of this node (%s)"
 					% [annotation, name]
 			)

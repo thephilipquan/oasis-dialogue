@@ -78,9 +78,9 @@ func test_directory_and_character_subpath_not_found_returns_null() -> void:
 	sut.json_path = config.path
 	var character := _create_character("Tom", sut, 0)
 
-	# This is expected to push a warning.
 	var iterator := sut.get_reachable_branches(character)
 	assert_null(iterator)
+	assert_push_error(1)
 
 
 func test_characters_file_and_character_not_found_returns_null() -> void:
@@ -92,9 +92,9 @@ func test_characters_file_and_character_not_found_returns_null() -> void:
 	sut.json_path = config.path
 	var character := _create_character("Tom", sut, 0)
 
-	# This is expected to push a warning.
 	var iterator := sut.get_reachable_branches(character)
 	assert_null(iterator)
+	assert_push_error(1)
 
 
 func test_character_file_and_wrong_character_name_returns_null() -> void:
@@ -107,9 +107,9 @@ func test_character_file_and_wrong_character_name_returns_null() -> void:
 	sut.json_path = config.path.path_join("frank.json")
 	var character := _create_character("Tom", sut, 0)
 
-	# This is expected to push a warning.
 	var iterator := sut.get_reachable_branches(character)
 	assert_null(iterator)
+	assert_push_error(1)
 
 
 func test_character_file_and_branch_id_not_found_returns_null() -> void:
@@ -122,9 +122,9 @@ func test_character_file_and_branch_id_not_found_returns_null() -> void:
 	sut.json_path = config.path.path_join("frank.json")
 	var character := _create_character("frank", sut, 5)
 
-	# This is expected to push a warning.
 	var iterator := sut.get_reachable_branches(character)
 	assert_null(iterator)
+	assert_push_error(1)
 
 
 func _create_json_file_for_tests(config: ExportConfig, character: String) -> void:
