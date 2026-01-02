@@ -231,6 +231,7 @@ func export(config: _ExportConfig) -> void:
 			filename.get_extension() != EXTENSION
 			or basename == _ACTIONS
 			or basename == _CONDITIONS
+			or basename == _ANNOTATIONS
 		):
 			continue
 
