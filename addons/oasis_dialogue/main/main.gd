@@ -26,6 +26,9 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
+	if is_part_of_edited_scene():
+		return
+
 	_manager.quit()
 
 
