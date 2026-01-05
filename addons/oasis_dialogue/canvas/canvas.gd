@@ -14,6 +14,7 @@ const _InputDialog := preload("res://addons/oasis_dialogue/input_dialog/input_di
 const _ConfirmDialog := preload("res://addons/oasis_dialogue/confirm_dialog/confirm_dialog.tscn")
 const _FileDialog := preload("res://addons/oasis_dialogue/project_dialog/file_dialog.gd")
 const _CSVFile := preload("res://addons/oasis_dialogue/io/csv_file.gd")
+const _ProjectMenu := preload("res://addons/oasis_dialogue/menu_bar/project.gd")
 
 const _Branch := preload("res://addons/oasis_dialogue/branch/branch.gd")
 const _BranchScene := preload("res://addons/oasis_dialogue/branch/branch.tscn")
@@ -23,6 +24,9 @@ const _StatusLabelScene := preload("res://addons/oasis_dialogue/status/status_la
 
 const _Lexer := preload("res://addons/oasis_dialogue/model/lexer.gd")
 const _Parser := preload("res://addons/oasis_dialogue/model/parser.gd")
+
+signal close_requested
+signal quit_requested
 
 @export
 var _graph: GraphEdit = null
@@ -77,3 +81,9 @@ func register(registry: _Registry) -> void:
 		var file := _CSVFile.new()
 		return file
 	registry.add(CSV_FILE_FACTORY_REGISTRY_KEY, csv_file_factory)
+
+
+func setup(registry: _Registry) -> void:
+	var project_menu: _ProjectMenu = registry.at(_ProjectMenu.REGISTRY_KEY)
+	project_menu.close_project_requested.connect(close_requested.emit)
+	project_menu.quit_app_requested.connect(quit_requested.emit)

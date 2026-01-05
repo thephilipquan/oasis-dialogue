@@ -11,10 +11,14 @@ const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 
 signal save_requested
 signal export_requested
+signal close_project_requested
+signal quit_app_requested
 
 enum Item {
-	SAVE = 0,
-	EXPORT = 1,
+	SAVE,
+	EXPORT,
+	CLOSE_PROJECT,
+	QUIT_APP,
 }
 
 var _get_character_count := Callable()
@@ -34,7 +38,11 @@ func set_items() -> void:
 	i.shift_pressed = true
 	i.keycode = KEY_S
 	add_item("Save", Item.SAVE, i.get_keycode_with_modifiers())
-	add_item("Export", Item.EXPORT)
+	add_item("Export...", Item.EXPORT)
+	add_item("Close", Item.CLOSE_PROJECT)
+
+	if not OS.has_feature("editor_hint"):
+		add_item("Quit", Item.QUIT_APP)
 
 
 func register(registry: _Registry) -> void:
@@ -71,5 +79,7 @@ func emit_item_signal(id: int) -> void:
 	var signals: Array[Signal] = [
 			save_requested,
 			export_requested,
+			close_project_requested,
+			quit_app_requested,
 	]
 	signals[id].emit()
