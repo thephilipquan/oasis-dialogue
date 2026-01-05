@@ -51,6 +51,9 @@ func export(config: _ExportConfig, files: Array[_OasisFile]) -> void:
 	var json_file: _JsonFile = _json_file_factory.call()
 	json_file.saved.connect(exported.emit)
 
+	if config.is_directory_export and not DirAccess.dir_exists_absolute(config.path):
+		DirAccess.make_dir_recursive_absolute(config.path)
+
 	var characters: Dictionary[String, Dictionary] = {}
 
 	for file in files:
