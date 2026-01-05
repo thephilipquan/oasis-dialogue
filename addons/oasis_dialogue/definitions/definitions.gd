@@ -106,13 +106,20 @@ func mark_page_valid() -> void:
 
 func update_page_summary(summary: PackedStringArray) -> void:
 	_page.summary = summary
+
+
+func update_page_indexes(indexes: Dictionary[String, PackedStringArray]) -> void:
+	_page.set_indexes(indexes)
+
+
+func emit_updated() -> void:
 	if _loading:
 		return
 	updated.emit()
 
 
-func get_page_annotations() -> PackedStringArray:
-	return _page.annotations
+func get_page_available_annotations() -> PackedStringArray:
+	return _page._available_annotations
 
 
 func save_annotations(file: _OasisFile) -> void:
@@ -213,6 +220,10 @@ func _on_parse_timer_timeout() -> void:
 
 
 func _on_enable_page_toggled(toggled_on: bool) -> void:
+	# Needed to run the scene by itself.
+	if not _page:
+		_page = annotations
+
 	_page.enabled = toggled_on
 	_sync_page()
 
@@ -246,7 +257,8 @@ class Page:
 	var button: BaseButton = null
 	var active := false
 
-	var annotations := PackedStringArray()
+	var _available_annotations := PackedStringArray()
+	var _indexes: Dictionary[String, PackedStringArray] = {}
 
 	func is_enabled() -> bool:
 		return enabled
@@ -260,49 +272,41 @@ class Page:
 		return active
 
 
+	func set_indexes(new_indexes: Dictionary[String, PackedStringArray]) -> void:
+		_indexes = new_indexes
+
+
+	func get_index(key: String) -> PackedStringArray:
+		return _indexes.get(key, PackedStringArray())
+
+
 class AnnotationPage:
 	extends Page
 
-	var _exclusives := PackedStringArray()
-
 
 	func _init() -> void:
-		annotations = ["default", "prompt"]
+		_available_annotations = ["default", "prompt"]
 
 
-	func annotation_marks_default(value: String) -> bool:
-		return value == "default"
-
-
-	func annotation_marks_exclusive(value: String) -> bool:
-		return value == "prompt"
+	func get_default() -> String:
+		var list: PackedStringArray = _indexes.get("default", [])
+		var result := ""
+		if list:
+			result = list[0]
+		return result
 
 
 	func is_exclusive(value: String) -> bool:
-		return value in _exclusives
-
-
-	func set_exclusives(values: PackedStringArray) -> void:
-		_exclusives = values
+		return value in _indexes["prompt"]
 
 
 class ActionsPage:
 	extends Page
 
-	var _branch_keywords := PackedStringArray()
-
 
 	func _init() -> void:
-		annotations = ["branch"]
+		_available_annotations = ["branch"]
 
 
 	func is_branch(value: String) -> bool:
-		return value in _branch_keywords
-
-
-	func annotation_marks_branch(value: String) -> bool:
-		return value == "branch"
-
-
-	func set_branch_actions(values: PackedStringArray) -> void:
-		_branch_keywords = values
+		return value in _indexes["branch"]

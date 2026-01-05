@@ -3,8 +3,6 @@ extends Node
 
 const REGISTRY_KEY := "user_manager"
 
-const _ExportConfig := preload("res://addons/oasis_dialogue/model/export_config.gd")
-const _ExportHandler := preload("res://addons/oasis_dialogue/canvas/export_handler.gd")
 const _ProjectDialog := preload("res://addons/oasis_dialogue/project_dialog/project_dialog.gd")
 const _ProjectMenu := preload("res://addons/oasis_dialogue/menu_bar/project.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
@@ -14,7 +12,6 @@ const _DIR := "oasis_dialogue"
 const _CACHE := "cache.cfg"
 var _cache_path := _USER.path_join(_DIR).path_join(_CACHE)
 
-var _last_export_path := ""
 var _last_open_path := ""
 var _dirty := false
 
@@ -49,37 +46,20 @@ func setup(registry: _Registry) -> void:
 		var project_dialog: _ProjectDialog = registry.at(_ProjectDialog.REGISTRY_KEY)
 		project_dialog.path_requested.connect(cache_open_path)
 
-	# In project.
-	if registry.has(_ExportHandler.REGISTRY_KEY):
-		var export_handler: _ExportHandler = registry.at(_ExportHandler.REGISTRY_KEY)
-		export_handler.export_requested.connect(cache_export_path)
 	if registry.has(_ProjectMenu.REGISTRY_KEY):
 		var project_menu: _ProjectMenu = registry.at(_ProjectMenu.REGISTRY_KEY)
 		project_menu.save_requested.connect(save)
 
 
 func init_cache(cache: ConfigFile) -> void:
-	_last_export_path = cache.get_value("export", "last_export_path", "")
 	_last_open_path = cache.get_value("open", "last_open_path", "")
 
 
 func save() -> void:
 	var cache := ConfigFile.new()
-	cache.set_value("export", "last_export_path", _last_export_path)
 	cache.set_value("open", "last_open_path", _last_open_path)
 	cache.save(_cache_path)
 	_dirty = false
-
-
-func cache_export_path(config: _ExportConfig) -> void:
-	if config.path == _last_export_path:
-		return
-	_last_export_path = config.path
-	_dirty = true
-
-
-func get_last_export_path() -> String:
-	return _last_export_path
 
 
 func cache_open_path(path: String) -> void:

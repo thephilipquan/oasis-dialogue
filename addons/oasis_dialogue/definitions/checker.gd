@@ -8,7 +8,7 @@ const _AST := preload("res://addons/oasis_dialogue/definitions/model/ast.gd")
 const _Error := preload("res://addons/oasis_dialogue/definitions/model/error.gd")
 
 const _DuplicateAnnotation := preload("res://addons/oasis_dialogue/definitions/visitor/duplicate_annotation.gd")
-const _DuplicateDefault := preload("res://addons/oasis_dialogue/definitions/visitor/duplicate_default.gd")
+const _DuplicateExclusiveAnnotation := preload("res://addons/oasis_dialogue/definitions/visitor/duplicate_exclusive_annotation.gd")
 const _DuplicateId := preload("res://addons/oasis_dialogue/definitions/visitor/duplicate_id.gd")
 const _FinishCallback := preload("res://addons/oasis_dialogue/definitions/visitor/finish_callback.gd")
 const _UpdateSummary := preload("res://addons/oasis_dialogue/definitions/visitor/update_summary.gd")
@@ -43,7 +43,7 @@ func _ready() -> void:
 	parse_error.init_on_err(on_err)
 
 	var validate_annotation := _ValidateAnnotation.new()
-	validate_annotation.init_get_annotations(_definitions.get_page_annotations)
+	validate_annotation.init_get_annotations(_definitions.get_page_available_annotations)
 	validate_annotation.init_on_err(on_err)
 
 	var duplicate_id := _DuplicateId.new()
@@ -52,24 +52,18 @@ func _ready() -> void:
 	var duplicate_annotation := _DuplicateAnnotation.new()
 	duplicate_annotation.init_on_err(on_err)
 
-	var duplicate_default := _DuplicateDefault.new()
-	duplicate_default.init_is_default(_definitions.annotations.annotation_marks_default)
+	var duplicate_default := _DuplicateExclusiveAnnotation.new()
+	duplicate_default.init_exclusive_annotation("default")
 	duplicate_default.init_on_err(on_err)
 
 	var update_summary := _UpdateSummary.new()
 	update_summary.set_update(_definitions.update_page_summary)
 
-	var update_exclusive_annotations := _UpdateIndex.new()
-	update_exclusive_annotations.init_is_viewing_page(_definitions.annotations.is_active)
-	update_exclusive_annotations.init_condition(_definitions.annotations.annotation_marks_exclusive)
-	update_exclusive_annotations.init_update_index(_definitions.annotations.set_exclusives)
-
-	var update_branch_actions := _UpdateIndex.new()
-	update_branch_actions.init_is_viewing_page(_definitions.actions.is_active)
-	update_branch_actions.init_condition(_definitions.actions.annotation_marks_branch)
-	update_branch_actions.init_update_index(_definitions.actions.set_branch_actions)
+	var update_indexes := _UpdateIndex.new()
+	update_indexes.init_update_indexes(_definitions.update_page_indexes)
 
 	var mark_page_valid := _FinishCallback.new(_definitions.mark_page_valid)
+	var emit_updated := _FinishCallback.new(_definitions.emit_updated)
 
 	_iterator.set_visitors([
 			parse_error,
@@ -78,8 +72,9 @@ func _ready() -> void:
 			duplicate_annotation,
 			duplicate_default,
 			update_summary,
-			update_exclusive_annotations,
+			update_indexes,
 			mark_page_valid,
+			emit_updated,
 	])
 
 

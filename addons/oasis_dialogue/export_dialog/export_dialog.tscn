@@ -1,0 +1,176 @@
+[gd_scene load_steps=11 format=3 uid="uid://d0ccnobkcvkah"]
+
+[ext_resource type="PackedScene" uid="uid://d0rr37ab1t73" path="res://addons/oasis_dialogue/controls/toggle_button/toggle_button.tscn" id="1_4ar1p"]
+[ext_resource type="Texture2D" uid="uid://cimjeadvn8t23" path="res://icon.svg" id="1_p6or0"]
+[ext_resource type="Theme" uid="uid://bky1cp2vmyxy8" path="res://addons/oasis_dialogue/export_dialog/theme.tres" id="1_rapqv"]
+[ext_resource type="Script" uid="uid://1rxlxkvne6js" path="res://addons/oasis_dialogue/export_dialog/export_dialog.gd" id="2_ojspl"]
+[ext_resource type="Script" uid="uid://d3qic8mfkieyy" path="res://addons/oasis_dialogue/export_dialog/default_annotation.gd" id="4_76kjv"]
+[ext_resource type="Script" uid="uid://dkve5xmi33vb8" path="res://addons/oasis_dialogue/export_dialog/path.gd" id="5_4vo6h"]
+[ext_resource type="Script" uid="uid://dc8kawh5u3ksv" path="res://addons/oasis_dialogue/export_dialog/open_file_dialog.gd" id="6_pghit"]
+[ext_resource type="Script" uid="uid://ddfoaagwfncb4" path="res://addons/oasis_dialogue/export_dialog/status.gd" id="8_wvkca"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4ar1p"]
+content_margin_left = 64.0
+content_margin_top = 64.0
+content_margin_right = 64.0
+content_margin_bottom = 64.0
+bg_color = Color(0.14, 0.14, 0.14, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rapqv"]
+resource_local_to_scene = true
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+draw_center = false
+
+[node name="ExportDialog" type="Control" node_paths=PackedStringArray("_toggle_button", "_default_annotation", "_language", "_path", "_file_system_button", "_status", "_export")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_rapqv")
+script = ExtResource("2_ojspl")
+_toggle_button = NodePath("PanelContainer/CenterContainer/PanelContainer/VBoxContainer/ToggleButton")
+_default_annotation = NodePath("PanelContainer/CenterContainer/PanelContainer/VBoxContainer/DefaultAnnotationContainer/DefaultAnnotation")
+_language = NodePath("PanelContainer/CenterContainer/PanelContainer/VBoxContainer/LanguageContainer/Language")
+_path = NodePath("PanelContainer/CenterContainer/PanelContainer/VBoxContainer/PathContainer/Path")
+_file_system_button = NodePath("PanelContainer/CenterContainer/PanelContainer/VBoxContainer/PathContainer/Path/Control/OpenFileDialog")
+_status = NodePath("PanelContainer/CenterContainer/PanelContainer/VBoxContainer/Status")
+_export = NodePath("PanelContainer/CenterContainer/PanelContainer/VBoxContainer/Export")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="PanelContainer"]
+layout_mode = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="PanelContainer/CenterContainer"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_4ar1p")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/CenterContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="ToggleButton" parent="PanelContainer/CenterContainer/PanelContainer/VBoxContainer" instance=ExtResource("1_4ar1p")]
+layout_mode = 2
+_left_text = "single"
+_right_text = "directory"
+unselected_style = SubResource("StyleBoxFlat_rapqv")
+
+[node name="DefaultAnnotationContainer" type="HBoxContainer" parent="PanelContainer/CenterContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="PanelContainer/CenterContainer/PanelContainer/VBoxContainer/DefaultAnnotationContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Default Annotation"
+
+[node name="DefaultAnnotation" type="OptionButton" parent="PanelContainer/CenterContainer/PanelContainer/VBoxContainer/DefaultAnnotationContainer"]
+custom_minimum_size = Vector2(128, 39)
+layout_mode = 2
+script = ExtResource("4_76kjv")
+
+[node name="LanguageContainer" type="HBoxContainer" parent="PanelContainer/CenterContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="PanelContainer/CenterContainer/PanelContainer/VBoxContainer/LanguageContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Language"
+
+[node name="Language" type="LineEdit" parent="PanelContainer/CenterContainer/PanelContainer/VBoxContainer/LanguageContainer"]
+custom_minimum_size = Vector2(128, 0)
+layout_mode = 2
+max_length = 5
+
+[node name="PathContainer" type="HBoxContainer" parent="PanelContainer/CenterContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="PanelContainer/CenterContainer/PanelContainer/VBoxContainer/PathContainer"]
+layout_mode = 2
+text = "Path"
+
+[node name="Path" type="LineEdit" parent="PanelContainer/CenterContainer/PanelContainer/VBoxContainer/PathContainer"]
+custom_minimum_size = Vector2(128, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+expand_to_text_length = true
+emoji_menu_enabled = false
+script = ExtResource("5_4vo6h")
+
+[node name="Control" type="Control" parent="PanelContainer/CenterContainer/PanelContainer/VBoxContainer/PathContainer/Path"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+grow_horizontal = 0
+grow_vertical = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="OpenFileDialog" type="TextureButton" parent="PanelContainer/CenterContainer/PanelContainer/VBoxContainer/PathContainer/Path/Control"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 0
+offset_left = 16.0
+offset_top = -16.0
+offset_right = 48.0
+offset_bottom = 16.0
+texture_normal = ExtResource("1_p6or0")
+ignore_texture_size = true
+stretch_mode = 5
+script = ExtResource("6_pghit")
+
+[node name="Status" type="Label" parent="PanelContainer/CenterContainer/PanelContainer/VBoxContainer"]
+visible = false
+custom_minimum_size = Vector2(256, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.495, 0.495, 1)
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+script = ExtResource("8_wvkca")
+
+[node name="Export" type="Button" parent="PanelContainer/CenterContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+disabled = true
+text = "Export"
+
+[node name="Close" type="TextureButton" parent="."]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_top = 32.0
+offset_right = -32.0
+grow_horizontal = 0
+texture_normal = ExtResource("1_p6or0")
+ignore_texture_size = true
+stretch_mode = 5
+
+[connection signal="left_selected" from="PanelContainer/CenterContainer/PanelContainer/VBoxContainer/ToggleButton" to="." method="set_single_export"]
+[connection signal="right_selected" from="PanelContainer/CenterContainer/PanelContainer/VBoxContainer/ToggleButton" to="." method="set_directory_export"]
+[connection signal="changed" from="PanelContainer/CenterContainer/PanelContainer/VBoxContainer/DefaultAnnotationContainer/DefaultAnnotation" to="." method="set_default_annotation"]
+[connection signal="item_selected" from="PanelContainer/CenterContainer/PanelContainer/VBoxContainer/DefaultAnnotationContainer/DefaultAnnotation" to="PanelContainer/CenterContainer/PanelContainer/VBoxContainer/DefaultAnnotationContainer/DefaultAnnotation" method="_on_item_selected"]
+[connection signal="text_changed" from="PanelContainer/CenterContainer/PanelContainer/VBoxContainer/LanguageContainer/Language" to="." method="set_language"]
+[connection signal="text_changed" from="PanelContainer/CenterContainer/PanelContainer/VBoxContainer/PathContainer/Path" to="." method="set_path"]
+[connection signal="button_up" from="PanelContainer/CenterContainer/PanelContainer/VBoxContainer/PathContainer/Path/Control/OpenFileDialog" to="PanelContainer/CenterContainer/PanelContainer/VBoxContainer/PathContainer/Path/Control/OpenFileDialog" method="_on_button_up"]
+[connection signal="selected" from="PanelContainer/CenterContainer/PanelContainer/VBoxContainer/PathContainer/Path/Control/OpenFileDialog" to="." method="set_path"]
+[connection signal="selected" from="PanelContainer/CenterContainer/PanelContainer/VBoxContainer/PathContainer/Path/Control/OpenFileDialog" to="PanelContainer/CenterContainer/PanelContainer/VBoxContainer/PathContainer/Path" method="set_text"]
+[connection signal="button_up" from="PanelContainer/CenterContainer/PanelContainer/VBoxContainer/Export" to="." method="export"]
+[connection signal="button_up" from="Close" to="." method="close"]

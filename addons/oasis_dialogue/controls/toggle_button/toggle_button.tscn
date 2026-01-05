@@ -1,0 +1,45 @@
+[gd_scene load_steps=5 format=3 uid="uid://d0rr37ab1t73"]
+
+[ext_resource type="Script" uid="uid://ddehr6huu4oqe" path="res://addons/oasis_dialogue/controls/toggle_button/toggle_button.gd" id="1_xf8yf"]
+[ext_resource type="StyleBox" uid="uid://bmywf6ddunkd6" path="res://addons/oasis_dialogue/controls/toggle_button/selected_stylebox.tres" id="2_6dx4u"]
+[ext_resource type="StyleBox" uid="uid://bhmp0ivrlo5ov" path="res://addons/oasis_dialogue/controls/toggle_button/unselected_stylebox.tres" id="3_6hbwj"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7qork"]
+bg_color = Color(0.1, 0.1, 0.1, 0.6)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[node name="ToggleButton" type="PanelContainer"]
+offset_right = 58.0
+offset_bottom = 39.0
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_7qork")
+script = ExtResource("1_xf8yf")
+selected_style = ExtResource("2_6dx4u")
+unselected_style = ExtResource("3_6hbwj")
+selected_font_color = Color(1, 1, 1, 1)
+unselected_font_color = Color(0.5, 0.5, 0.5, 1)
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Left" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+mouse_filter = 0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = ExtResource("2_6dx4u")
+vertical_alignment = 1
+
+[node name="Right" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+mouse_filter = 0
+theme_override_colors/font_color = Color(0.5, 0.5, 0.5, 1)
+theme_override_styles/normal = ExtResource("3_6hbwj")
+vertical_alignment = 1
+
+[connection signal="gui_input" from="HBoxContainer/Left" to="." method="_on_left_gui_input"]
+[connection signal="gui_input" from="HBoxContainer/Right" to="." method="_on_right_gui_input"]
