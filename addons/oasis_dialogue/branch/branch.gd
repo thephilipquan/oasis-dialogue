@@ -9,12 +9,11 @@ var _invalid_style: StyleBox = null
 
 @onready
 var _code_edit: CodeEdit = $CodeEdit
+@onready
+var _remove: TextureButton = $Remove
 
 var _id := -1
-var _remove_button: Button = null
-
 var _is_erred := false
-
 
 func _ready() -> void:
 	if is_part_of_edited_scene():
@@ -22,12 +21,7 @@ func _ready() -> void:
 
 	var hbox := get_titlebar_hbox()
 	hbox.add_spacer(false)
-
-	_remove_button = Button.new()
-	_remove_button.visible = false
-	_remove_button.text = "remove"
-	_remove_button.button_up.connect(_on_remove_branch_button_up)
-	hbox.add_child(_remove_button)
+	_remove.reparent(hbox)
 
 	node_selected.connect(_on_node_selected)
 	node_deselected.connect(_on_node_deselected)
@@ -76,6 +70,10 @@ func color_normal() -> void:
 		remove_theme_stylebox_override("titlebar_selected")
 
 
+func emit_removed() -> void:
+	removed.emit(_id)
+
+
 func _on_code_edit_text_changed() -> void:
 	var parser_timer: Timer = $ParserTimer
 	parser_timer.start()
@@ -86,13 +84,9 @@ func _on_parser_timer_timeout() -> void:
 	changed.emit(_id, _code_edit.text)
 
 
-func _on_remove_branch_button_up() -> void:
-	removed.emit(_id)
-
-
 func _on_node_selected() -> void:
-	_remove_button.visible = true
+	_remove.visible = true
 
 
 func _on_node_deselected() -> void:
-	_remove_button.visible = false
+	_remove.visible = false

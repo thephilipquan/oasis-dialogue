@@ -1,8 +1,11 @@
-[gd_scene load_steps=4 format=3 uid="uid://dyt45pvhi04an"]
+[gd_scene load_steps=7 format=3 uid="uid://dyt45pvhi04an"]
 
 [ext_resource type="Theme" uid="uid://b48w54vf670uy" path="res://addons/oasis_dialogue/branch/branch_theme.tres" id="1_oxoiw"]
 [ext_resource type="StyleBox" uid="uid://bc3exjdlkea78" path="res://addons/oasis_dialogue/branch/titlebar_invalid_stylebox.tres" id="2_6hn2x"]
 [ext_resource type="Script" uid="uid://cfpmjd8eo8f6o" path="res://addons/oasis_dialogue/branch/branch.gd" id="2_darse"]
+[ext_resource type="Texture2D" uid="uid://cdtrpbw6jkiiv" path="res://addons/oasis_dialogue/assets/x_light_normal.png" id="4_qhlkn"]
+[ext_resource type="Texture2D" uid="uid://cj5rtyms2kni8" path="res://addons/oasis_dialogue/assets/x_light_selected.png" id="5_si3lg"]
+[ext_resource type="Texture2D" uid="uid://du5v5g3pw4nf4" path="res://addons/oasis_dialogue/assets/x_hovered.png" id="6_hjp76"]
 
 [node name="Branch" type="GraphNode"]
 custom_minimum_size = Vector2(320, 0)
@@ -18,8 +21,27 @@ slot/0/right_type = 0
 slot/0/right_color = Color(1, 1, 1, 1)
 slot/0/right_icon = null
 slot/0/draw_stylebox = true
+slot/1/left_enabled = false
+slot/1/left_type = 0
+slot/1/left_color = Color(1, 1, 1, 1)
+slot/1/left_icon = null
+slot/1/right_enabled = false
+slot/1/right_type = 0
+slot/1/right_color = Color(1, 1, 1, 1)
+slot/1/right_icon = null
+slot/1/draw_stylebox = true
 script = ExtResource("2_darse")
 _invalid_style = ExtResource("2_6hn2x")
+
+[node name="Remove" type="TextureButton" parent="."]
+visible = false
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+texture_normal = ExtResource("4_qhlkn")
+texture_pressed = ExtResource("5_si3lg")
+texture_hover = ExtResource("6_hjp76")
+ignore_texture_size = true
+stretch_mode = 5
 
 [node name="ParserTimer" type="Timer" parent="."]
 wait_time = 0.5
@@ -34,5 +56,6 @@ auto_brace_completion_pairs = {
 "{": "}"
 }
 
+[connection signal="button_up" from="Remove" to="." method="emit_removed"]
 [connection signal="timeout" from="ParserTimer" to="." method="_on_parser_timer_timeout"]
 [connection signal="text_changed" from="CodeEdit" to="." method="_on_code_edit_text_changed"]
