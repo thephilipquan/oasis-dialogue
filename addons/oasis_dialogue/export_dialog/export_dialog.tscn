@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://d0ccnobkcvkah"]
+[gd_scene load_steps=14 format=3 uid="uid://d0ccnobkcvkah"]
 
 [ext_resource type="PackedScene" uid="uid://d0rr37ab1t73" path="res://addons/oasis_dialogue/controls/toggle_button/toggle_button.tscn" id="1_4ar1p"]
 [ext_resource type="Texture2D" uid="uid://cimjeadvn8t23" path="res://icon.svg" id="1_p6or0"]
@@ -8,6 +8,9 @@
 [ext_resource type="Script" uid="uid://dkve5xmi33vb8" path="res://addons/oasis_dialogue/export_dialog/path.gd" id="5_4vo6h"]
 [ext_resource type="Script" uid="uid://dc8kawh5u3ksv" path="res://addons/oasis_dialogue/export_dialog/open_file_dialog.gd" id="6_pghit"]
 [ext_resource type="Script" uid="uid://ddfoaagwfncb4" path="res://addons/oasis_dialogue/export_dialog/status.gd" id="8_wvkca"]
+[ext_resource type="Texture2D" uid="uid://htevrvwex4yn" path="res://addons/oasis_dialogue/assets/x_dark_normal.png" id="9_ncs48"]
+[ext_resource type="Texture2D" uid="uid://dhaf4cbmhe0xa" path="res://addons/oasis_dialogue/assets/x_dark_selected.png" id="10_0styg"]
+[ext_resource type="Texture2D" uid="uid://du5v5g3pw4nf4" path="res://addons/oasis_dialogue/assets/x_hovered.png" id="11_6ohjh"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4ar1p"]
 content_margin_left = 64.0
@@ -159,7 +162,9 @@ anchor_right = 1.0
 offset_top = 32.0
 offset_right = -32.0
 grow_horizontal = 0
-texture_normal = ExtResource("1_p6or0")
+texture_normal = ExtResource("9_ncs48")
+texture_pressed = ExtResource("10_0styg")
+texture_hover = ExtResource("11_6ohjh")
 ignore_texture_size = true
 stretch_mode = 5
 
