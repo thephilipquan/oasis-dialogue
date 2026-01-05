@@ -27,9 +27,10 @@ func _ready() -> void:
 	if _extension:
 		filters = PackedStringArray(["*.%s" % _extension])
 
+	if not get_line_edit().text and _default_filename:
+		get_line_edit().text = _default_filename
+
 	if file_mode == FileMode.FILE_MODE_SAVE_FILE:
-		if _default_filename:
-			get_line_edit().text = _default_filename
 		confirmed.connect(_on_confirm)
 	else:
 		file_selected.connect(_emit_selected)
