@@ -4,7 +4,7 @@
 Hello World!
 @response
 Why are you saying that? { branch 1 }
-Howd' you know my name was World? { branch 2 }
+How'd you know my name was World? { branch 2 }
 [position_offset]
 Vector2(-540.0, -220.0)
 
