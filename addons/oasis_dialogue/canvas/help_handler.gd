@@ -18,7 +18,7 @@ func setup(registry: _Registry) -> void:
 
 
 func _open_documentation() -> void:
-	OS.shell_open("https://github.com/thephilipquan/oasis-dialogue/blob/feat-docs/docs/how_to_write.md")
+	OS.shell_open("https://github.com/thephilipquan/oasis-dialogue/blob/main/docs/how_to_write.md")
 
 
 func _open_github_issues() -> void:
