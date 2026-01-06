@@ -21,6 +21,8 @@ signal branch_changed(id: int, text: String)
 signal branch_removed(id: int)
 ## Emitted when a branch
 signal branches_dirtied(id: int, dirty_ids: Array[int])
+## Emitted when all branches are removed.
+signal branches_removed()
 signal pretty_requested(id: int)
 
 var duration: float = 0.5:
@@ -183,6 +185,7 @@ func remove_branches() -> void:
 		branch.queue_free()
 	_branches.clear()
 	_dirty_branches.clear()
+	branches_removed.emit()
 
 
 func highlight_branch(id: int, lines: Array[int]) -> void:
