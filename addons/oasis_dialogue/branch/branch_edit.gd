@@ -18,8 +18,11 @@ const _Sequence := preload("res://addons/oasis_dialogue/utils/sequence_utils.gd"
 signal dirtied
 ## Emitted when [signal Branch.changed] is emitted.
 signal branch_changed(id: int, text: String)
+## Emitted when a single branch is removed. There may or may not be branches
+## left after the removal.
 signal branch_removed(id: int)
-## Emitted when a branch
+## Emitted when a branch is removed and referencing branches, [param dirty_ids],
+## need to be reparsed to remove the now broken reference.
 signal branches_dirtied(id: int, dirty_ids: Array[int])
 ## Emitted when all branches are removed.
 signal branches_removed()
@@ -306,8 +309,7 @@ func load_character(file: _OasisFile) -> void:
 		)
 
 	_is_restoring_branches = true
-	for id in _branches:
-		branch_changed.emit(id, get_branch_text(id))
+	_emit_all_branches_changed()
 	_is_restoring_branches = false
 
 
