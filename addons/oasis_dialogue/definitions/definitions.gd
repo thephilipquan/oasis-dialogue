@@ -238,12 +238,12 @@ func _on_enable_page_toggled(toggled_on: bool) -> void:
 
 func _color_page_button(page: Page) -> void:
 	var color := Color()
-	if page.has_error:
-		color = get_theme_color("invalid_color", "Project")
-	elif page.enabled:
-		color = get_theme_color("enabled_color", "Project")
-	else:
+	if not page.enabled:
 		color = Color.WHITE
+	elif page.has_error:
+		color = get_theme_color("invalid_color", "Project")
+	else:
+		color = get_theme_color("enabled_color", "Project")
 	page.button.modulate = color
 
 
