@@ -233,6 +233,7 @@ show_grid_buttons = false
 script = ExtResource("7_54gq2")
 
 [node name="Status" parent="View/Body/HSplitContainer/BranchEdit" groups=["oasis_registerable"] instance=ExtResource("8_54gq2")]
+z_index = 1
 layout_mode = 1
 
 [node name="CharacterCallToAction" type="CenterContainer" parent="View/Body/HSplitContainer/BranchEdit" groups=["oasis_registerable"]]
