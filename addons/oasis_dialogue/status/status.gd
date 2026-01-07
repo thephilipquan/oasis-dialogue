@@ -88,7 +88,7 @@ func update_current_character() -> void:
 	_current_character = _get_active_character.call()
 
 
-func add_branch(id: int) -> void:
+func add_branch() -> void:
 	info("Added branch %d" % id)
 
 

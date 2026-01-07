@@ -61,7 +61,7 @@ func setup(registry: _Registry) -> void:
 
 	project_manager.character_loaded.connect(update_create_branch_event.unbind(1), CONNECT_DEFERRED)
 	graph.branch_removed.connect(update_create_branch_event.unbind(1), CONNECT_DEFERRED)
-	add_branch_button.branch_added.connect(hide_event.bind(event).unbind(1))
+	add_branch_button.branch_added.connect(hide_event.bind(event))
 	remove_character_handler.character_removed.connect(hide_event.bind(event))
 
 

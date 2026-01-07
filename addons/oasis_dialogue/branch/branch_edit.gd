@@ -12,6 +12,7 @@ const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manag
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 const _RemoveCharacterHandler := preload("res://addons/oasis_dialogue/canvas/remove_character_handler.gd")
 const _Save := preload("res://addons/oasis_dialogue/save.gd")
+const _Sequence := preload("res://addons/oasis_dialogue/utils/sequence_utils.gd")
 
 ## Emitted when the user changes anything so the file needs to be saved.
 signal dirtied
@@ -66,10 +67,9 @@ func init_branch_factory(branch_factory: Callable) -> void:
 	_branch_factory = branch_factory
 
 
-func add_branch(id: int, silent := false) -> void:
-	if id in _branches:
-		push_warning("branch: %d already exists" % id)
-		return
+func add_branch(id := -1, silent := false) -> void:
+	if id == -1 or id in _branches:
+		id = _Sequence.get_next_int(_branches.keys())
 
 	var branch: _Branch = _branch_factory.call()
 	add_child(branch)
