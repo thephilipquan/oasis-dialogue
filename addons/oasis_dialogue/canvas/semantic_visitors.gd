@@ -67,8 +67,7 @@ func setup(registry: _Registry) -> void:
 		_Global.CONNECT_BRANCH_KEYWORD,
 		graph.has_branch,
 		func(id: int) -> void:
-			graph.add_branch(id)
-			status.add_branch(id),
+			graph.add_branch(id),
 	)
 	var connect_branch_visitor := _ConnectBranchVisitor.new(
 		_Global.CONNECT_BRANCH_KEYWORD,

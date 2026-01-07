@@ -3,9 +3,7 @@ extends Control
 
 const REGISTRY_KEY := "status"
 
-const _AddBranchButton := preload("res://addons/oasis_dialogue/canvas/add_branch_button.gd")
 const _AddCharacterHandler := preload("res://addons/oasis_dialogue/canvas/add_character_handler.gd")
-const _BranchEdit := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
 const _Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
 const _CharacterTree := preload("res://addons/oasis_dialogue/canvas/character_tree.gd")
 const _CSVExporter := preload("res://addons/oasis_dialogue/canvas/csv_exporter.gd")
@@ -46,9 +44,6 @@ func setup(registry: _Registry) -> void:
 	var _rename_character_handler: _RenameCharacterHandler = registry.at(_RenameCharacterHandler.REGISTRY_KEY)
 	_rename_character_handler.character_renamed.connect(rename_character)
 
-	var add_branch_button: _AddBranchButton = registry.at(_AddBranchButton.REGISTRY_KEY)
-	add_branch_button.branch_added.connect(add_branch)
-
 	var add_character_button: _AddCharacterHandler = registry.at(_AddCharacterHandler.REGISTRY_KEY)
 	add_character_button.character_added.connect(add_character)
 
@@ -57,9 +52,6 @@ func setup(registry: _Registry) -> void:
 
 	var tree: _CharacterTree = registry.at(_CharacterTree.REGISTRY_KEY)
 	tree.character_selected.connect(clear_errs.unbind(1))
-
-	var graph: _BranchEdit = registry.at(_BranchEdit.REGISTRY_KEY)
-	graph.branch_removed.connect(remove_branch)
 
 	var csv_exporter: _CSVExporter = registry.at(_CSVExporter.REGISTRY_KEY)
 	csv_exporter.exported.connect(export_csv)
@@ -86,14 +78,6 @@ func init_active_is_dirty(callback: Callable) -> void:
 
 func update_current_character() -> void:
 	_current_character = _get_active_character.call()
-
-
-func add_branch() -> void:
-	info("Added branch %d" % id)
-
-
-func remove_branch(id: int) -> void:
-	info("Removed branch %d" % id)
 
 
 func rename_character(to: String) -> void:
