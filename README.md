@@ -1,15 +1,16 @@
 # OasisDialogue
 
-A visual editor to write branching dialogue for games. Write with complete autonomy without consulting devs. No coding needed. If using Godot - comes with tools for quick and easy integration.
+A visual editor to write branching dialogue for games. Write in complete isolation from code. If using Godot - comes with tools for quick and easy integration.
 
 ![GIF of Oasis Dialogue example.](src/gif/export/example.gif)
 
 ## features
 
+* A visual editor to write dialogue
+* Tools (nodes) to implement dialogue in Godot
 * Show dialogue based on conditions
-* Run code in response to player's dialogue choices
-* Isolation from game code with safe and easy integration
-* CSV export for localization
+* Run code in response to dialogue
+* Localization-ready export
 * Standalone editor
 * Version control friendly file format
 
@@ -17,9 +18,12 @@ A visual editor to write branching dialogue for games. Write with complete auton
 
 You can search *Oasis Dialogue* in Godot's Asset Manager, or download the standalone app from the [latest release](https://github.com/thephilipquan/oasis-dialogue/releases/latest).
 
-You can view the [example](example/) provided, take a look at [how to write](docs/how_to_write.md) if you're a writer, and [how to implement](docs/how_to_implement.md) if you're a developer.
+To learn how to use **OasisDialogue**, view any of the following:
+* the [example](example/) provided
+* [how to write](docs/how_to_write.md) if you're a writer
+* [how to implement](docs/how_to_implement.md) if you're a developer
 
-## when not to use Oasis Dialogue
+## when not to use OasisDialogue
 
 Overall, OasisDialogue meets most game needs for dialogue branching. The following situations are when OasisDialogue is not a good fit for your game...
 
