@@ -1,6 +1,7 @@
 @tool
 extends Control
 
+const REGISTRY_KEY := "canvas"
 const INPUT_DIALOG_FACTORY_REGISTRY_KEY := "input_dialog_factory"
 const CONFIRM_DIALOG_FACTORY_REGISTRY_KEY := "confirm_dialog_factory"
 const BRANCH_FACTORY_REGISTRY_KEY := "branch_factory"
@@ -42,6 +43,8 @@ func _ready() -> void:
 
 
 func register(registry: _Registry) -> void:
+	registry.add(REGISTRY_KEY, self)
+
 	var lexer := _Lexer.new()
 	registry.add(_Lexer.REGISTRY_KEY, lexer)
 	var parser := _Parser.new()

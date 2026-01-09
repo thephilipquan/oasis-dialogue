@@ -3,6 +3,7 @@ extends Node
 
 const REGISTRY_KEY := "export_handler"
 
+const _Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
 const _Definitions := preload("res://addons/oasis_dialogue/definitions/definitions.gd")
 const _ExportConfig := preload("res://addons/oasis_dialogue/model/export_config.gd")
 const _DefaultAnnotationData := preload("res://addons/oasis_dialogue/export_dialog/model/default_annotation_data.gd")
@@ -26,10 +27,12 @@ func register(registry: _Registry) -> void:
 
 
 func setup(registry: _Registry) -> void:
+	var canvas: _Canvas = registry.at(_Canvas.REGISTRY_KEY)
+
 	init_dialog_factory(
 			func create_export_dialog() -> _Dialog:
 				var scene: _Dialog = _DialogScene.instantiate()
-				add_child(scene)
+				canvas.add_child(scene)
 				return scene
 	)
 
