@@ -11,6 +11,7 @@ class Character:
 	class Branch:
 		const VALUE := "value"
 		const POSITION_OFFSET := "position_offset"
+		const LOCKED := "locked"
 	class Config:
 		const GRAPH := "graph"
 		class Graph:

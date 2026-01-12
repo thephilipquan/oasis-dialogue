@@ -37,3 +37,4 @@ GraphNode/styles/panel_selected = SubResource("StyleBoxFlat_4gr4x")
 GraphNode/styles/slot = SubResource("StyleBoxEmpty_1huek")
 GraphNode/styles/titlebar = SubResource("StyleBoxFlat_q7wve")
 GraphNode/styles/titlebar_selected = SubResource("StyleBoxFlat_kaxkx")
+HBoxContainer/constants/separation = 16

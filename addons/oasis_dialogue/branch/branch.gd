@@ -1,14 +1,19 @@
 @tool
 extends GraphNode
 
+const _HoverableToggleButton = preload("res://addons/oasis_dialogue/controls/hoverable_toggle_button.gd")
+
 signal changed(id: int, text: String)
 signal removed(id: int)
+signal lock_changed()
 
 @export
 var _invalid_style: StyleBox = null
 
 @onready
 var _code_edit: CodeEdit = $CodeEdit
+@onready
+var _lock: TextureButton = $Lock
 @onready
 var _remove: TextureButton = $Remove
 
@@ -21,6 +26,7 @@ func _ready() -> void:
 
 	var hbox := get_titlebar_hbox()
 	hbox.add_spacer(false)
+	_lock.reparent(hbox)
 	_remove.reparent(hbox)
 
 	node_selected.connect(_on_node_selected)
@@ -33,6 +39,18 @@ func init(highlighter: SyntaxHighlighter) -> void:
 
 func is_erred() -> bool:
 	return _is_erred
+
+
+func is_locked() -> bool:
+	return _lock.button_pressed
+
+
+func set_locked(value: bool, silent := false) -> void:
+	if silent:
+		_lock.set_pressed_no_signal(value)
+	else:
+		_lock.button_pressed = value
+		lock_changed.emit()
 
 
 func set_id(id: int) -> void:
@@ -85,8 +103,10 @@ func _on_parser_timer_timeout() -> void:
 
 
 func _on_node_selected() -> void:
-	_remove.visible = true
+	_lock.show()
+	_remove.show()
 
 
 func _on_node_deselected() -> void:
-	_remove.visible = false
+	_lock.hide()
+	_remove.hide()

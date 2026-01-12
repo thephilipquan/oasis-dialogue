@@ -80,6 +80,7 @@ func add_branch(id := -1, silent := false) -> void:
 	add_child(branch)
 	branch.removed.connect(remove_branch)
 	branch.changed.connect(_on_branch_changed)
+	branch.lock_changed.connect(dirtied.emit)
 	branch.set_id(id)
 	center_node_in_graph(branch)
 
@@ -138,7 +139,10 @@ func connect_branches(from_id: int, to_ids: Array[int], interactive := true) -> 
 		if is_in and not other_is_connected:
 			if not to.is_slot_enabled_left(0):
 				to.set_slot_enabled_left(0, true)
-				if not to.is_slot_enabled_right(0):
+				if (
+						not to.is_slot_enabled_right(0)
+						and not to.is_locked()
+				):
 					to_arrange.push_back(to)
 			connect_node(from.name, 0, to.name, 0)
 		elif not is_in and other_is_connected:
@@ -225,7 +229,11 @@ func arrange_orphans(ignore: _Branch) -> void:
 	var orphans: Array[_Branch] = []
 	for id in _branches:
 		var branch := _branches[id]
-		if not get_connection_count(branch.name, 0) and _branches[id] != ignore:
+		if (
+				not get_connection_count(branch.name, 0)
+				and _branches[id] != ignore
+				and not _branches[id].is_locked()
+		):
 			orphans.push_back(branch)
 		elif not anchor:
 			anchor = branch
@@ -287,6 +295,7 @@ func save_character(file: _OasisFile) -> void:
 		var branch := _branches[id]
 		file.set_value(section, _Save.Character.Branch.VALUE, branch.get_text())
 		file.set_value(section, _Save.Character.Branch.POSITION_OFFSET, branch.position_offset)
+		file.set_value(section, _Save.Character.Branch.LOCKED, branch.is_locked())
 
 
 func load_character(file: _OasisFile) -> void:
@@ -307,6 +316,12 @@ func load_character(file: _OasisFile) -> void:
 				_Save.Character.Branch.POSITION_OFFSET,
 				Vector2.ZERO
 		)
+		var is_locked: bool = file.get_value(
+				key,
+				_Save.Character.Branch.LOCKED,
+				false
+		)
+		branch.set_locked(is_locked, true)
 
 	_is_restoring_branches = true
 	_emit_all_branches_changed()

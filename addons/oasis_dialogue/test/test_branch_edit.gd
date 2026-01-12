@@ -273,6 +273,7 @@ func test_load_character_restores_saved_branches() -> void:
 	sut.add_branch(7)
 	stub(branches[1].get_text).to_return("b\nc")
 	branches[1].position_offset = Vector2(150, 200)
+	stub(branches[1].is_locked).to_return(true)
 
 	var file := OasisFile.new()
 	sut.save_character(file)
@@ -284,6 +285,7 @@ func test_load_character_restores_saved_branches() -> void:
 	assert_eq(branches[0].position_offset, Vector2(50, 100))
 	assert_called(branches[1], "set_text", ["b\nc"])
 	assert_eq(branches[1].position_offset, Vector2(150, 200))
+	assert_called(branches[1], "set_locked", [true])
 
 
 func test_load_character_config_restores_viewport_state() -> void:
