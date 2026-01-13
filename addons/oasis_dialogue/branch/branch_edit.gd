@@ -49,7 +49,7 @@ func register(registry: _Registry) -> void:
 
 func setup(registry: _Registry) -> void:
 	var add_branch_button: _AddBranch = registry.at(_AddBranch.REGISTRY_KEY)
-	add_branch_button.branch_added.connect(add_branch)
+	add_branch_button.branch_added.connect(add_branch_at_center)
 
 	var remove_character: _RemoveCharacterHandler = registry.at(_RemoveCharacterHandler.REGISTRY_KEY)
 	remove_character.character_removed.connect(remove_branches)
@@ -72,7 +72,7 @@ func init_branch_factory(branch_factory: Callable) -> void:
 	_branch_factory = branch_factory
 
 
-func add_branch(id := -1, silent := false) -> void:
+func _add_branch(id := -1) -> _Branch:
 	if id == -1 or id in _branches:
 		id = _Sequence.get_next_int(_branches.keys())
 
@@ -82,11 +82,30 @@ func add_branch(id := -1, silent := false) -> void:
 	branch.changed.connect(_on_branch_changed)
 	branch.lock_changed.connect(dirtied.emit)
 	branch.set_id(id)
-	center_node_in_graph(branch)
-
 	_branches[id] = branch
-	if not silent:
-		dirtied.emit()
+
+	return branch
+
+
+func add_branch_at_center(id := -1) -> void:
+	var branch := _add_branch(id)
+	center_node_in_graph(branch)
+	dirtied.emit()
+
+
+func add_branch_at(at_position: Vector2) -> void:
+	var branch := _add_branch()
+
+	# Translate to graph_edit space.
+	at_position = ((at_position + scroll_offset) / zoom)
+	# Offset to spawn center of titlebar under mouse.
+	at_position += Vector2(
+			-branch.size.x / 2,
+			-branch.get_titlebar_hbox().size.y / 2
+	)
+	branch.position_offset = at_position
+
+	dirtied.emit()
 
 
 func get_branch_text(id: int) -> String:
@@ -307,7 +326,7 @@ func load_character(file: _OasisFile) -> void:
 			continue
 
 		var id := key.to_int()
-		add_branch(id, true)
+		_add_branch(id)
 
 		var branch := _branches[id]
 		branch.set_text(file.get_value(key, _Save.Character.Branch.VALUE, ""))

@@ -1,4 +1,4 @@
-[gd_scene load_steps=41 format=3 uid="uid://4plc4vhymybs"]
+[gd_scene load_steps=42 format=3 uid="uid://4plc4vhymybs"]
 
 [ext_resource type="Script" uid="uid://bkn5mac6gdvq3" path="res://addons/oasis_dialogue/canvas/canvas.gd" id="1_pyvqf"]
 [ext_resource type="Theme" uid="uid://b17l0ux5wllk5" path="res://addons/oasis_dialogue/canvas/canvas_theme.tres" id="1_ta1sa"]
@@ -38,6 +38,7 @@
 [ext_resource type="Script" uid="uid://dp50oi44nwmpt" path="res://addons/oasis_dialogue/canvas/remove_character_button.gd" id="26_ycj4d"]
 [ext_resource type="Script" path="res://addons/oasis_dialogue/canvas/character_call_to_action.gd" id="30_oj43n"]
 [ext_resource type="Script" path="res://addons/oasis_dialogue/canvas/branch_call_to_action.gd" id="31_y5ltl"]
+[ext_resource type="Script" uid="uid://beff6mv4n0m7o" path="res://addons/oasis_dialogue/controls/double_click_at_listener.gd" id="39_nsqch"]
 [ext_resource type="PackedScene" uid="uid://5s7p0xabevpo" path="res://addons/oasis_dialogue/definitions/definitions.tscn" id="41_nsqch"]
 [ext_resource type="Script" uid="uid://bkt8n6baoto56" path="res://addons/oasis_dialogue/canvas/toggle_visibiility.gd" id="42_0fanf"]
 
@@ -277,6 +278,13 @@ branch"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="DoubleClickListener" type="Control" parent="View/Body/HSplitContainer/BranchEdit" node_paths=PackedStringArray("target")]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("39_nsqch")
+target = NodePath("..")
+
 [node name="HSplitContainer" type="HSplitContainer" parent="View/Body/HSplitContainer"]
 visible = false
 layout_mode = 2
@@ -297,3 +305,5 @@ button = NodePath("../Header/ToggleDefinitionsPanel")
 target = NodePath("../Body/HSplitContainer/HSplitContainer")
 container = NodePath("../Body/HSplitContainer")
 settings_header = "definitions"
+
+[connection signal="double_clicked_at" from="View/Body/HSplitContainer/BranchEdit/DoubleClickListener" to="View/Body/HSplitContainer/BranchEdit" method="add_branch_at"]

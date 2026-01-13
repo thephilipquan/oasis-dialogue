@@ -27,7 +27,7 @@ func before_each() -> void:
 func test_add_branch() -> void:
 	stub(sut.center_node_in_graph).to_do_nothing()
 
-	sut.add_branch(3)
+	sut.add_branch_at_center(3)
 
 	var branch := branches[0]
 	assert_eq(branch.removed.get_connections().size(), 1)
@@ -36,14 +36,14 @@ func test_add_branch() -> void:
 
 
 func test_update_branch_calls_set_text() -> void:
-	sut.add_branch(2)
+	sut.add_branch_at_center(2)
 	sut.update_branch(2, "hello world")
 	assert_called(branches[0], "set_text", ["hello world"])
 
 
 func test_remove_branch() -> void:
 	watch_signals(sut)
-	sut.add_branch(3)
+	sut.add_branch_at_center(3)
 
 	sut.remove_branch(3)
 	await wait_physics_frames(1)
@@ -53,7 +53,7 @@ func test_remove_branch() -> void:
 
 func test_remove_branch_emits_branch_removed() -> void:
 	watch_signals(sut)
-	sut.add_branch(3)
+	sut.add_branch_at_center(3)
 
 	sut.remove_branch(3)
 	await wait_physics_frames(1)
@@ -63,7 +63,7 @@ func test_remove_branch_emits_branch_removed() -> void:
 
 func test_remove_branch_emits_branches_dirtied() -> void:
 	watch_signals(sut)
-	sut.add_branch(3)
+	sut.add_branch_at_center(3)
 
 	sut.remove_branch(3)
 	await wait_physics_frames(1)
@@ -73,7 +73,7 @@ func test_remove_branch_emits_branches_dirtied() -> void:
 
 func test_remove_branch_emits_branches_dirtied_with_left_connections() -> void:
 	for i in 3:
-		sut.add_branch(i)
+		sut.add_branch_at_center(i)
 	sut.connect_branches(0, [1])
 	sut.connect_branches(1, [2])
 	watch_signals(sut)
@@ -85,20 +85,20 @@ func test_remove_branch_emits_branches_dirtied_with_left_connections() -> void:
 
 
 func test_highlight_calls_branch_highlight() -> void:
-	sut.add_branch(2)
+	sut.add_branch_at_center(2)
 	sut.highlight_branch(2, [0, 2, 3])
 	assert_called(branches[0], "highlight", [[0, 2, 3]])
 
 
 func test_clear_highlights_calls_branch_highlight() -> void:
-	sut.add_branch(3)
+	sut.add_branch_at_center(3)
 	sut.clear_branch_highlights(3)
 	assert_called(branches[0], "highlight", [[]])
 
 
 func test_connecting_branch_to_orphan() -> void:
-	sut.add_branch(2)
-	sut.add_branch(4)
+	sut.add_branch_at_center(2)
+	sut.add_branch_at_center(4)
 	stub(sut.arrange_branches_around_anchor).to_do_nothing()
 	stub(sut.arrange_orphans).to_do_nothing()
 
@@ -115,9 +115,9 @@ func test_connecting_branch_to_orphan() -> void:
 
 
 func test_connecting_branch_to_non_orphan() -> void:
-	sut.add_branch(0)
-	sut.add_branch(1)
-	sut.add_branch(2)
+	sut.add_branch_at_center(0)
+	sut.add_branch_at_center(1)
+	sut.add_branch_at_center(2)
 	stub(sut.arrange_branches_around_anchor).to_do_nothing()
 	stub(sut.arrange_orphans).to_do_nothing()
 
@@ -135,8 +135,8 @@ func test_connecting_branch_to_non_orphan() -> void:
 
 
 func test_connect_branch_removes_previous_connections() -> void:
-	sut.add_branch(2)
-	sut.add_branch(4)
+	sut.add_branch_at_center(2)
+	sut.add_branch_at_center(4)
 	stub(sut.arrange_branches_around_anchor).to_do_nothing()
 	stub(sut.arrange_orphans).to_do_nothing()
 
@@ -155,7 +155,7 @@ func test_connect_branch_removes_previous_connections() -> void:
 
 func test_disable_orphan_slots() -> void:
 	for i in 3:
-		sut.add_branch(i)
+		sut.add_branch_at_center(i)
 		branches[i].set_slot_enabled_left(0, true)
 		branches[i].set_slot_enabled_right(0, true)
 	sut.connect_node(branches[1].name, 0, branches[2].name, 0)
@@ -172,7 +172,7 @@ func test_disable_orphan_slots() -> void:
 func test_arrange_branches_around_anchor() -> void:
 	sut.duration = 0.1
 	for i in 3:
-		sut.add_branch(i)
+		sut.add_branch_at_center(i)
 		branches[i].set_slot_enabled_left(0, true)
 		branches[i].set_slot_enabled_right(0, true)
 	branches[0].position_offset = Vector2(200, 300)
@@ -196,7 +196,7 @@ func test_arrange_branches_around_anchor() -> void:
 func test_arrange_branches_around_anchor_ignore_selected() -> void:
 	sut.duration = 0.1
 	for i in 3:
-		sut.add_branch(i)
+		sut.add_branch_at_center(i)
 		branches[i].set_slot_enabled_left(0, true)
 		branches[i].set_slot_enabled_right(0, true)
 	branches[0].position_offset = Vector2(200, 300)
@@ -220,7 +220,7 @@ func test_arrange_branches_around_anchor_ignore_selected() -> void:
 
 func test_arrange_orphans() -> void:
 	for i in 3:
-		sut.add_branch(i)
+		sut.add_branch_at_center(i)
 		branches[i].set_slot_enabled_left(0, true)
 		branches[i].set_slot_enabled_right(0, true)
 	branches[0].position_offset = Vector2(0, 0)
@@ -244,7 +244,7 @@ func test_arrange_orphans() -> void:
 
 func test_arrange_orphans_with_ignore() -> void:
 	for i in 3:
-		sut.add_branch(i)
+		sut.add_branch_at_center(i)
 		branches[i].set_slot_enabled_left(0, true)
 		branches[i].set_slot_enabled_right(0, true)
 	branches[0].position_offset = Vector2(0, 0)
@@ -266,11 +266,12 @@ func test_arrange_orphans_with_ignore() -> void:
 
 
 func test_load_character_restores_saved_branches() -> void:
-	sut.add_branch(3)
+	sut.add_branch_at_center(3)
 	stub(branches[0].get_text).to_return("a")
 	branches[0].position_offset = Vector2(50, 100)
+	stub(branches[0].is_locked).to_return(true)
 
-	sut.add_branch(7)
+	sut.add_branch_at_center(7)
 	stub(branches[1].get_text).to_return("b\nc")
 	branches[1].position_offset = Vector2(150, 200)
 	stub(branches[1].is_locked).to_return(true)
@@ -283,9 +284,10 @@ func test_load_character_restores_saved_branches() -> void:
 
 	assert_called(branches[0], "set_text", ["a"])
 	assert_eq(branches[0].position_offset, Vector2(50, 100))
+	assert_called(branches[0], "set_locked", [true, true])
 	assert_called(branches[1], "set_text", ["b\nc"])
 	assert_eq(branches[1].position_offset, Vector2(150, 200))
-	assert_called(branches[1], "set_locked", [true])
+	assert_called(branches[1], "set_locked", [true, true])
 
 
 func test_load_character_config_restores_viewport_state() -> void:
@@ -309,26 +311,20 @@ func test_load_character_config_restores_viewport_state() -> void:
 
 func test_add_branch_emits_dirtied() -> void:
 	watch_signals(sut)
-	sut.add_branch(3)
+	sut.add_branch_at_center(3)
 	assert_signal_emitted(sut.dirtied)
-
-
-func test_add_branch_silently_does_not_emit_dirtied() -> void:
-	watch_signals(sut)
-	sut.add_branch(3, true)
-	assert_signal_not_emitted(sut.dirtied)
 
 
 func test_branch_text_change_emits_dirtied() -> void:
 	watch_signals(sut)
-	sut.add_branch(3)
+	sut.add_branch_at_center(3)
 	branches[0].changed.emit(3, "")
 	assert_signal_emitted(sut.dirtied)
 
 
 func test_remove_branch_emits_dirtied() -> void:
 	watch_signals(sut)
-	sut.add_branch(3)
+	sut.add_branch_at_center(3)
 	sut.remove_branch(3)
 	assert_signal_emitted(sut.dirtied)
 
@@ -338,9 +334,9 @@ func test_scroll_offset_change_emits_dirtied() -> void:
 
 
 func test_pretty_requested_only_on_dirty_branches() -> void:
-	sut.add_branch(0)
-	sut.add_branch(2)
-	sut.add_branch(5)
+	sut.add_branch_at_center(0)
+	sut.add_branch_at_center(2)
+	sut.add_branch_at_center(5)
 	# Simulate braches changing.
 	branches[1].changed.emit(2, "")
 	branches[2].changed.emit(5, "")
@@ -351,8 +347,8 @@ func test_pretty_requested_only_on_dirty_branches() -> void:
 
 
 func test_saving_resets_dirty_branches() -> void:
-	sut.add_branch(0)
-	sut.add_branch(1)
+	sut.add_branch_at_center(0)
+	sut.add_branch_at_center(1)
 	# Simulate braches changing.
 	branches[0].changed.emit(0, "")
 	sut.save_character(OasisFile.new())
