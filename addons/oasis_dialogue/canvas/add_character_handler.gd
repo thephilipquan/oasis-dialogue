@@ -6,9 +6,10 @@ const REGISTRY_KEY := "add_character_handler"
 const _Button := preload("res://addons/oasis_dialogue/canvas/add_character_button.gd")
 const _Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
 const _CharacterMenu := preload("res://addons/oasis_dialogue/menu_bar/character.gd")
+const _InputDialog := preload("res://addons/oasis_dialogue/input_dialog/input_dialog.gd")
 const _ProjectManager := preload("res://addons/oasis_dialogue/main/project_manager.gd")
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
-const _InputDialog := preload("res://addons/oasis_dialogue/input_dialog/input_dialog.gd")
+const _Tree := preload("res://addons/oasis_dialogue/canvas/character_tree.gd")
 
 signal character_added(name: String)
 
@@ -33,6 +34,9 @@ func setup(registry: _Registry) -> void:
 
 	var button: _Button = registry.at(_Button.REGISTRY_KEY)
 	button.button_up.connect(show_dialog)
+
+	var tree: _Tree = registry.at(_Tree.REGISTRY_KEY)
+	tree.new_item_requested.connect(show_dialog)
 
 
 func init_input_dialog_factory(callback: Callable) -> void:

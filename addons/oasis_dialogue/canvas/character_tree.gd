@@ -12,6 +12,7 @@ const _RenameCharacterHandler := preload("res://addons/oasis_dialogue/canvas/ren
 const _Save := preload("res://addons/oasis_dialogue/save.gd")
 
 signal item_rename_requested
+signal new_item_requested
 # [signal item_selected] is already defined in base so "character".
 signal character_selected(name: String)
 signal changed
@@ -150,6 +151,13 @@ func load_settings(data: ConfigFile) -> void:
 		else:
 			push_warning("active (%s) not found in character tree" % active_item)
 	changed.emit()
+
+
+func request_add_item_at(at_position: Vector2) -> void:
+	var item := get_item_at_position(at_position)
+	if item:
+		return
+	new_item_requested.emit()
 
 
 func _on_item_selected() -> void:

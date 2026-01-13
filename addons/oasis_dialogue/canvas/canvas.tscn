@@ -219,6 +219,13 @@ texture_pressed = ExtResource("21_1ink7")
 texture_hover = ExtResource("22_crrap")
 script = ExtResource("3_4e1bp")
 
+[node name="DoubleClickAtListener" type="Control" parent="View/Body/CharacterTree" node_paths=PackedStringArray("target")]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("39_nsqch")
+target = NodePath("..")
+
 [node name="HSplitContainer" type="HSplitContainer" parent="View/Body"]
 layout_mode = 2
 
@@ -306,4 +313,5 @@ target = NodePath("../Body/HSplitContainer/HSplitContainer")
 container = NodePath("../Body/HSplitContainer")
 settings_header = "definitions"
 
+[connection signal="double_clicked_at" from="View/Body/CharacterTree/DoubleClickAtListener" to="View/Body/CharacterTree" method="request_add_item_at"]
 [connection signal="double_clicked_at" from="View/Body/HSplitContainer/BranchEdit/DoubleClickListener" to="View/Body/HSplitContainer/BranchEdit" method="add_branch_at"]
