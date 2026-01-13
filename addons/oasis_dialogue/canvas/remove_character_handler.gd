@@ -3,7 +3,6 @@ extends Node
 
 const REGISTRY_KEY := "remove_character_handler"
 
-const _Button := preload("res://addons/oasis_dialogue/canvas/remove_character_button.gd")
 const _Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
 const _CharacterMenu := preload("res://addons/oasis_dialogue/menu_bar/character.gd")
 const _ConfirmDialog := preload("res://addons/oasis_dialogue/confirm_dialog/confirm_dialog.gd")
@@ -32,9 +31,6 @@ func setup(registry: _Registry) -> void:
 	init_confirm_dialog_factory(
 			registry.at(_Canvas.CONFIRM_DIALOG_FACTORY_REGISTRY_KEY)
 	)
-
-	var button: _Button = registry.at(_Button.REGISTRY_KEY)
-	button.button_up.connect(remove)
 
 	var menu: _CharacterMenu = registry.at(_CharacterMenu.REGISTRY_KEY)
 	menu.remove_requested.connect(remove)

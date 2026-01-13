@@ -3,7 +3,6 @@ extends Node
 
 const REGISTRY_KEY := "add_character_handler"
 
-const _Button := preload("res://addons/oasis_dialogue/canvas/add_character_button.gd")
 const _Canvas := preload("res://addons/oasis_dialogue/canvas/canvas.gd")
 const _CharacterMenu := preload("res://addons/oasis_dialogue/menu_bar/character.gd")
 const _InputDialog := preload("res://addons/oasis_dialogue/input_dialog/input_dialog.gd")
@@ -31,9 +30,6 @@ func setup(registry: _Registry) -> void:
 
 	var character_menu: _CharacterMenu = registry.at(_CharacterMenu.REGISTRY_KEY)
 	character_menu.new_character_requested.connect(show_dialog)
-
-	var button: _Button = registry.at(_Button.REGISTRY_KEY)
-	button.button_up.connect(show_dialog)
 
 	var tree: _Tree = registry.at(_Tree.REGISTRY_KEY)
 	tree.new_item_requested.connect(show_dialog)

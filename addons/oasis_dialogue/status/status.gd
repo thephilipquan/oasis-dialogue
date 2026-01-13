@@ -44,8 +44,8 @@ func setup(registry: _Registry) -> void:
 	var _rename_character_handler: _RenameCharacterHandler = registry.at(_RenameCharacterHandler.REGISTRY_KEY)
 	_rename_character_handler.character_renamed.connect(rename_character)
 
-	var add_character_button: _AddCharacterHandler = registry.at(_AddCharacterHandler.REGISTRY_KEY)
-	add_character_button.character_added.connect(add_character)
+	var add_character_handler: _AddCharacterHandler = registry.at(_AddCharacterHandler.REGISTRY_KEY)
+	add_character_handler.character_added.connect(add_character)
 
 	var remove_character_handler: _RemoveCharacterHandler = registry.at(_RemoveCharacterHandler.REGISTRY_KEY)
 	remove_character_handler.character_removed.connect(remove_character)

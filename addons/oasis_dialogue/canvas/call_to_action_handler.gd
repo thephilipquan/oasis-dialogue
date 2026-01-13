@@ -6,7 +6,6 @@ const REGISTRY_KEY := "call_to_action_handler"
 const _Registry := preload("res://addons/oasis_dialogue/registry.gd")
 const _AddBranch := preload("res://addons/oasis_dialogue/canvas/add_branch_button.gd")
 const _BranchCallToAction := preload("res://addons/oasis_dialogue/canvas/branch_call_to_action.gd")
-const _AddCharacter := preload("res://addons/oasis_dialogue/canvas/add_character_button.gd")
 const _AddCharacterHandler := preload("res://addons/oasis_dialogue/canvas/add_character_handler.gd")
 const _CharacterCallToAction := preload("res://addons/oasis_dialogue/canvas/character_call_to_action.gd")
 const _Graph := preload("res://addons/oasis_dialogue/branch/branch_edit.gd")
@@ -34,13 +33,11 @@ func setup(registry: _Registry) -> void:
 	var graph: _Graph = registry.at(_Graph.REGISTRY_KEY)
 	init_get_branch_count(graph.get_branch_count)
 
-	var add_character_button: _AddCharacter = registry.at(_AddCharacter.REGISTRY_KEY)
 	var add_character_handler: _AddCharacterHandler = registry.at(_AddCharacterHandler.REGISTRY_KEY)
 	var add_character_call_to_action: _CharacterCallToAction = registry.at(
 			_CharacterCallToAction.REGISTRY_KEY
 	)
 	var event := Event.new()
-	event.add_highlight(add_character_button)
 	event.add_display(add_character_call_to_action)
 	_events.add_character = event
 
