@@ -188,6 +188,7 @@ layout_mode = 2
 [node name="BranchEdit" type="GraphEdit" parent="View/Body/HSplitContainer" groups=["oasis_registerable"]]
 layout_mode = 2
 size_flags_horizontal = 3
+scroll_offset = Vector2(-168, 0)
 grid_pattern = 1
 snapping_enabled = false
 panning_scheme = 1
