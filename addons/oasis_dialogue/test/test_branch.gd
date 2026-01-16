@@ -105,7 +105,7 @@ func test_change_emits_changed_after_period() -> void:
 func test_show_button_on_node_select() -> void:
 	sut._on_node_selected()
 
-	var button := sut.find_child("*Button*", true, false)
+	var button := sut.find_child("*Remove*", true, false)
 	assert_true(button.visible)
 
 
@@ -114,7 +114,7 @@ func test_hide_button_on_node_deselect() -> void:
 
 	sut._on_node_deselected()
 
-	var button := sut.find_child("*Button*", true, false)
+	var button := sut.find_child("*Remove*", true, false)
 	assert_false(button.visible)
 
 
@@ -122,6 +122,6 @@ func test_remove() -> void:
 	sut.set_id(3)
 	watch_signals(sut)
 
-	sut._on_remove_branch_button_up()
+	sut.emit_removed()
 
 	assert_signal_emitted_with_parameters(sut.removed, [3])
