@@ -21,6 +21,15 @@ func test_end_of_file() -> void:
 	assert_eq_deep(got, expected)
 
 
+func test_whitespace_is_ignored() -> void:
+	var source := "  \t  \t"
+	var expected: Array[Type] = [
+		Type.EOF,
+	]
+	var got := sut.tokenize(source).map(func(t: Token): return t.type)
+	assert_eq_deep(got, expected)
+
+
 func test_newline() -> void:
 	var source := "\n"
 	var expected: Array[Type] = [
@@ -52,7 +61,7 @@ func test_curly_end() -> void:
 
 
 func test_skip_whitespace() -> void:
-	var source := "     "
+	var source := "		"
 	var expected: Array[Type] = [
 		Type.EOF,
 	]
@@ -70,10 +79,12 @@ func test_atsign() -> void:
 	assert_eq_deep(got, expected)
 
 
-func test_identifier() -> void:
-	var source := "{ hey }"
+func test_text_after_curly_brace_is_identifier() -> void:
+	var source := "{ a b c_d-e }"
 	var expected: Array[Type] = [
 		Type.CURLY_START,
+		Type.IDENTIFIER,
+		Type.IDENTIFIER,
 		Type.IDENTIFIER,
 		Type.CURLY_END,
 		Type.EOF,
@@ -82,8 +93,8 @@ func test_identifier() -> void:
 	assert_eq_deep(got, expected)
 
 
-func test_keyword() -> void:
-	var source := "@rng"
+func test_text_after_atsign_is_identifier() -> void:
+	var source := "@a"
 	var expected: Array[Type] = [
 		Type.ATSIGN,
 		Type.IDENTIFIER,
@@ -94,9 +105,8 @@ func test_keyword() -> void:
 
 
 func test_atsign_makes_next_text_identifier() -> void:
-	var source := "\n@hey there"
+	var source := "@a b"
 	var expected: Array[Type] = [
-		Type.EOL,
 		Type.ATSIGN,
 		Type.IDENTIFIER,
 		Type.IDENTIFIER,
@@ -107,7 +117,7 @@ func test_atsign_makes_next_text_identifier() -> void:
 
 
 func test_text() -> void:
-	var source := "hey_there"
+	var source := "!&*9@a b c"
 	var expected: Array[Type] = [
 		Type.TEXT,
 		Type.EOF,
@@ -116,8 +126,19 @@ func test_text() -> void:
 	assert_eq_deep(got, expected)
 
 
+func test_number() -> void:
+	var source := "0 1"
+	var expected: Array[Type] = [
+		Type.NUMBER,
+		Type.NUMBER,
+		Type.EOF,
+	]
+	var got := sut.tokenize(source).map(func(t: Token): return t.type)
+	assert_eq_deep(got, expected)
+
+
 func test_text_after_newline() -> void:
-	var source := "@prompt\nhey there"
+	var source := "@prompt\na b"
 	var expected: Array[Type] = [
 		Type.ATSIGN,
 		Type.PROMPT,
@@ -130,7 +151,7 @@ func test_text_after_newline() -> void:
 
 
 func test_text_after_curly_end() -> void:
-	var source := "}hey there"
+	var source := "}a"
 	var expected: Array[Type] = [
 		Type.CURLY_END,
 		Type.TEXT,
@@ -140,37 +161,33 @@ func test_text_after_curly_end() -> void:
 	assert_eq_deep(got, expected)
 
 
-func test_whitespace_ignored_after_curly_end() -> void:
-	var source := "{ something }     \nhey"
+func test_text_ends_with_curly_start() -> void:
+	var source := "a b {a"
 	var expected: Array[Type] = [
+		Type.TEXT,
 		Type.CURLY_START,
 		Type.IDENTIFIER,
-		Type.CURLY_END,
-		Type.EOL,
-		Type.TEXT,
 		Type.EOF,
 	]
-	var tokens := sut.tokenize(source)
-	gut.p(tokens.map(func(t: Token): return t.to_string()), 1)
-	var got := tokens.map(func(t: Token): return t.type)
+	var got := sut.tokenize(source).map(func(t: Token): return t.type)
 	assert_eq_deep(got, expected)
 
 
 func test_new_line_shifts_line_and_column() -> void:
-	var source := (
-"""{ }
-  { }"""
-	)
+	var source := "a\n b\n\n  c"
 
 	var tokens := sut.tokenize(source)
 	var expected_tokens: Array[Vector2i] = [
-		Vector2(0, 0),
-		Vector2(0, 2),
-		Vector2(0, 3),
+		Vector2(0, 0), # a
+		Vector2(0, 1),
 
+		Vector2(1, 1), # b
 		Vector2(1, 2),
-		Vector2(1, 4),
-		Vector2(1, 5),
+
+		Vector2(2, 0),
+
+		Vector2(3, 2), # c
+		Vector2(3, 3), # EOF
 	]
 
 	for i in tokens.size():
@@ -179,3 +196,27 @@ func test_new_line_shifts_line_and_column() -> void:
 
 		assert_eq(got.line, expected.x) # x is line.
 		assert_eq(got.column, expected.y) # y is column.
+
+
+func test_newline_resets_text_and_identifier() -> void:
+	var source := "{a}\nb\n{c} d {e}"
+	var expected: Array[Type] = [
+			Type.CURLY_START,
+			Type.IDENTIFIER,
+			Type.CURLY_END,
+			Type.EOL,
+
+			Type.TEXT,
+			Type.EOL,
+
+			Type.CURLY_START,
+			Type.IDENTIFIER,
+			Type.CURLY_END,
+			Type.TEXT,
+			Type.CURLY_START,
+			Type.IDENTIFIER,
+			Type.CURLY_END,
+			Type.EOF,
+	]
+	var got := sut.tokenize(source).map(func(t: Token): return t.type)
+	assert_eq_deep(got, expected)
