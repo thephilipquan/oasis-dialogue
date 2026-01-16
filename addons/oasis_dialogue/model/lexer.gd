@@ -6,134 +6,130 @@ const _Token := preload("res://addons/oasis_dialogue/model/token.gd")
 
 const _Type := _Token.Type
 
-var _patterns: Array[Pattern] = []
-
 var _tokens: Array[_Token] = []
 var _source := ""
-var _position := 0
+var _i := 0
 var _line := 0
 var _column := 0
+var _state := Callable()
 
-var _can_be_text := true
-
-func _init() -> void:
-	_patterns = [
-		Pattern.new(RegEx.create_from_string("@"), atsign_handler),
-		Pattern.new(RegEx.create_from_string("\n"), newline_handler),
-		Pattern.new(RegEx.create_from_string("{"), curly_start_handler),
-		Pattern.new(RegEx.create_from_string("}"), curly_end_handler),
-		Pattern.new(RegEx.create_from_string(r"[ ]+"), skip_handler),
-		Pattern.new(RegEx.create_from_string("[a-zA-Z_]+"), match_handler.bind(_Type.IDENTIFIER)),
-		Pattern.new(RegEx.create_from_string("[0-9]+"), match_handler.bind(_Type.NUMBER)),
-		Pattern.new(RegEx.create_from_string("[^{\n]+"), text_handler),
-	]
+var _text_is_identifier := false
 
 
-func atsign_handler(m: RegExMatch) -> bool:
-	_can_be_text = false
-	return default_handler(m, _Type.ATSIGN, "@")
+func tokenize(source: String) -> Array[_Token]:
+	_source = source
+	_tokens = []
+	_i  = 0
+	_line  = 0
+	_column  = 0
+	_state = _base
+
+	_text_is_identifier = false
+
+	while _i < _source.length():
+		_state.call()
+
+	_add_token(_Type.EOF)
+	return _tokens.duplicate()
 
 
-func default_handler(_m: RegExMatch, type: _Type, value: String) -> bool:
-	add_token(type, value)
-	move_position(value.length())
-	return true
+func _base() -> void:
+	var next := _source[_i]
+	if next == " " or next == "\t":
+		_move()
+	elif next == "\n":
+		_add_token(_Type.EOL)
+		_move_line()
+		_text_is_identifier = false
+	elif next == "@":
+		_add_token(_Type.ATSIGN)
+		_move()
+		_text_is_identifier = true
+	elif next == "{":
+		_add_token(_Type.CURLY_START)
+		_move()
+		_text_is_identifier = true
+	elif next == "}":
+		_add_token(_Type.CURLY_END)
+		_move()
+		_text_is_identifier = false
+	elif next.is_valid_int():
+		_state = _number
+	else:
+		if _text_is_identifier:
+			_state = _identifier
+		else:
+			_state = _text
 
 
-func newline_handler(m: RegExMatch) -> bool:
-	default_handler(m, _Type.EOL, "\n")
-	_line += 1
-	_column = 0
-	_can_be_text = true
-	return true
+func _identifier() -> void:
+	var start := _i
+	var end := _i
+	while end < _source.length() and _is_valid_identifier_character(_source[end]):
+		end += 1
+
+	if end > start:
+		var value := _source.substr(start, end - start)
+		if value in _Token.reserved_keywords:
+			_add_token(_Token.reserved_keywords[value], value)
+		else:
+			_add_token(_Type.IDENTIFIER, value)
+		_move(value.length())
+
+	_state = _base
 
 
-func skip_handler(m: RegExMatch) -> bool:
-	var length := m.get_end() - m.get_start()
-	move_position(length)
-	return true
+func _number() -> void:
+	var start := _i
+	var end := _i
+	while end < _source.length() and _source[end].is_valid_int():
+		end += 1
+
+	if end > start:
+		var value := _source.substr(start, end - start)
+		_add_token(_Type.NUMBER, value)
+		_move(value.length())
+
+	_state = _base
 
 
-func curly_start_handler(m: RegExMatch) -> bool:
-	_can_be_text = false
-	return default_handler(m, _Type.CURLY_START, "{")
+func _text() -> void:
+	var start := _i
+	var end := _i
+	while (
+			end < _source.length()
+			and _source[end] != "\n"
+			and _source[end] != "{"
+	):
+		end += 1
+
+	if end > start:
+		var value := _source.substr(start, end - start).strip_edges()
+		_add_token(_Type.TEXT, value)
+		_move(value.length())
+
+	_state = _base
 
 
-func curly_end_handler(m: RegExMatch) -> bool:
-	_can_be_text = true
-	return default_handler(m, _Type.CURLY_END, "}")
-
-
-func match_handler(m: RegExMatch, type: _Type) -> bool:
-	if _can_be_text:
-		return false
-	var value := m.get_string()
-	var actual_type := type
-	if value in _Token.reserved_keywords:
-		actual_type = _Token.reserved_keywords[value]
-	add_token(actual_type, value)
-	move_position(value.length())
-	return true
-
-
-func text_handler(m: RegExMatch) -> bool:
-	var value := m.get_string()
-	value = value.rstrip(" ")
-	var type := _Type.TEXT
-	add_token(type, value)
-	move_position(value.length())
-	return true
-
-
-func add_token(type: _Type, value: String) -> void:
+func _add_token(type: _Type, value := "") -> void:
 	var token := _Token.new(type, value, _line, _column)
 	_tokens.push_back(token)
 
 
-func move_position(steps: int) -> void:
-	_position += steps
-	_column += steps
+func _move(step := 1) -> void:
+	_i += step
+	_column += step
 
 
-func remainder() -> String:
-	return _source.substr(_position)
+func _move_line() -> void:
+	_i += 1
+	_line += 1
+	_column = 0
 
 
-func tokenize(source: String) -> Array[_Token]:
-	_tokens = []
-	_source = source
-	_position  = 0
-	_line  = 0
-	_column  = 0
-	_can_be_text = true
-
-	while _position < _source.length():
-		var matched := false
-		var remaining := remainder()
-
-		for pattern in _patterns:
-			var m := pattern.regex.search(remaining)
-			if m and m.get_start() == 0:
-				matched = pattern.handler.call(m)
-			if matched:
-				break
-
-		if not matched:
-			push_warning("ERROR: nothing matched: (%s)" % remaining)
-			move_position(1)
-
-	add_token(_Type.EOF, "EOF")
-	return _tokens
-
-
-class Pattern:
-	extends RefCounted
-
-	var regex: RegEx = null
-	var handler := Callable()
-
-
-	@warning_ignore("shadowed_variable")
-	func _init(regex: RegEx, handler: Callable) -> void:
-		self.regex = regex
-		self.handler = handler
+func _is_valid_identifier_character(s: String) -> bool:
+	return (
+		s == "_"
+		or s == "-"
+		or ("a" <= s and s <= "z")
+	)

@@ -4,17 +4,16 @@ enum Type {
 	INIT = 0,
 
 	ATSIGN,
-	IDENTIFIER,
-	NUMBER,
-
 	CURLY_START,
 	CURLY_END,
-
-	TEXT,
 	EOF,
 	EOL,
+	ILLEGAL,
 
-	# Keywords.
+	NUMBER,
+	TEXT,
+	IDENTIFIER,
+
 	PROMPT,
 	RESPONSE,
 }
