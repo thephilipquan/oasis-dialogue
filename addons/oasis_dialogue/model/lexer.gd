@@ -17,6 +17,7 @@ var _text_is_identifier := false
 
 
 func tokenize(source: String) -> Array[_Token]:
+	count = 0
 	_source = source
 	_tokens = []
 	_i  = 0
@@ -32,8 +33,14 @@ func tokenize(source: String) -> Array[_Token]:
 	_add_token(_Type.EOF)
 	return _tokens.duplicate()
 
+var count := 0
 
 func _base() -> void:
+	count += 1
+	if count > 10000:
+		var x := 0
+		x += 1
+
 	var next := _source[_i]
 	if next == " " or next == "\t":
 		_move()
@@ -42,18 +49,18 @@ func _base() -> void:
 		_move_line()
 		_text_is_identifier = false
 	elif next == "@":
-		_add_token(_Type.ATSIGN)
+		_add_token(_Type.ATSIGN, next)
 		_move()
 		_text_is_identifier = true
 	elif next == "{":
-		_add_token(_Type.CURLY_START)
+		_add_token(_Type.CURLY_START, next)
 		_move()
 		_text_is_identifier = true
 	elif next == "}":
-		_add_token(_Type.CURLY_END)
+		_add_token(_Type.CURLY_END, next)
 		_move()
 		_text_is_identifier = false
-	elif next.is_valid_int():
+	elif _text_is_identifier and next.is_valid_int():
 		_state = _number
 	else:
 		if _text_is_identifier:
@@ -68,13 +75,36 @@ func _identifier() -> void:
 	while end < _source.length() and _is_valid_identifier_character(_source[end]):
 		end += 1
 
+	if start == end:
+		_state = _illegal
+		return
+
+	var value := _source.substr(start, end - start)
+	if value in _Token.reserved_keywords:
+		_add_token(_Token.reserved_keywords[value], value)
+	else:
+		_add_token(_Type.IDENTIFIER, value)
+	_move(value.length())
+
+	_state = _base
+
+
+func _illegal() -> void:
+	var start := _i
+	var end := _i
+	while (
+			end < _source.length()
+			and not _is_valid_identifier_character(_source[end])
+			and _source[end] != "\n"
+	):
+		end += 1
+
 	if end > start:
 		var value := _source.substr(start, end - start)
-		if value in _Token.reserved_keywords:
-			_add_token(_Token.reserved_keywords[value], value)
-		else:
-			_add_token(_Type.IDENTIFIER, value)
+		_add_token(_Type.ILLEGAL, value)
 		_move(value.length())
+	else:
+		push_warning("bug: thought there was an illegal sequence in %s at %d but found nothing." % [_source, _i])
 
 	_state = _base
 
@@ -131,5 +161,5 @@ func _is_valid_identifier_character(s: String) -> bool:
 	return (
 		s == "_"
 		or s == "-"
-		or ("a" <= s and s <= "z")
+		or (("A" <= s and s <= "Z") or ("a" <= s and s <= "z"))
 	)

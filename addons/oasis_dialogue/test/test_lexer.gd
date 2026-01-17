@@ -127,10 +127,29 @@ func test_text() -> void:
 
 
 func test_number() -> void:
-	var source := "0 1"
+	var source := "{ 0 1"
 	var expected: Array[Type] = [
+		Type.CURLY_START,
 		Type.NUMBER,
 		Type.NUMBER,
+		Type.EOF,
+	]
+	var got := sut.tokenize(source).map(func(t: Token): return t.type)
+	assert_eq_deep(got, expected)
+
+
+func test_illegal_character_in_identifier() -> void:
+	var source := "@ab#!\n{ a#"
+	var expected: Array[Type] = [
+		Type.ATSIGN,
+		Type.IDENTIFIER,
+		Type.ILLEGAL,
+		Type.EOL,
+
+		Type.CURLY_START,
+		Type.IDENTIFIER,
+		Type.ILLEGAL,
+
 		Type.EOF,
 	]
 	var got := sut.tokenize(source).map(func(t: Token): return t.type)
@@ -167,6 +186,16 @@ func test_text_ends_with_curly_start() -> void:
 		Type.TEXT,
 		Type.CURLY_START,
 		Type.IDENTIFIER,
+		Type.EOF,
+	]
+	var got := sut.tokenize(source).map(func(t: Token): return t.type)
+	assert_eq_deep(got, expected)
+
+
+func test_text_that_starts_with_numbers() -> void:
+	var source := "5 a b c"
+	var expected: Array[Type] = [
+		Type.TEXT,
 		Type.EOF,
 	]
 	var got := sut.tokenize(source).map(func(t: Token): return t.type)
