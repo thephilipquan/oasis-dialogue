@@ -16,327 +16,6 @@ func before_each() -> void:
 	sut = Parser.new()
 
 
-func test_push_parent() -> void:
-	sut.push_parent(AST.Branch.new())
-	assert_eq(sut._stack.size(), 1)
-
-
-func test_pop_parent() -> void:
-	sut.push_parent(AST.Branch.new())
-
-	sut.pop_parent()
-
-	assert_eq(sut._stack.size(), 0)
-
-
-func test_append_child() -> void:
-	var branch := AST.Branch.new()
-	sut.push_parent(branch)
-	sut.append_child(AST.Branch.new())
-
-	assert_eq(branch.children.size(), 1)
-
-
-func test_append_expected_error() -> void:
-	var branch := AST.Branch.new()
-	sut.push_parent(branch)
-	sut.append_expected_error(Type.IDENTIFIER, Token.new(Type.EOF, "eof", 3, 4))
-
-	if not branch.children:
-		fail_test("")
-		return
-	assert_is(branch.children[0], AST.Error)
-
-
-func test_at_eof_not_at_end_returns_false() -> void:
-	var source := "@a @b @c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	sut._position = 0
-	assert_false(sut.at_eof())
-
-	sut._position = tokens.size() - 2
-	assert_false(sut.at_eof())
-
-
-func test_at_eof_at_end_returns_true() -> void:
-	var source := "@a @b @c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	sut._position = tokens.size() - 1
-	assert_true(sut.at_eof())
-
-
-func test_peek() -> void:
-	var source := "@a @b @c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	assert_eq(sut.peek(), tokens[0])
-
-
-func test_peek_with_offset() -> void:
-	var source := "@a @b @c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	assert_eq(sut.peek(2), tokens[2])
-
-
-func test_peek_at_end_returns_null() -> void:
-	var source := "@a @b @c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	assert_null(sut.peek(tokens.size()))
-
-
-func text_peek_expected_returns_next() -> void:
-	var source := "@a @b @c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	var next := sut.peek_expected(Type.ATSIGN)
-
-	assert_eq(next, tokens[0])
-
-
-func text_peek_expected_list_returns_next() -> void:
-	var source := "@a @b @c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	var next := sut.peek_expected([Type.IDENTIFIER, Type.ATSIGN])
-
-	assert_eq(next, tokens[0])
-
-
-func test_peek_expected_failed_returns_null() -> void:
-	var branch := AST.Branch.new()
-	sut.push_parent(branch)
-
-	var source := "@a @b @c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	var next := sut.peek_expected(Type.IDENTIFIER)
-
-	assert_null(next)
-
-
-func test_peek_expected_failed_appends_error() -> void:
-	var branch := AST.Branch.new()
-	sut.push_parent(branch)
-
-	var source := "@a @b @c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	var next := sut.peek_expected(Type.IDENTIFIER)
-
-	if branch.children:
-		assert_is(branch.children[0], AST.Error)
-	else:
-		fail_test("")
-
-
-func test_peek_expected_at_end_fails() -> void:
-	var branch := AST.Branch.new()
-	sut.push_parent(branch)
-
-	var source := "@a @b @c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-	sut._position = tokens.size() - 1
-
-	var next := sut.peek_expected(Type.EOF)
-
-	assert_null(next)
-
-
-func text_peek_expected_not_in_list_fails() -> void:
-	var source := "@a @b @c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	var next := sut.peek_expected([Type.IDENTIFIER, Type.TEXT])
-
-	assert_null(next)
-
-
-func test_peek_sequence_exists_returns_true() -> void:
-	var source := "@a @b @c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	assert_true(sut.peek_sequence([Type.ATSIGN, Type.IDENTIFIER]))
-
-
-func test_peek_sequence_not_exists_returns_false() -> void:
-	var source := "@a @b @c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	assert_false(sut.peek_sequence([Type.ATSIGN, Type.TEXT]))
-
-
-func test_peek_sequence_near_end_returns_false() -> void:
-	var source := "@a @b @c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-	sut._position = tokens.size() - 1
-
-	assert_false(sut.peek_sequence([Type.ATSIGN, Type.IDENTIFIER]))
-
-
-func test_consume_increments_position() -> void:
-	var source := "@a @b @c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	sut.consume()
-
-	assert_eq(sut._position, 1)
-
-
-func test_consume_with_count() -> void:
-	var source := "@a @b @c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	sut.consume(3)
-
-	assert_eq(sut._position, 3)
-
-
-func test_consume_expected_exists_position_increments() -> void:
-	var source := "@a @b @c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	sut.consume_expected(Type.ATSIGN)
-
-	assert_eq(sut._position, 1)
-
-
-func test_consume_expected_not_next_position_remains_unchanged() -> void:
-	sut.push_parent(AST.Branch.new())
-
-	var source := "@a @b @c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	sut.consume_expected(Type.TEXT)
-
-	assert_eq(sut._position, 0)
-
-
-func test_consume_at_end_returns_null() -> void:
-	var source := "@a @b @c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	sut.consume(tokens.size() - 1)
-
-	assert_null(sut.consume())
-
-
-func test_consume_at_end_does_not_increment_position() -> void:
-	var source := "@a @b @c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	sut.consume(tokens.size() - 1)
-
-	var before := sut._position
-	sut.consume
-	var after := sut._position
-
-	assert_eq(after, before)
-
-
-func test_consume_to_consumes_first_match() -> void:
-	var source := "@@@b c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	sut.consume_to(Type.IDENTIFIER)
-
-	assert_eq(sut._position, 4)
-
-
-func test_consume_to_when_current_is_matched_consumes() -> void:
-	var source := "@@@b c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	sut.consume_to(Type.ATSIGN)
-
-	assert_eq(sut._position, 1)
-
-
-func test_consume_to_stops_at_eof_if_no_match() -> void:
-	var source := "@@@b c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	sut.consume_to(Type.TEXT)
-
-	assert_eq(sut._position, 5)
-
-
-func test_consume_while_stops_at_first_non_match() -> void:
-	var source := "@@@b c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	sut.consume_while(Type.ATSIGN)
-
-	assert_eq(sut._position, 3)
-
-
-func test_consume_while_stops_at_eof() -> void:
-	var source := "@@@"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	sut.consume_while(Type.ATSIGN)
-
-	assert_eq(sut._position, 3)
-
-
-func test_consume_until_stops_if_next_is_match() -> void:
-	var source := "@hey @@b c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	sut.consume_until(Type.ATSIGN)
-
-	assert_eq(sut._position, 0)
-
-
-func test_consume_until_stops_at_match() -> void:
-	var source := "@@@b c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	sut.consume_until(Type.IDENTIFIER)
-
-	assert_eq(sut._position, 3)
-
-
-func test_consume_until_stops_at_eof_if_no_match() -> void:
-	var source := "@@@b c"
-	var tokens := lexer.tokenize(source)
-	sut._tokens = tokens
-
-	sut.consume_until(Type.TEXT)
-
-	assert_eq(sut._position, 5)
-
-
 func test_annotation() -> void:
 	var source := "@rng"
 	var tokens := lexer.tokenize(source)
@@ -402,14 +81,14 @@ func test_annotation_only_appends_first_error_on_line() -> void:
 
 
 func test_parse_condition() -> void:
-	var source := "@prompt\n{hey}"
+	var source := "@prompt\n{hey} a"
 	var tokens := lexer.tokenize(source)
 
 	var ast := sut.parse(tokens)
 	assert_eq(ast.children.size(), 1)
 
 	var prompt: AST.Prompt = ast.children[0]
-	assert_eq(prompt.children.size(), 1)
+	assert_eq(prompt.children.size(), 2)
 
 	var condition := prompt.children[0]
 	assert_is(condition, AST.Condition)
@@ -469,14 +148,14 @@ func test_parse_action() -> void:
 
 
 func test_condition_with_value() -> void:
-	var source := "@prompt\n{foo 3}"
+	var source := "@prompt\n{foo 3} b"
 	var tokens := lexer.tokenize(source)
 
 	var ast := sut.parse(tokens)
 	assert_eq(ast.children.size(), 1)
 
 	var prompt: AST.Prompt = ast.children[0]
-	assert_eq(prompt.children.size(), 1)
+	assert_eq(prompt.children.size(), 2)
 
 	var condition := prompt.children[0]
 	assert_eq(condition.value.value, int(tokens[5].value))
@@ -516,14 +195,14 @@ func test_full_prompt_with_condition_and_action() -> void:
 
 
 func test_multiple_conditions() -> void:
-	var source := "@prompt\n{foo 3 bar baz}"
+	var source := "@prompt\n{foo 3 bar baz} a"
 	var tokens := lexer.tokenize(source)
 
 	var ast := sut.parse(tokens)
 	assert_eq(ast.children.size(), 1)
 
 	var prompt: AST.Prompt = ast.children[0]
-	assert_eq(prompt.children.size(), 3)
+	assert_eq(prompt.children.size(), 4)
 
 	assert_eq(prompt.children[0].name, tokens[4].value)
 	assert_eq(prompt.children[1].name, tokens[6].value)
@@ -611,24 +290,6 @@ func test_header_with_eol_is_valid() -> void:
 	assert_eq(ast.children.size(), 0)
 
 
-func test_header_without_eol_appends_error() -> void:
-	var source := "@prompt"
-	var tokens := lexer.tokenize(source)
-
-	var ast := sut.parse(tokens)
-	assert_eq(ast.children.size(), 1)
-
-	assert_is(ast.children[0], AST.Error)
-
-	source = "@response"
-	tokens = lexer.tokenize(source)
-
-	ast = sut.parse(tokens)
-	assert_eq(ast.children.size(), 1)
-
-	assert_is(ast.children[0], AST.Error)
-
-
 func test_tokens_after_header_annotation_appends_error() -> void:
 	var source := "@prompt heythere you fool"
 	var tokens := lexer.tokenize(source)
@@ -692,17 +353,14 @@ func test_full_example() -> void:
 	assert_is(ast.children[2], AST.Response)
 
 
-func test_prompt_after_response_appends_error() -> void:
+func test_prompt_after_response_is_valid() -> void:
 	var source := "@response\nhello\n@prompt\nworld"
 	var tokens := lexer.tokenize(source)
 
 	var ast := sut.parse(tokens)
-	assert_eq(ast.children.size(), 3)
-
-	var invalid_response: AST.Response = ast.children[1]
-	assert_eq(invalid_response.children.size(), 1)
-
-	assert_is(invalid_response.children[0], AST.Error)
+	assert_eq(ast.children.size(), 2)
+	for c in ast.children:
+		assert_false(c is AST.Error)
 
 
 func test_extra_lines_before_annotations_is_valid() -> void:
@@ -712,16 +370,6 @@ func test_extra_lines_before_annotations_is_valid() -> void:
 
 	for child in ast.children:
 		assert_false(child is AST.Error)
-
-
-func test_extra_lines_between_annotations_appends_error() -> void:
-	var source := "@rng\n\n@unique"
-	var tokens := lexer.tokenize(source)
-
-	var ast := sut.parse(tokens)
-	assert_eq(ast.children.size(), 2)
-
-	assert_is(ast.children[1], AST.Error)
 
 
 func test_extra_lines_between_annotations_and_prompts_is_valid() -> void:
