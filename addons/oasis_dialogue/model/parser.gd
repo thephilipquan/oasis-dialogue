@@ -52,10 +52,15 @@ func _validate_base() -> bool:
 		_Type.EOF,
 	]
 	if not next.type in expected:
-		_append_error_to_parent(
-				"Invalid start to branch.",
-				next,
-		)
+		var message := ""
+		match next.type:
+			_Type.TEXT:
+				message = "Text must be inside a @prompt or @response block. Add '@prompt' or '@response' on the line above."
+			_Type.CURLY_START:
+				message = "Conditions must be inside a @prompt or @response block. Add '@prompt' or '@response' on the line above."
+			_:
+				message = "Invalid start to line. Expected '@prompt', '@response', '@annotation', or blank line."
+		_append_error_to_parent(message, next)
 		result = false
 	return result
 
@@ -96,10 +101,13 @@ func _validate_annotation() -> bool:
 			_Type.IDENTIFIER,
 	]
 	if not next.type in expected:
-		_append_error_to_parent(
-				"Expected annotation or header after atsign.",
-				next,
-		)
+		var message := ""
+		match next.type:
+			_Type.EOF, _Type.EOL:
+				message = "Missing annotation. Add an annotation or header, or remove the '@'."
+			_:
+				message = "Invalid annotation. '@' must be followed by 'prompt', 'response', or a valid identifier."
+		_append_error_to_parent(message, next)
 		result = false
 	return result
 
@@ -111,10 +119,13 @@ func _parse_after_annotation(next_state: Callable) -> void:
 			_Type.EOF,
 	]
 	if not next.type in expected:
-		_append_error_to_parent(
-				"Expected nothing but a newline after.",
-				next,
-		)
+		var message := ""
+		match next.type:
+			_Type.ILLEGAL:
+				message = "Illegal character(s) '%s'. Annotations can only consist of letters, '_', and '-'." % next.value.c_escape()
+			_:
+				message = "Annotations and headers must be on their own line."
+		_append_error_to_parent(message, next)
 	_consume_to(_Type.EOL)
 	_state = next_state
 
@@ -159,16 +170,15 @@ func _validate_line() -> bool:
 	assert(next)
 	if not next.type in expected:
 		_append_error_to_parent(
-				"Expected curly start or text",
+				"Lines must start with a '{condition}' or plain text.",
 				next,
 		)
-	# if EOL: hint keep lines together
 		result = false
 	return result
 
 
 func _parse_condition() -> void:
-	if not _validate_code():
+	if not _validate_code("condition"):
 		_consume_to(_Type.EOL)
 		return
 
@@ -187,7 +197,7 @@ func _parse_condition() -> void:
 
 
 func _parse_action() -> void:
-	if not _validate_code():
+	if not _validate_code("action"):
 		_consume_to(_Type.EOL)
 		return
 
@@ -205,7 +215,8 @@ func _parse_action() -> void:
 		_consume()
 
 
-func _validate_code() -> bool:
+# [param type] for messages.
+func _validate_code(type: String) -> bool:
 	var result := true
 	const expected := [
 			_Type.IDENTIFIER,
@@ -213,13 +224,16 @@ func _validate_code() -> bool:
 	]
 	var next := _peek()
 	if not next.type in expected:
-		_append_error_to_parent(
-				"invalid condition",
-				next,
-		)
+		var message := ""
+		match next.type:
+			_Type.NUMBER:
+				message = "Missing keyword for '%s'." % next.value
+			_Type.ILLEGAL:
+				message = "Illegal character(s) '%s'. Or is this text and you're missing a '}'?" % next.value.c_escape()
+			_Type.EOL, _Type.EOF:
+				message = "Incomplete %s. Close the %s with a '}'" % [type, type]
+		_append_error_to_parent(message, next)
 		result = false
-	# if next.type == TEXT: "missing curly end before text"
-	# if number: missing keyword?
 	return result
 
 
@@ -245,7 +259,17 @@ func _validate_text() -> bool:
 	var result := true
 	var next := _peek()
 	if next.type != _Type.TEXT:
-		_append_error_to_parent("expected text", next)
+		var message := ""
+		match next.type:
+			_Type.CURLY_START:
+				message = "Missing text before action. Add dialogue text before the '{'."
+			_Type.EOL, _Type.EOF:
+				message = "Missing text. Add dialogue text after the condition."
+			_Type.ATSIGN:
+				message = "Dialogue text cannot start with '@'. Open an issue on GitHub if you need this feature."
+			_:
+				message = "Missing text."
+		_append_error_to_parent(message, next)
 		result = false
 	return result
 
@@ -275,7 +299,8 @@ func _validate_after_text() -> bool:
 	]
 	var next := _peek()
 	if not next.type in expected:
-		_append_error_to_parent("invalid symbol after text", next)
+		var message := "Invalid content after dialogue text. Expected '{action}' or end of line."
+		_append_error_to_parent(message, next)
 		result = false
 	return result
 
@@ -287,7 +312,7 @@ func _parse_after_action() -> void:
 			_Type.EOF,
 	]
 	if not next.type in expected:
-		_append_error_to_parent("expected eol or eof after action", next)
+		_append_error_to_parent("There should be nothing after actions. Remove '%s'." % next.value.c_escape(), next)
 	_consume_to(_Type.EOL)
 	_pop_parent()
 	_state = _parse_line
