@@ -38,7 +38,6 @@ func _base() -> void:
 	elif _source[_i] == "@":
 		_add_token(_Type.ATSIGN)
 		_move(1)
-
 		_state = _identifier
 
 	elif _is_valid_identifier_character(_source[_i]):

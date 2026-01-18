@@ -17,6 +17,7 @@ func parse(tokens: Array[_Token]) -> _AST.Program:
 	_tokens = tokens
 	_i = 0
 	_state = _parse_base
+	_declared = false
 
 	while _i < tokens.size():
 		_state.call()
@@ -25,8 +26,6 @@ func parse(tokens: Array[_Token]) -> _AST.Program:
 
 
 func _parse_base() -> void:
-	_declared = false
-
 	if not _validate_base():
 		_consume_to(_Type.EOL)
 		return
@@ -34,10 +33,12 @@ func _parse_base() -> void:
 	var next := _peek()
 	match next.type:
 		_Type.ATSIGN:
+			_consume()
 			_state = _parse_annotation
 		_Type.IDENTIFIER:
-			_state = _parse_identifier
+			_state = _parse_expected_identifier
 		_Type.EOL, _Type.EOF:
+			_declared = false
 			_consume()
 
 
@@ -52,7 +53,7 @@ func _validate_base() -> bool:
 	]
 	if not next.type in expected:
 		var error := _AST.Error.new(
-				"Expected a declaration but found %s instead." % next.value,
+				"Invalid start to definition. Expected an annotation or identifier.",
 				next.line,
 				next.column
 		)
@@ -66,74 +67,74 @@ func _parse_annotation() -> void:
 		_reset_to_base()
 		return
 
+	var next := _peek()
+	const exit := [
+			_Type.EOL,
+			_Type.EOF,
+	]
+	if next.type in exit:
+		_state = _parse_base
+		return
+
 	if not _declared:
 		_push_new_declaration()
 		_declared = true
 
-	var token := _consume_to(_Type.IDENTIFIER)
-	_append_to_declaration(_AST.Annotation.new(token.value, token.line, token.column))
+	_consume()
+	_append_to_declaration(_AST.Annotation.new(
+			next.value,
+			next.line,
+			next.column,
+	))
 
-	_validate_after_annotation()
-	_consume_to(_Type.EOL)
-
-	if _peek().type != _Type.ATSIGN:
-		_state = _parse_identifier
-
+	_state = _parse_after_annotation
 
 
 func _validate_annotation() -> bool:
-	assert(_peek().type == _Type.ATSIGN)
-
 	var result := true
-	var next := _peek(1)
-	if not next:
-		var atsign := _peek()
+	var next := _peek()
+	if next.type != _Type.IDENTIFIER:
+		var message := ""
+		match next.type:
+			_Type.EOF:
+				message = "Incomplete annotation."
+			_Type.EOL:
+				message = "Incomplete annotation. If there is no annotation for this item, remove the '@'."
+			_:
+				message = "Invalid annotation. '@' must be followed by a valid identifier."
 		_append_to_declaration(_AST.Error.new(
-				"Missing name after the @. If there is no annotation for this item, remove the @." % next.value,
-				atsign.line,
-				atsign.column
-		))
-		result = false
-	elif next.type != _Type.IDENTIFIER:
-		_append_to_declaration(_AST.Error.new(
-				"Expected the name of the annotation after @ but found %s instead." % next.value,
+				message,
 				next.line,
-				next.column
+				next.column,
 		))
 		result = false
 	return result
 
 
-func _validate_after_annotation() -> bool:
+func _parse_after_annotation() -> void:
 	var next := _peek()
-	var result := true
 	if next.type != _Type.EOL:
 		_append_to_declaration(_AST.Error.new(
-				"End the annotatation by creating a new line.",
+				"Annotations must be on their own line.",
 				next.line,
 				next.column
 		))
-		result = false
-	return result
+	_consume_to(_Type.EOL)
+	_state = _parse_base
 
 
-func _parse_identifier() -> void:
-	if not _validate_identifier():
-		_reset_to_base()
-		return
+func _parse_expected_identifier() -> void:
+	var next := _peek()
+	assert(next.type == _Type.IDENTIFIER)
 
 	if not _declared:
 		_push_new_declaration()
 		_declared = true
 
-	var token := _consume_to(_Type.IDENTIFIER)
-	_append_to_declaration(_AST.Identifier.new(token.value, token.line, token.column))
+	_consume()
+	_append_to_declaration(_AST.Identifier.new(next.value, next.line, next.column))
 
-	if not _validate_after_identifier():
-		_reset_to_base()
-		return
-
-	_state = _parse_description
+	_state = _parse_after_identifier
 
 
 func _validate_identifier() -> bool:
@@ -141,68 +142,92 @@ func _validate_identifier() -> bool:
 	var next := _peek()
 	if next.type != _Type.IDENTIFIER:
 		_append_to_declaration(_AST.Error.new(
-				"Expected an identifier but found %s instead." % next.value,
+				"Expected an identifier, but found %s instead." % next.value.c_escape(),
 				next.line,
 				next.column
 		))
 		result = false
 	return result
+
+
+func _parse_after_identifier() -> void:
+	if not _validate_after_identifier():
+		_reset_to_base()
+		return
+
+	const exit := [
+			_Type.EOL,
+			_Type.EOF,
+	]
+	var next := _peek()
+	if next.type in exit:
+		_state = _parse_base
+		return
+
+	_consume()
+	_state = _parse_description
 
 
 func _validate_after_identifier() -> bool:
 	var result := true
+	const expected := [
+			_Type.COLON,
+			_Type.EOL,
+			_Type.EOF,
+	]
 	var next := _peek()
-	match next.type:
-		_Type.EOL, _Type.EOF, _Type.COLON:
-			pass
-		_Type.IDENTIFIER:
-			_append_to_declaration(_AST.Error.new(
-				"Keep identifiers on separate lines.",
+	if not next.type in expected:
+		var message := ""
+		match next.type:
+			_Type.IDENTIFIER:
+				message = "Multiple identifiers on the same line. Place each identifier on a separate line."
+			_:
+				message = "Unexpected '%s' after identifier. Expected ':' with a description or end of the line." % next.value.c_escape()
+		_append_to_declaration(_AST.Error.new(
+				message,
 				next.line,
 				next.column
-			))
-			result = false
-		_:
-			_append_to_declaration(_AST.Error.new(
-				"Expected a description for the identifier or the end of the line but found %s instead." % next.value,
-				next.line,
-				next.column
-			))
-			result = false
+		))
+		result = false
 	return result
 
 
 func _parse_description() -> void:
-	if not _peek().type == _Type.COLON:
-		_state = _parse_base
-		return
-
 	if not _validate_description():
 		_reset_to_base()
 		return
 
-	var token := _consume_to(_Type.TEXT)
-	_append_to_declaration(_AST.Description.new(token.value, token.line, token.column))
-	_consume_to(_Type.EOL)
+	var token := _consume()
+	_append_to_declaration(_AST.Description.new(
+			token.value,
+			token.line,
+			token.column,
+	))
+	_state = _parse_after_description
 
+
+func _parse_after_description() -> void:
+	var next := _peek()
+	const expected := [
+			_Type.EOL,
+			_Type.EOF,
+	]
+	if not next.type in expected:
+		_append_to_declaration(_AST.Error.new(
+				"Expected end of line. Remove %s or move it to the next line." % next.value.c_escape(),
+				next.line,
+				next.column
+		))
+	_consume_to(_Type.EOL)
 	_state = _parse_base
 
 
 func _validate_description() -> bool:
-	assert(_peek().type == _Type.COLON)
 	var result := true
-	var next := _peek(1)
-	if not next:
-		var colon := _peek()
+	var next := _peek()
+	if next.type != _Type.TEXT:
 		_append_to_declaration(_AST.Error.new(
-				"Missing description. If there is no description, remove the colon." % next.value,
-				colon.line,
-				colon.column
-		))
-		result = false
-	elif next.type != _Type.TEXT:
-		_append_to_declaration(_AST.Error.new(
-				"Expected a description after the colon but found %s instead." % next.value,
+				"Missing description. If there is no description, remove the colon.",
 				next.line,
 				next.column
 		))
@@ -228,24 +253,20 @@ func _append_to_declaration(ast: _AST.AST) -> void:
 	a.push_back(ast)
 
 
-func _consume(amount := 1) -> _Token:
-	_i += amount
-	var consumed: _Token = null
-	if _i < _tokens.size():
-		consumed = _tokens[_i]
-	return consumed
+func _consume(count := 1) -> _Token:
+	var next := _peek(count - 1)
+	if not next:
+		return null
+	_i += count
+	return next
 
 
-func _consume_to(type: _Type) -> _Token:
-	var past: _Token = null
-
-	# Do not consume EOF.
-	while _i < _tokens.size() - 1:
-		_i += 1
-		past = _peek(-1)
-		if past.type == type:
+func _consume_to(type: _Type) -> void:
+	while _i < _tokens.size():
+		if _peek().type == type:
+			_i += 1
 			break
-	return past
+		_i += 1
 
 
 func _peek(offset := 0) -> _Token:
