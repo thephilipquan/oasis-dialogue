@@ -1,11 +1,21 @@
-# how to implement oasis dialogue
+# how to implement OasisDialogue
 
-## summary
+As stated in the project [readme](/README.md), all OasisDialogue does is provide an interface to write dialogue that is then exported to `.csv` (and `.json`), which is one of Godot's [built-in solutions](https://docs.godotengine.org/en/stable/tutorials/i18n/internationalizing_games.html#) for handling localization.
 
-1. Extend `OasisManager`, add to your scene, and set its fields.
-2. (optional) Add `OasisTraverserControllers` as children of `OasisManager` for every custom annotation in your dialogue.
-3. Add an `OasisCharacter` and set its fields.
-4. Call `OasisCharacter.start()` -> which returns an `OasisTraverser`.
-5. Connect to `OasisTraverser`'s signals and call `OasisTraverser.next()` until `finished` is emitted.
+To get started, add the imported **.translation** files via `Project > Project Settings > Localization > Add...`
 
-View all classes' documentation for details. All classes you'll be using can be found in the [addons's public/ folder](/addons/oasis_dialogue/public/).
+Once your localization files are configured, you'll work with the classes OasisDialogue provides to handle dialogue. Of those classes, there are 3 main ones that you need to be familiar with:
+
+* OasisCharacter
+  * Entry point from your game to dialogue
+  * Set members in inspector and call `start()`
+* OasisTraverser
+  * Returned from `OasisCharacter.start()`
+  * Connect to signals and call `next()` until dialogue is finished
+* OasisManager
+  * The only place you need to code
+  * Must extend and override
+  * Add to scene or autoload
+  * Manages one to many `OasisCharacters`
+
+With that in mind, I would recommend downloading and/or taking a look at the [example](/example) implementation, which is also documented, so you can see how simple it is. When you're ready to implement OasisDialogue yourself, the class docs will fill in the details. All classes you'll be using can be found in the [addons public/ folder](/addons/oasis_dialogue/public/), and are searchable via Godot's `Help > Search Help...`.

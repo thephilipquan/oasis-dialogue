@@ -18,6 +18,8 @@ const _NodeUtils := preload("res://addons/oasis_dialogue/utils/node_utils.gd")
 ## root node of the project.
 ## Therefore, setting this directly is recommended when working with multiple
 ## managers.
+##
+## If your manager is registered as an autoload, then ignore setting this.
 @export
 var manager: OasisManager = null
 ## The name of the character that must match a character found in
@@ -38,15 +40,8 @@ func _ready() -> void:
 
 
 ## Returns an [OasisTraverser] for the given [member character] starting from
-## branch [member root].
-## [br][br]
-## Returns [code]null[/code] in the following situations:
-## [br]
-## * The [member OasisManager.json_path] is not set.
-## [br]
-## * [member character] does not exist at [member OasisManager.json_path]
-## [br]
-## * [member root] was not found.
+## branch [member root]. Returns [code]null[/code] if
+## [method OasisManager.get_reachable_branches] fails.
 func start() -> OasisTraverser:
 	var traverser := manager.get_reachable_branches(self)
 	return traverser
