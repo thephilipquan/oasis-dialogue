@@ -23,6 +23,14 @@ To learn how to use **OasisDialogue**, view any of the following:
 * [how to write](docs/how_to_write.md) if you're a writer
 * [how to implement](docs/how_to_implement.md) if you're a developer
 
+## the problem OasisDialogue solves
+
+Godot provides [two methods](https://docs.godotengine.org/en/stable/tutorials/i18n/internationalizing_games.html#) out of the box for translating your game: CSV files and PO files. OasisDialogue chooses the former since it is accessible and more common than the latter.
+
+This choice, however, means the writer has to write in 2 files at the same time - a JSON (or similar format) file with traversal and display rules, and a CSV file for the actual text.
+
+OasisDialogue solves this workflow issue by providing a visual interface to write in, instead of files, and simply exporting to CSV and JSON when your dialogue is set.
+
 ## when not to use OasisDialogue
 
 Overall, OasisDialogue meets most game needs for dialogue branching. The following situations are when OasisDialogue is not a good fit for your game...
