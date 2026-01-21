@@ -1,4 +1,6 @@
-[gd_resource type="Theme" load_steps=7 format=3 uid="uid://b48w54vf670uy"]
+[gd_resource type="Theme" load_steps=9 format=3 uid="uid://b48w54vf670uy"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_kaxkx"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rwa6r"]
 content_margin_left = 16.0
@@ -11,8 +13,9 @@ corner_radius_bottom_left = 16
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_rwa6r"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4gr4x"]
-bg_color = Color(0.6, 0.6, 0.6, 0)
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_4gr4x"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_q7wve"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1huek"]
 
@@ -31,9 +34,11 @@ corner_radius_top_left = 16
 corner_radius_top_right = 16
 
 [resource]
+CodeEdit/styles/focus = SubResource("StyleBoxEmpty_kaxkx")
 CodeEdit/styles/normal = SubResource("StyleBoxFlat_rwa6r")
 GraphNode/styles/panel = SubResource("StyleBoxEmpty_rwa6r")
-GraphNode/styles/panel_selected = SubResource("StyleBoxFlat_4gr4x")
+GraphNode/styles/panel_focus = SubResource("StyleBoxEmpty_4gr4x")
+GraphNode/styles/panel_selected = SubResource("StyleBoxEmpty_q7wve")
 GraphNode/styles/slot = SubResource("StyleBoxEmpty_1huek")
 GraphNode/styles/titlebar = SubResource("StyleBoxFlat_q7wve")
 GraphNode/styles/titlebar_selected = SubResource("StyleBoxFlat_kaxkx")
