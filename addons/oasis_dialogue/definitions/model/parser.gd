@@ -114,8 +114,14 @@ func _validate_annotation() -> bool:
 func _parse_after_annotation() -> void:
 	var next := _peek()
 	if next.type != _Type.EOL:
+		var message := ""
+		match next.type:
+			_Type.EOF:
+				message = "Missing identifier to annotate."
+			_:
+				message = "Annotations must be on their own line."
 		_append_to_declaration(_AST.Error.new(
-				"Annotations must be on their own line.",
+				message,
 				next.line,
 				next.column
 		))
@@ -218,6 +224,7 @@ func _parse_after_description() -> void:
 				next.line,
 				next.column
 		))
+	_declared = false
 	_consume_to(_Type.EOL)
 	_state = _parse_base
 

@@ -88,7 +88,7 @@ func test_colon_with_text() -> void:
 	var expected_types: Array[Type] = [
 			Type.COLON,
 			Type.TEXT,
-			Type.EOF
+			Type.EOF,
 	]
 	var types := sut.tokenize(source).map(
 			func(t: Token) -> Type:
@@ -96,6 +96,25 @@ func test_colon_with_text() -> void:
 	)
 	assert_eq_deep(types, expected_types)
 	assert_eq(tokens[1].value, "abc")
+
+
+func test_text_parses_to_eol() -> void:
+	var source := ":a b c !@#$%^&*();\na"
+	var tokens := sut.tokenize(source)
+
+	var expected_types: Array[Type] = [
+			Type.COLON,
+			Type.TEXT,
+			Type.EOL,
+			Type.IDENTIFIER,
+			Type.EOF,
+	]
+	var types := sut.tokenize(source).map(
+			func(t: Token) -> Type:
+				return t.type
+	)
+	assert_eq_deep(types, expected_types)
+	assert_eq(tokens[1].value, "a b c !@#$%^&*();")
 
 
 func test_colon_with_space_between() -> void:

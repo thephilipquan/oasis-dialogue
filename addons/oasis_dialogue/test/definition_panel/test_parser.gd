@@ -50,6 +50,25 @@ func test_id_with_multiple_annotations() -> void:
 	assert_is(d.children[2], AST.Identifier)
 
 
+func test_use_case() -> void:
+	var source := "@a\nb\n@c\nd: e\n@f\ng"
+	var ast := _parse(source)
+
+	if ast.children.size() != 3:
+		fail_test("declaration count %d != expected count 3" % ast.children.size())
+		return
+
+	const expected := [
+			[AST.Annotation, AST.Identifier],
+			[AST.Annotation, AST.Identifier, AST.Description],
+			[AST.Annotation, AST.Identifier],
+	]
+	for i in ast.children.size():
+		var declaration: AST.Declaration = ast.children[i]
+		for j in declaration.children.size():
+			assert_is(declaration.children[j], expected[i][j])
+
+
 func test_id_with_description() -> void:
 	var source := "a: b c d"
 	var ast := _parse(source)
